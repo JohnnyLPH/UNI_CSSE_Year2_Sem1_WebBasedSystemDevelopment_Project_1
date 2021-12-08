@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./favicon.ico">
+    <title>User Account Registration - VIP LOUNGE</title>
+    <link rel="stylesheet" type="text/css" href="./form.css" />
+    <script type="text/javascript">
+        function resetForm() {
+            if(window.confirm("Clear the Registration Form?")) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function showTerms() {
+            document.registrationForm.style.display = "none";
+            document.getElementById("terms-statement").style.display = "block";
+        }
+
+        function hideTerms() {
+            document.registrationForm.style.removeProperty("display");
+            document.getElementById("terms-statement").style.removeProperty("display");
+        }
+    </script>
+    <script src="./formValidation.js" defer></script>
+</head>
+<body>
+    <!-- Coded by 73804 (G03 Lab 1) -->
+    <nav>     
+        <a class="title"><img src="./images/top.png" alt="Logo">VIP LOUNGE</a>      
+    </nav>    
+    <main>
+        <noscript>
+            <div class="warning-banner">
+                <svg width="40" height="40" viewBox="0 0 20 20"><path d="M11.31 2.85l6.56 11.93A1.5 1.5 0 0116.56 17H3.44a1.5 1.5 0 01-1.31-2.22L8.69 2.85a1.5 1.5 0 012.62 0zM10 13a.75.75 0 100 1.5.75.75 0 000-1.5zm0-6.25a.75.75 0 00-.75.75v4a.75.75 0 001.5 0v-4a.75.75 0 00-.75-.75z" fill-rule="nonzero"></path></svg>
+                <h1>JavaScript Disabled</h1>
+                <h2>Please enable JavaScript and reload page to have features such as Clear Form Confirmation and clickable Terms and Conditions.</h2>
+            </div>
+        </noscript>
+        <form action="./formValidation.php" method="post" name="registrationForm" onsubmit="return(validateForm());" novalidate>            
+            <div style="text-align: center;">
+                <img src="./images/form-icon-png-15.jpg" style="max-width: 100px; vertical-align: middle;">
+                <h1 style="display: inline-block;">User Account Registration</h1>
+            </div>
+            <p style="text-align: center;">Please fill in all details.</p>            
+            <fieldset>
+                <label for="firstName">First Name: </label>
+                <div class="input">
+                    <span class="form-icon badge"></span>
+                    <div>
+                        <input type="text" name="firstName" id="firstName">
+                        <p class="warning-text hidden">Error</p>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <label for="lastName">Last Name: </label>
+                <div class="input">
+                    <span class="form-icon badge"></span>
+                    <div>
+                        <input type="text" name="lastName" id="lastName">
+                        <p class="warning-text hidden">Error</p>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <label for="email">Email: </label>
+                <div class="input">
+                    <span class="form-icon email"></span>
+                    <div>
+                        <input type="email" name="email" placeholder="username@domain.com" id="email">
+                        <p class="warning-text hidden">Error</p>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <label for="phone">Phone Number: </label>
+                <div class="input">
+                    <span class="form-icon smartphone"></span>
+                    <div>
+                        <div style="display: flex; align-items: center;">
+                            <span style="white-space: pre;">+60 </span>
+                            <input type="tel" name="phone" placeholder="123456789" id="phone">
+                        </div>
+                        <p class="warning-text hidden">Error</p>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <label for="password">Password: </label>
+                <div class="input">
+                    <span class="form-icon vpn_key"></span>
+                    <div>
+                        <input type="password" name="password" id="password">
+                        <p class="warning-text hidden">Error</p>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <label for="confirmPassword">Confirm Password: </label>
+                <div class="input">
+                    <span class="form-icon vpn_key"></span>
+                    <div>
+                        <input type="password" name="confirmPassword" id="confirmPassword">
+                        <p class="warning-text hidden">Error</p>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <label for="gender">Gender: </label>
+                <div class="input" style="text-align: center;">
+                    <span class="form-icon wc"></span>
+                    <div>
+                        <input type="radio" name="gender" value="Male" id="male">
+                        <label for="male" style="font-weight: normal;">Male</label>
+                        <input type="radio" name="gender" value="Female" id="female">
+                        <label for="female" style="font-weight: normal;">Female</label>                
+                        <p class="warning-text hidden">Error</p>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <label for="state">State: </label>
+                <div class="input">
+                    <span class="form-icon flag"></span>
+                    <div>
+                        <select name="state" id="state">
+                            <option value="">-- Select state --</option>                    
+                            <optgroup label="Federal Territories">
+                                <option value="MY-14">Kuala Lumpur</option>
+                                <option value="MY-15">Labuan</option>
+                                <option value="MY-16">Putrajaya</option>
+                            </optgroup>
+                            <optgroup label="Peninsular Malaysia">
+                                <option value="MY-01">Johor</option>
+                                <option value="MY-02">Kedah</option>
+                                <option value="MY-03">Kelantan</option>
+                                <option value="MY-04">Melaka</option>
+                                <option value="MY-05">Negeri Sembilan</option>
+                                <option value="MY-06">Pahang</option>
+                                <option value="MY-07">Penang</option>
+                                <option value="MY-08">Perak</option>
+                                <option value="MY-09">Perlis</option>
+                                <option value="MY-10">Selangor</option>
+                                <option value="MY-11">Terengganu</option>
+                            </optgroup>
+                            <optgroup label="East Malaysia">                    
+                                <option value="MY-12">Sabah</option>
+                                <option value="MY-13">Sarawak</option>
+                            </optgroup>
+                        </select>
+                        <p class="warning-text hidden">Error</p>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset style="display: block; text-align: center;">
+                <input type="checkbox" name="terms" id="terms">
+                <label for="terms">I accept the <a href="#" onclick="showTerms()">Terms and Conditions</a></label>
+                <p class="warning-text hidden">Error</p>
+            </fieldset>        
+            <fieldset>
+                <input type="submit" value="REGISTER" class="button-flex">
+                <a href="./registration.html" onclick="return(resetForm());" id="reset" class="button-flex">CLEAR</a>
+            </fieldset>
+        </form>
+        <article id="terms-statement">
+            <div style="text-align: right;">
+                <img src="./images/outline_cancel_black_18dp.png" onclick="hideTerms()" style="cursor: pointer;">
+            </div>
+            <div style="text-align: center;">
+                <h1>Terms and Conditions</h1>
+                <h3>Last Updated: 2021</h3>
+            </div>
+            <div style="text-align: justify;">
+                <p>1. This is Terms and Conditions. This is Terms and Conditions. This is Terms and Conditions.</p>
+                <p>2. This is Terms and Conditions. This is Terms and Conditions. This is Terms and Conditions. This is Terms and Conditions. This is Terms and Conditions. This is Terms and Conditions. This is Terms and Conditions. This is Terms and Conditions. This is Terms and Conditions.</p>
+                <p>3. This is Terms and Conditions. This is Terms and Conditions. This is Terms and Conditions.</p>
+            </div>
+        </article>
+    </main>
+      
+    <footer>
+        <section>
+            <article>
+                <h3>BEST VIEWED ON</h3>
+                <h4>Chromium-based browsers</h4>
+            </article>
+            <article>
+                <h3>CODED BY</h3>
+                <h4>Regan (73804, Lab 1, G03)</h4>
+            </article>
+        </section>
+        <section>
+            <article>
+                <h3>COURSE</h3>
+                <h4>TME2104 Web-Based System Development Sem 1 2021/2022</h4>
+            </article>
+            <article>
+                <h3>COPYRIGHT</h3>
+                <h4>&copy; VIP LOUNGE 2021</h4>
+            </article>
+        </section>
+        <section>
+            <article id="follow-us">
+                <h3>FOLLOW US</h3>
+                <a href="#follow-us"><img src="./images/social/Facebook.png" alt="Facebook" title="Facebook"></a>
+                <a href="#follow-us"><img src="./images/social/Instagram.png" alt="Instagram" title="Instagram"></a>
+                <a href="#follow-us"><img src="./images/social/Twitter.png" alt="Twitter" title="Twitter"></a>
+                <a href="#follow-us"><img src="./images/social/YouTube.png" alt="YouTube" title="YouTube"></a>
+            </article>
+        </section>
+    </footer>
+</body>
+</html>
