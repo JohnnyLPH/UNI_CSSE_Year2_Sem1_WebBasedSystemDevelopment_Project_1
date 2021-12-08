@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<!--
+    Lab 3:
+    Name: Yuki Chung Pei Ying
+    Matric Number: 77237
+-->
+<html>
+    <head>
+        <title>Lab 3: User Account Registration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <link rel="icon" type="image/x-icon" href="favicon.png">
+        <link rel="stylesheet" href="registrationStyle.css">
+        <script type="text/javascript" src="formValidation.js" defer></script>
+    </head>
+
+    <body>
+        <header>
+            <h1>&#127793; Welcome to Registration Page &#127793;</h1>
+            <h4>Dear user, please kindly fill up the form below to register your account~</h4>
+        </header>
+
+        <main>
+            <div class="reg-form-head">
+                <h2>User Account Registration</h2>
+            </div>
+            
+            <div class="reg-form-content">
+                <form id="reg-form" action="formValidation.php" method="post" onsubmit="return formValidation();">
+                    <div>
+                        <!-- Key In Neme (First Name & Last Neme) -->
+                        <h3 class="nameStyle">Name &#128221;</h3>
+                        <input class="firstName" type="text" placeholder="First Name" name="firstName"><br>
+                        <input class="lastName" placeholder="Last Name" type="text" name="lastName">
+                    </div>
+
+                    <div>
+                        <!-- Key In Email -->
+                        <h3 class="nameStyle">Email &#128234;</h3>
+                        <input class="email" type="text" placeholder="E.g. example@xxxx.com" name="email">
+                    </div>
+
+                    <div>
+                        <!-- Key In Mobile Phone Number -->
+                        <h3 class="nameStyle">Mobile &#128222;</h3>
+                        <input class="code" type="text" name="code" value="+60">
+                        <input class="number" type="text" name="number" maxlength="10">
+                    </div>
+
+                    <div>
+                        <!-- Set Password -->
+                        <h3 class="nameStyle">Password &#128273;</h3>
+                        <input class="password" type="password" placeholder="* MUST be 6 Digits Length & Alphanumeric*" name="password" maxlength="6">
+                    </div>
+
+                    <div>
+                        <!-- Confirm Password -->
+                        <h3 class="nameStyle">Confirm Password &#128272;</h3>
+                        <input class="confirmPassword" type="password" placeholder="Re-enter Password" name="confirmPassword" maxlength="6">
+                    </div>
+
+                    <div>
+                        <!-- Select Gender -->
+                        <h3 class="nameStyle">Gender</h3>
+
+                        <label class="radio">
+                            <input class="male" type="radio" name="gender" value="male" checked>
+                            <span class="checkmark"></span>
+                            Male &#129501;
+                        </label>
+
+                        <label class="radio">
+                            <input class="female" type="radio" name="gender" value="female">
+                            <span class="checkmark"></span>
+                            Female &#129498;
+                        </label>
+                    </div>
+
+                    <div>
+                        <!-- Select State -->
+                        <h3 class="nameStyle">State &#128506;&#65039;</h3>
+                        <select class="state" name="state" style="text-align: center;">
+                            <option value="none" selected>-Select State-</option>
+                            <option value="Kuala Lumpur">Kuala Lumpur</option>
+                            <option value="Labuan">Labuan</option>
+                            <option value="Putrajaya">Putrajaya</option>
+                            <option value="Johor">Johor</option>
+                            <option value="Kedah">Kedah</option>
+                            <option value="Kelantan">Kelantan</option>
+                            <option value="Melaka">Melaka</option>
+                            <option value="Negeri Sembilan">Negeri Sembilan</option>
+                            <option value="Pahang">Pahang</option>
+                            <option value="Perak">Perak</option>
+                            <option value="Perlis">Perlis</option>
+                            <option value="Pulau Pinang">Pulau Pinang</option>
+                            <option value="Sabah">Sabah</option>
+                            <option value="Sarawak">Sarawak</option>
+                            <option value="Selangor">Selangor</option>
+                            <option value="Terengganu">Terengganu</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <!-- Accept Terms and condition -->
+                        <input class="accept-term-checkbox" type="checkbox" name="accept-term" value="true">
+                        <label for="accept-term-checkbox" class="accept-term-words">
+                            I accept the above Terms and Conditions&#128220;
+                        </label>
+                    </div>
+                    
+                    <div class="button-container" style="margin-top: 20px;">
+                        <!-- Submit Registration Form -->
+                        <button type="submit">Register &#10004;</button>
+                        <!-- Reset Registration Form -->
+                        <button type="reset">Clear &#10006;</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <footer>
+            <p>Created by :<br>
+                &#127810;<b><i>Yuki Chung Pei Ying (77237)</i></b>&#127810;
+                <br>
+                &#127794; &#129498; &#127794;
+            </p>
+        </footer>
+    </body>
+</html>
