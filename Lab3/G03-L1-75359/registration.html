@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>User Account Registration</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+
+        <link rel="stylesheet" href="style.css">
+        <link rel="shortcut icon" href="https://avatars.githubusercontent.com/u/70358914?v=4">
+
+        <script type="text/javascript" src="formValidation.js" defer></script>
+    </head>
+    
+    <body>
+        <header>
+            <h1>REGISTRATION FORM</h1>
+        </header>
+        
+        <main>
+            <h2>User Account Registration</h2>
+            <!-- Use Post Method to send sensitive information. -->
+            <!-- <form id="register-form" action="formValidation.php" method="post"> -->
+            <form id="register-form" action="formValidation.php" method="post" onsubmit="return validateForm();">
+                <div>
+                    <!-- Input: Text -->
+                    <label for="first-name">First Name:</label><br>
+
+                    <input id="first-name" type="text" placeholder="First" name="first-name">
+                </div>
+
+                <div>
+                    <!-- Input: Text -->
+                    <label for="last-name">Last Name:</label><br>
+
+                    <input id="last-name" type="text" placeholder="Last" name="last-name">
+                </div>
+
+                <div>
+                    <!-- Input: Text -->
+                    <label for="email">Email&#128231;:</label><br>
+
+                    <input id="email" type="text" placeholder="Format: abc@xxx.xxx" name="email">
+                </div>
+
+                <div>
+                    <!-- Input: Text & Tel -->
+                    <label for="phone-no">Mobile&#128222;:</label><br>
+
+                    <input size="1" id="country-code" type="text" placeholder="+60" name="country-code" value="+60">
+                    <input id="phone-no" type="tel" placeholder="9 - 10 digits" name="phone-no" maxlength="10">
+                </div>
+
+                <div>
+                    <!-- Input: Password -->
+                    <label for="password">Password&#128273;:</label><br>
+
+                    <input id="password" type="password" placeholder="Alphanumeric, Length:6" name="password" maxlength="6">
+                </div>
+
+                <div>
+                    <!-- Input: Password -->
+                    <label for="reconfirm-password">Confirm Password&#128477;&#65039;:</label><br>
+
+                    <input id="reconfirm-password" type="password" placeholder="Re-enter Password" name="reconfirm-password" maxlength="6">
+                </div>
+
+                <div>
+                    <!-- Input: Radio Button -->
+                    <label for="gender">Gender&#9794;&#65039;&#9792;&#65039;:</label><br>
+
+                    <input id="male" type="radio" name="gender" value="male" checked>
+                    <label for="male">Male</label>
+
+                    <input id="female" type="radio" name="gender" value="female">
+                    <label for="female">Female</label>
+                </div>
+
+                <div>
+                    <!-- Input: Select -->
+                    <label for="state">State&#128506;&#65039;:</label><br>
+
+                    <select id="state" name="state">
+                        <option value="none" selected>-Select State-</option>
+                        <option value="Kuala Lumpur">Kuala Lumpur</option>
+                        <option value="Labuan">Labuan</option>
+                        <option value="Putrajaya">Putrajaya</option>
+                        <option value="Johor">Johor</option>
+                        <option value="Kedah">Kedah</option>
+                        <option value="Kelantan">Kelantan</option>
+                        <option value="Melaka">Melaka</option>
+                        <option value="Negeri Sembilan">Negeri Sembilan</option>
+                        <option value="Pahang">Pahang</option>
+                        <option value="Perak">Perak</option>
+                        <option value="Perlis">Perlis</option>
+                        <option value="Pulau Pinang">Pulau Pinang</option>
+                        <option value="Sabah">Sabah</option>
+                        <option value="Sarawak">Sarawak</option>
+                        <option value="Selangor">Selangor</option>
+                        <option value="Terengganu">Terengganu</option>
+                    </select>
+                </div>
+
+                <div>
+                    <!-- Input: Checkbox -->
+                    <input id="accept-term" type="checkbox" name="accept-term" value="true">
+                    <label for="accept-term">I accept the above Terms and Conditions</label>
+                </div>
+                
+                <div class="button-container">
+                    <!-- Submit -->
+                    <button type="submit">Register User</button>
+                    <!-- Reset -->
+                    <button type="reset">Clear All</button>
+                </div>
+            </form>
+        </main>
+
+        <footer>
+            <p>
+                Created by<br>
+                <a href="https://github.com/JohnnyLPH" target="_blank">
+                    Lau Pikk Heang
+                </a>
+            </p>
+        </footer>
+    </body>
+</html>
