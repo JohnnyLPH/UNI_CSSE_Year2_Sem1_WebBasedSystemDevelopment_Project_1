@@ -1,0 +1,87 @@
+    <!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User Register Account</title>
+        <link rel="stylesheet" href="mystyle.css">
+        <script type="text/javascript" src="formValidation.js"></script>
+       
+    </head>
+    <body>
+        <main>
+            <div>
+                <h1>User Account Registration</h1>
+            </div>
+            <section>
+                <form method="post" action="formValidation.php" onsubmit="return(validate())">
+                    <div>   
+                        <label for="user_fname"><p>First Name</p><img src="source/icon/Normal/id-card.png" alt="icon" id="fname_img"></label>
+                       <!--  <label for="user_fname" id="user_fname_icon"></label> -->
+                        <input type="text" name="user_fname" id="user_fname_input" placeholder="First name"/>
+                        <p id="user_fname_alert_string"></p>
+                    </div>
+                    <div>
+                        <label for="user_lname"><p>Last Name</p><img src="source/icon/Normal/id-card.png" alt="icon" id="lname_img"></label>
+                        <input type="text" name="user_lname" id="user_lname_input" placeholder="Last name"/>
+                        <p id="user_lname_alert_string"></p>
+                    </div>
+                    <div>
+                        <label for="user_email"><p>Email</p><img src="source/icon/Normal/email.png" alt="icon" id="email_img"></label>
+                        <input type="text" name="user_email" id="user_email_input" placeholder="Email"/>
+                        <p id="user_email_alert_string"></p>
+                    </div>
+                    <div>
+                        <label for="user_mobile"><p>Mobile</p><img src="source/icon//Normal/smartphone.png" alt="icon" id="mobile_img"></label>
+                        <input type="text" disabled value="+60" />
+                        <input type="text" name="user_mobile" id="user_mobile_input" placeholder="mobile number" />
+                        <p id="user_mobile_alert_string"></p>
+                    </div>
+                    <div>
+                        <label for="user_password"><p>Password</p><img src="source/icon/Normal/password.png" alt="icon" id="password_img"></label>
+                        <input type="password" name="user_password" id="user_password_input" minlength="6" placeholder="Password"/>
+                        <p id="user_password_alert_string"></p>
+                    </div>
+                    <div>
+                        <label for="user_cpassword"><p>Confirm Password</p><img src="source/icon/Normal/confirm_password.png" alt="icon" id="cpassword_img"></label>
+                        <input type="password" name="user_cpassword" id="user_cpassword_input" minlength="6" placeholder="Comfirm Password"/>
+                        <p id="user_cpassword_alert_string"></p>
+                    </div>
+                    <div>
+                        <label for="user_gender"><p>Gender</p><img src="source/icon/Normal/gender.png" alt="icon" id="gender_img"></label>
+                        <label class="gender_label_class" for="male">Male</label>
+                        <input type="radio" name="user_gender" id="male" value="male" checked/>
+                        <label class="gender_label_class" for="female">Female</label>
+                        <input type="radio" name="user_gender" id="female" value="female"/>
+                        <p id="user_gender_alert_string"></p>
+                    </div>
+                    <div>
+                        <label for="user_state"><p>State</p><img src="source/icon/Normal/region.png" alt="icon" id="state_img"></label>
+                       <select name="user_state" id="user_state_id">
+                           <option value="none" selected disabled hidden>Select an option</option>
+                           <option value="Johor">Johor</option>
+                           <option value="Kedah">Kedah</option>
+                           <option value="Kelantan">Kelantan</option>
+                           <option value="Malacca">Malacca</option>
+                           <option value="Negeri_Sembilan">Negeri Sembilan</option>
+                           <option value="Pahang">Pahang</option>
+                           <option value="Perak">Perak</option>
+                           <option value="Perlis">Perlis</option>
+                           <option value="Sabah">Sabah</option>
+                           <option value="Sarawak">Sarawak</option>
+                           <option value="Selangor">Selangor</option>
+                           <option value="Terengganu">Terengganu</option>
+                       </select>
+                       <p id="user_state_alert_string"></p>
+                    </div>
+                    <div>
+                        <div><input type="checkbox" name="user_provision" id="user_provision_id"/><span>I accept the above Terms and Conditions</span></div>
+                        <p id="user_provision_alert_string"></p>
+                    </div>
+                    <input type="submit" name="Submit" value="Register"/>
+                    <input type="button" value="Clear" onclick="clearInput()"/>
+                </form>
+            </section>
+            
+        </main>
+    </body>
+</html>
