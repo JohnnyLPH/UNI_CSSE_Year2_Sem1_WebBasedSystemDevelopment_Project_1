@@ -39,15 +39,17 @@
                     $adminLoginErr = "* Enter Admin Password!";
                 }
                 else {
-                    $stmt = $conn->prepare("SELECT * FROM Admins");
-                    $stmt->execute();
-                    $users = $stmt->fetchAll();
                     $found = false;
+                    // Make sure Admins table (id, adminName, password) is created.
+                    $query = "SELECT * FROM Admins";
 
-                    foreach($users as $user) {
-                        if ($user["adminName"] == $adminName && $user["password"] == $adminPassword) {
-                            $found = true;
-                            break;
+                    $rs = mysqli_query($serverConnect, $query);
+                    if ($rs) {
+                        while ($user = mysqli_fetch_assoc($rs)) {
+                            if ($user["adminName"] == $adminName && $user["password"] == $adminPassword) {
+                                $found = true;
+                                break;
+                            }
                         }
                     }
 
@@ -61,6 +63,8 @@
                     }
                 }
             }
+            // Close after use.
+            mysqli_close($serverConnect);
         ?>
        
         <main>

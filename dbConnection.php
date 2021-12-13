@@ -1,20 +1,23 @@
 <!-- For DB Connection -->
 <?php
-    $conn = "";
-    
-    try {
-        $serverName = "localhost:3306";
-        $dbName = "LINGsCARS";
-        $username = "root";
-        $password = "";
-    
-        $conn = new PDO(
-            "mysql:host=$serverName; dbname=$dbName",
-            $username, $password
-        );
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $serverName = "localhost:3306";
+
+    $username = "root";
+    $password = "";
+
+    // Make sure the DB is already created.
+    $dbName = "LINGsCARS";
+
+    // Use mysqli_close($serverConnect) to terminate connection after use.
+    $serverConnect = mysqli_connect($serverName, $username, $password);
+    if (!$serverConnect) {
+        echo "-Error Connecting to DB Server!<br>";
+        trigger_error(mysqli_error(), E_USER_ERROR);
     }
-    catch(PDOException $err) {
-        echo "-Error: Failed DB Connection. " . $err->getMessage();
+
+    $dbSelect = mysqli_select_db($serverConnect, $dbName);
+    if (!$dbSelect) {
+        echo "Error Selecting DB!<br>";
+        trigger_error(mysqli_error(), E_USER_ERROR); 
     }
 ?>
