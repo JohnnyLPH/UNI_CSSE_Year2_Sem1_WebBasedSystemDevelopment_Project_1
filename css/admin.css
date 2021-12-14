@@ -38,7 +38,9 @@ hr {
 }
 
 main {
-    width: 100%;
+    display: block;
+    margin: auto;
+    max-width: 1000px;
 }
 
 main h2 {
@@ -96,4 +98,3 @@ main h2 {
     color: rgb(68, 146, 156);
     border-color: rgb(68, 146, 156);
 }
-

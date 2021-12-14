@@ -1,5 +1,64 @@
-<!DOCTYPE html>
  <!-- Admin Login Page for LINGsCARS -->
+<?php
+    require_once("./dbConnection.php");
+    require_once("./adminAuthenticate.php");
+    // Already logged in, redirect to admin dashboard.
+    if (checkAdminLogin()) {
+        header("Location: ./adminDashboard.php");
+    }
+
+    $adminName = $adminPassword = $adminLoginErr = "";
+
+    function testInput($data) {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $adminName = testInput($_POST["admin-name"]);
+        $adminPassword = testInput($_POST["admin-password"]);
+
+        if (empty($adminName)) {
+            $adminLoginErr = "* Enter Admin Name!";
+        }
+        else if (empty($adminPassword)) {
+            $adminLoginErr = "* Enter Admin Password!";
+        }
+        else {
+            $found = false;
+            // Make sure Admins table (id, adminName, password) is already created.
+            $query = "SELECT * FROM Admins WHERE adminName='$adminName'";
+
+            $rs = mysqli_query($serverConnect, $query);
+            if ($rs) {
+                if ($user = mysqli_fetch_assoc($rs)) {
+                    if ($user["adminName"] == $adminName && $user["password"] == $adminPassword) {
+                        $found = true;
+                    }
+                }
+            }
+
+            if ($found) {
+                $_SESSION["adminLoggedIn"] = "true";
+                $_SESSION["adminName"] = $adminName;
+
+                $adminName = $adminPassword = $adminLoginErr = "";
+                // Redirect to admin dashboard after login.
+                header("Location: ./adminDashboard.php");
+            }
+            else {
+                $adminName = "";
+                $adminLoginErr = "* Failed Login! Make sure all inputs are correct!";
+            }
+        }
+    }
+    // Close after use.
+    mysqli_close($serverConnect);
+?>
+
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Admin Login | LINGsCARS</title>
@@ -16,57 +75,6 @@
             </p>
         </header>
 
-        <?php
-            include_once('dbConnection.php');
-
-            $adminName = $adminPassword = $adminLoginErr = "";
-
-            function testInput($data) {
-                $data = trim($data);
-                $data = stripslashes($data);
-                $data = htmlspecialchars($data);
-                return $data;
-            }
-
-            if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                $adminName = testInput($_POST["admin-name"]);
-                $adminPassword = testInput($_POST["admin-password"]);
-
-                if (empty($adminName)) {
-                    $adminLoginErr = "* Enter Admin Name!";
-                }
-                else if (empty($adminPassword)) {
-                    $adminLoginErr = "* Enter Admin Password!";
-                }
-                else {
-                    $found = false;
-                    // Make sure Admins table (id, adminName, password) is created.
-                    $query = "SELECT * FROM Admins";
-
-                    $rs = mysqli_query($serverConnect, $query);
-                    if ($rs) {
-                        while ($user = mysqli_fetch_assoc($rs)) {
-                            if ($user["adminName"] == $adminName && $user["password"] == $adminPassword) {
-                                $found = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if ($found) {
-                        $adminName = $adminPassword = $adminLoginErr = "";
-                        header("Location: index.html");
-                    }
-                    else {
-                        $adminName = "";
-                        $adminLoginErr = "* Failed Login! Make sure all inputs are correct!";
-                    }
-                }
-            }
-            // Close after use.
-            mysqli_close($serverConnect);
-        ?>
-       
         <main>
             <h2>
                 Admin Login
