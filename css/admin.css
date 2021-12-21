@@ -10,6 +10,7 @@ body {
     margin: 0;
     background-color: var(--main-body-color);
     font-size: 17px;
+    height: 100vh;
 }
 
 header {
@@ -17,7 +18,7 @@ header {
     background-color: var(--medium-dark-shade-of-cyan-);
     z-index: 1;
     top: 0;
-    font-size: larger;
+    font-size: x-large;
 }
 
 footer {
@@ -41,6 +42,7 @@ main {
     display: block;
     margin: auto;
     max-width: 1000px;
+    min-height: 85%;
 }
 
 main h2 {
@@ -91,10 +93,61 @@ main h2 {
     background-color: rgb(68, 146, 156);
 }
 
-
 #admin-login-form button:hover {
     cursor: pointer;
     background-color: white;
     color: rgb(68, 146, 156);
     border-color: rgb(68, 146, 156);
+}
+
+nav.fixed_nav_bar {
+    padding: 0;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+nav.fixed_nav_bar ul {
+    list-style-type: none;
+    margin: 0;
+    position: relative;
+    height: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 1;
+    padding: 0 15px;
+}
+
+nav.fixed_nav_bar li {
+    display: inline-block;
+    min-width: 11%;
+}
+
+nav.fixed_nav_bar li:last-child {
+    float: right;
+}
+
+nav.fixed_nav_bar li a {
+    color: white;
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+nav.fixed_nav_bar li a:hover {
+    color: var(--medium-dark-shade-of-cyan-);
+}
+
+nav.fixed_nav_bar li a.active {
+    color: var(--medium-dark-shade-of-cyan-);
+    background-color: var(--light-shade-of-red-orange);
+}
+
+nav.fixed_nav_bar li:hover:not(.active) {
+    color: var(--medium-dark-shade-of-cyan-);
+    background-color: var(--light-shade-of-red-orange);
 }

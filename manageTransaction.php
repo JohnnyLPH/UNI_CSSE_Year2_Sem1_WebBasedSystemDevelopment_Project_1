@@ -1,4 +1,4 @@
-<!-- Admin Dashboard: Home for LINGsCARS -->
+<!-- Admin Dashboard: Manage Transaction for LINGsCARS -->
 <?php
     require_once("./dbConnection.php");
     require_once("./adminAuthenticate.php");
@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Admin Dashboard: Home | LINGsCARS</title>
+        <title>Admin Dashboard: Manage Transaction | LINGsCARS</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
         <link rel="stylesheet" href="./css/admin.css">
@@ -27,7 +27,7 @@
         <nav class="fixed_nav_bar">
             <ul>
                 <li>
-                    <a href="./adminDashboard.php" class="active">Home</a>
+                    <a href="./adminDashboard.php">Home</a>
                 </li>
                 <li>
                     <a href="./manageMember.php">Manage Member</a>
@@ -36,7 +36,7 @@
                     <a href="./manageProduct.php">Manage Product</a>
                 </li>
                 <li>
-                    <a href="./manageTransaction.php">Manage Transaction</a>
+                    <a href="./manageTransaction.php" class="active">Manage Transaction</a>
                 </li>
                 <li>
                     <a href="./manageAdmin.php">Manage Admin</a>
@@ -49,13 +49,7 @@
 
         <main>
             <h2>
-                Logged in as: <i>
-                    <?php
-                        if (isset($_SESSION["adminName"])) {
-                            echo $_SESSION["adminName"];
-                        }
-                    ?>
-                </i>
+                Manage Transaction
             </h2>
 
             
