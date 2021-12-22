@@ -2,8 +2,8 @@
 <?php
     $dbHost = "localhost:3306";
 
-    $dbUsername = "root";
-    $dbPassword = "";
+    $dbUsername = "wbsd";
+    $dbPassword = "g03abcg03ab";
 
     // Make sure the DB is already created.
     $dbName = "LINGsCARS";

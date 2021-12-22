@@ -3,7 +3,7 @@
     require_once("./dbConnection.php");
     require_once("./adminAuthenticate.php");
     if (!checkAdminLogin()) {
-        header("Location: ./adminLogin.php");
+        header("Location: ./adminLogout.php");
     }
 ?>
 

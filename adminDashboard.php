@@ -3,7 +3,7 @@
     require_once("./dbConnection.php");
     require_once("./adminAuthenticate.php");
     if (!checkAdminLogin()) {
-        header("Location: ./adminLogin.php");
+        header("Location: ./adminLogout.php");
     }
 ?>
 
@@ -49,10 +49,13 @@
 
         <main>
             <h2>
-                Logged in as: <i>
+                Logged in: <i>
                     <?php
                         if (isset($_SESSION["adminName"])) {
                             echo $_SESSION["adminName"];
+                        }
+                        if (isset($_SESSION["lastActive"])) {
+                            echo "; Active: " . date("Y-m-d H:i", $_SESSION["lastActive"]);
                         }
                     ?>
                 </i>

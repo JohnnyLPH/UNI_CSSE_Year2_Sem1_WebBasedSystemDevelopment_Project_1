@@ -28,8 +28,8 @@
         }
         else {
             $found = false;
-            // Make sure Admins table (id, adminName, password) is already created.
-            $query = "SELECT * FROM Admins WHERE adminName='$adminName'";
+            // Make sure Admins table (id, adminName, password, lastLogin) is already created.
+            $query = "SELECT adminName, password FROM Admins WHERE adminName='$adminName'";
 
             $rs = mysqli_query($serverConnect, $query);
             if ($rs) {
@@ -41,8 +41,14 @@
             }
 
             if ($found) {
+                // Date stored as YYYY-MM-DD HH:MM:SS. Refer https://www.w3schools.com/php/func_date_date.asp
+                $currentDate = date("Y-m-d H:i:s");
+                // Record new login date.
+                mysqli_query($serverConnect, "UPDATE Admins SET lastLogin='$currentDate' WHERE adminName='$adminName'");
+
                 $_SESSION["adminLoggedIn"] = "true";
                 $_SESSION["adminName"] = $adminName;
+                $_SESSION["lastActive"] = strtotime($currentDate);
 
                 $adminName = $adminPassword = $adminLoginErr = "";
                 // Redirect to admin dashboard after login.
