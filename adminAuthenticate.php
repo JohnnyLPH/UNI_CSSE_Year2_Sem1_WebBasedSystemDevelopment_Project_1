@@ -9,14 +9,14 @@
 
         // Confirm logged in.
         if (
-            !isset($_SESSION["adminLoggedIn"]) || empty($_SESSION["adminLoggedIn"]) || 
-            $_SESSION["adminLoggedIn"] != "true" || !isset($_SESSION["adminName"]) || empty($_SESSION["adminName"])
+            !isset($_SESSION["adminId"]) || $_SESSION["adminId"] < 0 ||
+            !isset($_SESSION["adminName"]) || empty($_SESSION["adminName"])
         ) {
             return false;
         }
         // Check last active time.
         else if (
-            !isset($_SESSION["lastActive"]) || 
+            !isset($_SESSION["lastActive"]) ||
             strtotime(date("Y-m-d H:i:s")) - $_SESSION["lastActive"] > ($expireMin * 60)
         ) {
             return false;

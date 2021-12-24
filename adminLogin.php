@@ -28,14 +28,16 @@
         }
         else {
             $found = false;
-            // Make sure Admins table (id, adminName, password, lastLogin) is already created.
-            $query = "SELECT adminName, password FROM Admins WHERE adminName='$adminName'";
+            $adminId = 0;
+            // Make sure Admins table (id, adminName, adminPassword, lastLogin) is already created.
+            $query = "SELECT id, adminName, adminPassword FROM Admins WHERE adminName='$adminName';";
 
             $rs = mysqli_query($serverConnect, $query);
             if ($rs) {
                 if ($user = mysqli_fetch_assoc($rs)) {
-                    if ($user["adminName"] == $adminName && $user["password"] == $adminPassword) {
+                    if ($user["adminName"] == $adminName && $user["adminPassword"] == $adminPassword) {
                         $found = true;
+                        $adminId = $user["id"];
                     }
                 }
             }
@@ -44,9 +46,11 @@
                 // Date stored as YYYY-MM-DD HH:MM:SS. Refer https://www.w3schools.com/php/func_date_date.asp
                 $currentDate = date("Y-m-d H:i:s");
                 // Record new login date.
-                mysqli_query($serverConnect, "UPDATE Admins SET lastLogin='$currentDate' WHERE adminName='$adminName'");
+                mysqli_query(
+                    $serverConnect, "UPDATE Admins SET lastLogin='$currentDate' WHERE adminName='$adminName';"
+                );
 
-                $_SESSION["adminLoggedIn"] = "true";
+                $_SESSION["adminId"] = $adminId;
                 $_SESSION["adminName"] = $adminName;
                 $_SESSION["lastActive"] = strtotime($currentDate);
 

@@ -55,7 +55,7 @@
                             echo $_SESSION["adminName"];
                         }
                         if (isset($_SESSION["lastActive"])) {
-                            echo "; Active: " . date("Y-m-d H:i", $_SESSION["lastActive"]);
+                            echo "</i>; Active: <i>" . date("Y-m-d H:i", $_SESSION["lastActive"]);
                         }
                     ?>
                 </i>

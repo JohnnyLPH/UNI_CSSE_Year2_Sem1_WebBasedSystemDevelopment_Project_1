@@ -41,7 +41,7 @@ hr {
 main {
     display: block;
     margin: auto;
-    max-width: 1000px;
+    max-width: 1200px;
     min-height: 85%;
 }
 
@@ -107,6 +107,7 @@ nav.fixed_nav_bar {
     top: 0;
     width: 100%;
     z-index: 1;
+    overflow:auto;
 }
 
 nav.fixed_nav_bar ul {
@@ -150,4 +151,77 @@ nav.fixed_nav_bar li a.active {
 nav.fixed_nav_bar li:hover:not(.active) {
     color: var(--medium-dark-shade-of-cyan-);
     background-color: var(--light-shade-of-red-orange);
+}
+
+div.manage-section {
+    display: block;
+    margin: auto;
+    width: fit-content;
+    min-width: 60%;
+}
+
+table.db-table {
+    background-color: white;
+    width: 100%;
+    margin: auto;
+}
+
+/* table.db-table tr {
+    display: flex;
+} */
+
+table.db-table, table.db-table th, table.db-table td {
+    border: 2px solid black;
+    border-collapse: collapse;
+}
+
+table.db-table th, table.db-table td {
+    padding: 0 5px;
+    height: 30px;
+}
+
+table.db-table tr .data-not-found {
+    color: red;
+    text-align: center;
+}
+
+table.db-table td button, form button {
+    display: block;
+    margin: auto;
+    padding: 10px 0;
+    color: white;
+    cursor: pointer;
+    font-size: large;
+    font-weight: bold;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: white;
+    width: 100%;
+    min-width: 80px;
+    /* min-height: 35px; */
+}
+
+form button {
+    background-color: rgb(84, 212, 174);
+}
+
+table.db-table td .edit-button {
+    background-color: green;
+}
+
+table.db-table td .delete-button {
+    background-color: red;
+}
+
+table.db-table td button:hover, form button:hover {
+    color: black;
+    border-color: black;
+}
+
+table.db-table td button.edit-button:hover {
+    background-color:rgba(0, 128, 0, 0.651) ;
+}
+
+table.db-table td button.delete-button:hover {
+    background-color: rgba(255, 0, 0, 0.651);
 }
