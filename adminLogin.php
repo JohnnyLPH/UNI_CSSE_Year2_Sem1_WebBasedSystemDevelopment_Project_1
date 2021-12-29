@@ -5,6 +5,7 @@
     // Already logged in, redirect to admin dashboard.
     if (checkAdminLogin()) {
         header("Location: ./adminDashboard.php");
+        exit;
     }
 
     $adminName = $adminPassword = $adminLoginErr = "";
@@ -52,11 +53,12 @@
 
                 $_SESSION["adminId"] = $adminId;
                 $_SESSION["adminName"] = $adminName;
-                $_SESSION["lastActive"] = strtotime($currentDate);
+                $_SESSION["adminLastActive"] = strtotime($currentDate);
 
                 $adminName = $adminPassword = $adminLoginErr = "";
                 // Redirect to admin dashboard after login.
                 header("Location: ./adminDashboard.php");
+                exit;
             }
             else {
                 $adminName = "";
@@ -89,7 +91,7 @@
             <h2>
                 Admin Login
             </h2>
-            <span class="admin-login-err">
+            <span class="error-message">
                 <?php
                     echo $adminLoginErr;
                 ?>
@@ -117,7 +119,6 @@
             </form>
         </main>
         
-        <hr>
         <footer>
             <p>
                 By G03-ABC

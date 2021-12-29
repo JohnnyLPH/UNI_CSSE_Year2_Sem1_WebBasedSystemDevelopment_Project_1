@@ -3,4 +3,5 @@
     session_destroy();
     // Redirect back to admin login page.
     header("Location: ./adminLogin.php");
+    exit;
 ?>

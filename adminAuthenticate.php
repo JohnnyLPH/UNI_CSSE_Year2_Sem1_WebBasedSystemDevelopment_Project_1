@@ -1,11 +1,12 @@
 <!-- Authenticate Admin Login -->
 <?php
+    // require_once("./dbConnection.php");
     session_start();
     date_default_timezone_set("Asia/Kuala_Lumpur");
 
     // Return true if admin has logged in.
     function checkAdminLogin() {
-        $expireMin = 10;
+        $expireMin = 30;
 
         // Confirm logged in.
         if (
@@ -16,13 +17,14 @@
         }
         // Check last active time.
         else if (
-            !isset($_SESSION["lastActive"]) ||
-            strtotime(date("Y-m-d H:i:s")) - $_SESSION["lastActive"] > ($expireMin * 60)
+            !isset($_SESSION["adminLastActive"]) ||
+            strtotime(date("Y-m-d H:i:s")) - $_SESSION["adminLastActive"] > ($expireMin * 60)
         ) {
             return false;
         }
+
         // Reset last active time.
-        $_SESSION["lastActive"] = strtotime(date("Y-m-d H:i:s"));
+        $_SESSION["adminLastActive"] = strtotime(date("Y-m-d H:i:s"));
         return true;
     }
 ?>

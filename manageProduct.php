@@ -4,6 +4,27 @@
     require_once("./adminAuthenticate.php");
     if (!checkAdminLogin()) {
         header("Location: ./adminLogout.php");
+        exit;
+    }
+    // Check if admin is deleted.
+    else {
+        $foundAdmin = false;
+        $query = "SELECT id, adminName FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+
+        $rs = mysqli_query($serverConnect, $query);
+        if ($rs) {
+            if ($user = mysqli_fetch_assoc($rs)) {
+                if ($user["id"] == $_SESSION["adminId"]) {
+                    $foundAdmin = true;
+                    $_SESSION["adminName"] = $user["adminName"];
+                }
+            }
+        }
+
+        if (!$foundAdmin) {
+            header("Location: ./adminLogout.php");
+            exit;
+        }
     }
 ?>
 
@@ -55,7 +76,6 @@
             
         </main>
         
-        <hr>
         <footer>
             <p>
                 By G03-ABC

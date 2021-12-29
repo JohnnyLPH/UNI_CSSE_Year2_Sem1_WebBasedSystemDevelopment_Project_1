@@ -11,6 +11,7 @@ body {
     background-color: var(--main-body-color);
     font-size: 17px;
     height: 100vh;
+    min-height: fit-content;
 }
 
 header {
@@ -41,21 +42,34 @@ hr {
 main {
     display: block;
     margin: auto;
-    max-width: 1200px;
+    /* max-width: 1200px; */
     min-height: 85%;
+    max-height: fit-content;
 }
 
 main h2 {
+    text-decoration: underline;
+}
+
+main h2, h3 {
     margin: 0;
     padding-top: 25px;
     padding-bottom: 10px;
     text-align: center;
 }
 
-.admin-login-err {
+.error-message {
     display: block;
     margin: auto;
     color: red;
+    text-align: center;
+    font-style: italic;
+}
+
+.success-message {
+    display: block;
+    margin: auto;
+    color: green;
     text-align: center;
     font-style: italic;
 }
@@ -158,12 +172,16 @@ div.manage-section {
     margin: auto;
     width: fit-content;
     min-width: 60%;
+    margin-bottom: 10px;
+    /* max-width: 1200px; */
 }
 
 table.db-table {
     background-color: white;
     width: 100%;
     margin: auto;
+    margin-top: 30px;
+    margin-bottom: 80px;
 }
 
 /* table.db-table tr {
@@ -178,6 +196,7 @@ table.db-table, table.db-table th, table.db-table td {
 table.db-table th, table.db-table td {
     padding: 0 5px;
     height: 30px;
+    /* font-size: small; */
 }
 
 table.db-table tr .data-not-found {
@@ -203,25 +222,66 @@ table.db-table td button, form button {
 
 form button {
     background-color: rgb(84, 212, 174);
+
 }
 
-table.db-table td .edit-button {
+.button-section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.button-section .positive-button, .button-section .negative-button {
+    width: 30%;
+    margin: 10px;
+    padding: 10px 0;
+    color: white;
+    cursor: pointer;
+    font-size: large;
+    font-weight: bold;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: white;
+}
+
+.positive-button {
     background-color: green;
 }
 
-table.db-table td .delete-button {
+.negative-button {
     background-color: red;
 }
 
-table.db-table td button:hover, form button:hover {
+table.db-table td button:hover, form button:hover, .button-section button:hover {
     color: black;
     border-color: black;
 }
 
-table.db-table td button.edit-button:hover {
+.positive-button:hover {
     background-color:rgba(0, 128, 0, 0.651) ;
 }
 
-table.db-table td button.delete-button:hover {
+.negative-button:hover {
     background-color: rgba(255, 0, 0, 0.651);
+}
+
+#manage-add-form, #manage-edit-form, #manage-delete-form {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: auto;
+}
+
+#manage-add-form div, #manage-edit-form div, #manage-delete-form div {
+    width: fit-content;
+    min-width: 230px;
+    margin: auto;
+    padding: 5px;
+}
+
+#manage-add-form div input, #manage-edit-form div input, #manage-delete-form div input {
+    width: 100%;
+    min-height: 25px;
 }
