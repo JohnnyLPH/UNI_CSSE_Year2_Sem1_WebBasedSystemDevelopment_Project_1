@@ -1,9 +1,9 @@
 <!-- Admin Dashboard: Manage Product for LINGsCARS -->
 <?php
-    require_once("./dbConnection.php");
-    require_once("./adminAuthenticate.php");
+    require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
+    require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     if (!checkAdminLogin()) {
-        header("Location: ./adminLogout.php");
+        header("Location: /admin/adminLogout.php");
         exit;
     }
     // Check if admin is deleted.
@@ -22,7 +22,7 @@
         }
 
         if (!$foundAdmin) {
-            header("Location: ./adminLogout.php");
+            header("Location: /admin/adminLogout.php");
             exit;
         }
     }
@@ -34,8 +34,8 @@
         <title>Admin Dashboard: Manage Product | LINGsCARS</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
-        <link rel="stylesheet" href="./css/admin.css">
-        <link rel="shortcut icon" href="./favicon.ico">
+        <link rel="stylesheet" href="/css/admin.css">
+        <link rel="shortcut icon" href="/favicon.ico">
     </head>
 
     <body>
@@ -48,22 +48,22 @@
         <nav class="fixed_nav_bar">
             <ul>
                 <li>
-                    <a href="./adminDashboard.php">Home</a>
+                    <a href="/admin/adminDashboard.php">Home</a>
                 </li>
                 <li>
-                    <a href="./manageMember.php">Manage Member</a>
+                    <a href="/admin/manageMember.php">Manage Member</a>
                 </li>
                 <li>
-                    <a href="./manageProduct.php" class="active">Manage Product</a>
+                    <a href="/admin/manageProduct.php" class="active">Manage Product</a>
                 </li>
                 <li>
-                    <a href="./manageTransaction.php">Manage Transaction</a>
+                    <a href="/admin/manageTransaction.php">Manage Transaction</a>
                 </li>
                 <li>
-                    <a href="./manageAdmin.php">Manage Admin</a>
+                    <a href="/admin/manageAdmin.php">Manage Admin</a>
                 </li>
                 <li>
-                    <a href="./adminLogout.php">Log Out</a>
+                    <a href="/admin/adminLogout.php">Log Out</a>
                 </li>
             </ul>
         </nav>

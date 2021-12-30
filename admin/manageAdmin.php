@@ -1,9 +1,9 @@
 <!-- Admin Dashboard: Manage Admin for LINGsCARS -->
 <?php
-    require_once("./dbConnection.php");
-    require_once("./adminAuthenticate.php");
+    require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
+    require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     if (!checkAdminLogin()) {
-        header("Location: ./adminLogout.php");
+        header("Location: /admin/adminLogout.php");
         exit;
     }
     // Check if admin is deleted.
@@ -22,12 +22,11 @@
         }
 
         if (!$foundAdmin) {
-            header("Location: ./adminLogout.php");
+            header("Location: /admin/adminLogout.php");
             exit;
         }
     }
 
-    
     function testInput($data) {
         $data = trim($data);
         $data = stripslashes($data);
@@ -328,7 +327,7 @@
                         $passChecking = false;
 
                         if (empty($oldAdminPass)) {
-                            $deleteAdminMsg = "* Enter <i>Admin ID $adminId</i> Password to Confirm Delete!";
+                            $deleteAdminMsg = "* Enter Admin ID $adminId Password to Confirm Delete!";
                         }
                         // Check password of admin to be deleted.
                         else {
@@ -375,16 +374,16 @@
 
                         if (!($rs)) {
                             $passChecking = false;
-                            $deleteAdminMsg = "* ERROR: Failed to delete <i>Admin ID $adminId</i>!";
+                            $deleteAdminMsg = "* ERROR: Failed to delete Admin ID $adminId!";
                         }
                         // If logged in admin is deleted.
                         else if ($_SESSION['adminId'] == "$adminId") {
-                            header("Location: ./adminLogout.php");
+                            header("Location: /admin/adminLogout.php");
                             exit;
                         }
                         
                         if ($passChecking) {
-                            $deleteAdminMsg = "* <i>Admin ID $adminId</i> have been deleted successfully!";
+                            $deleteAdminMsg = "* Admin ID $adminId have been deleted successfully!";
                         }
                     }
                 }
@@ -399,8 +398,8 @@
         <title>Admin Dashboard: : Manage Admin | LINGsCARS</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
-        <link rel="stylesheet" href="./css/admin.css">
-        <link rel="shortcut icon" href="./favicon.ico">
+        <link rel="stylesheet" href="/css/admin.css">
+        <link rel="shortcut icon" href="/favicon.ico">
     </head>
 
     <body>
@@ -413,22 +412,22 @@
         <nav class="fixed_nav_bar">
             <ul>
                 <li>
-                    <a href="./adminDashboard.php">Home</a>
+                    <a href="/admin/adminDashboard.php">Home</a>
                 </li>
                 <li>
-                    <a href="./manageMember.php">Manage Member</a>
+                    <a href="/admin/manageMember.php">Manage Member</a>
                 </li>
                 <li>
-                    <a href="./manageProduct.php">Manage Product</a>
+                    <a href="/admin/manageProduct.php">Manage Product</a>
                 </li>
                 <li>
-                    <a href="./manageTransaction.php">Manage Transaction</a>
+                    <a href="/admin/manageTransaction.php">Manage Transaction</a>
                 </li>
                 <li>
-                    <a href="./manageAdmin.php" class="active">Manage Admin</a>
+                    <a href="/admin/manageAdmin.php" class="active">Manage Admin</a>
                 </li>
                 <li>
-                    <a href="./adminLogout.php">Log Out</a>
+                    <a href="/admin/adminLogout.php">Log Out</a>
                 </li>
             </ul>
         </nav>
@@ -447,17 +446,17 @@
                         <?php if (isset($addAdminMsg) && !empty($addAdminMsg)): ?>
                             <?php if (!$passChecking): ?>
                                 <span class='error-message'>
-                                    <?php print($addAdminMsg); ?>
+                                    <?php echo($addAdminMsg); ?>
                                 </span>
                             <?php else: ?>
                                 <span class='success-message'>
-                                    <?php print($addAdminMsg); ?>
+                                    <?php echo($addAdminMsg); ?>
                                 </span>
                             <?php endif; ?>
                         <?php endif; ?>
 
                         <?php if (!$passChecking): ?>
-                            <form id='manage-add-form' method='post' action='./manageAdmin.php'>
+                            <form id='manage-add-form' method='post' action='/admin/manageAdmin.php'>
                                 <input type='hidden' name='manage-mode' value='add-admin'>
                                 <input type='hidden' name='check-form' value='yes'>
 
@@ -467,7 +466,7 @@
                                     </label><br>
 
                                     <input id='admin-name' type='text' name='admin-name' placeholder='Admin Name (Min: 3 Char)' value='<?php
-                                        print((isset($_POST['admin-name'])) ? testInput($_POST['admin-name']): '');
+                                        echo((isset($_POST['admin-name'])) ? testInput($_POST['admin-name']): '');
                                     ?>'>
                                 </div>
 
@@ -488,7 +487,7 @@
                                 </div>
                             </form>
 
-                            <form id='cancel-add-form' method='post' action='./manageAdmin.php'></form>
+                            <form id='cancel-add-form' method='post' action='/admin/manageAdmin.php'></form>
                             
                             <div class='button-section'>
                                 <button form='manage-add-form' class='positive-button' type='submit'>
@@ -503,30 +502,30 @@
                     <!-- Edit Admin -->
                     <?php elseif ($manageMode == "edit-admin"): ?>
                         <h3>Edit <i>Admin ID <?php
-                            print((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
+                            echo((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
                         ?></i>:</h3>
 
                         <?php if (isset($editAdminMsg) && !empty($editAdminMsg)): ?>
                             <?php if (!$allowEditAdmin || !$passChecking): ?>
                                 <span class='error-message'>
-                                    <?php print($editAdminMsg); ?>
+                                    <?php echo($editAdminMsg); ?>
                                 </span>
                             <?php else: ?>
                                 <span class='success-message'>
-                                    <?php print($editAdminMsg); ?>
+                                    <?php echo($editAdminMsg); ?>
                                 </span>
                             <?php endif; ?>
                         <?php endif; ?>
                         
                         <?php if ($allowEditAdmin && !$passChecking): ?>
-                            <form id='manage-edit-form' method='post' action='./manageAdmin.php'>
+                            <form id='manage-edit-form' method='post' action='/admin/manageAdmin.php'>
                                 <input type='hidden' name='manage-mode' value='edit-admin'>
                                 <input type='hidden' name='check-form' value='yes'>
                                 <input type='hidden' name='admin-id' value='<?php
-                                    print((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
+                                    echo((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
                                 ?>'>
                                 <input type='hidden' name='admin-name' value='<?php
-                                    print((isset($_POST['admin-name'])) ? testInput($_POST['admin-name']): "");
+                                    echo((isset($_POST['admin-name'])) ? testInput($_POST['admin-name']): "");
                                 ?>'>
 
                                 <div>
@@ -536,10 +535,10 @@
 
                                     <input id='new-admin-name' type='text' name='new-admin-name' placeholder='Admin Name (Min: 3 Char)' value='<?php
                                         if (isset($_POST['new-admin-name']) && !empty($_POST['new-admin-name'])) {
-                                            print(testInput($_POST['new-admin-name']));
+                                            echo(testInput($_POST['new-admin-name']));
                                         }
                                         else if (isset($_POST['admin-name']) && !empty($_POST['admin-name'])) {
-                                            print(testInput($_POST['admin-name']));
+                                            echo(testInput($_POST['admin-name']));
                                         }
                                     ?>'>
                                 </div>
@@ -576,7 +575,7 @@
                                 <?php endif; ?>
                             </form>
 
-                            <form id='cancel-edit-form' method='post' action='./manageAdmin.php'></form>
+                            <form id='cancel-edit-form' method='post' action='/admin/manageAdmin.php'></form>
 
                             <div class='button-section'>
                                 <button form='manage-edit-form' class='positive-button' type='submit'>
@@ -591,27 +590,27 @@
                     <!-- Delete Admin -->
                     <?php elseif ($manageMode == "delete-admin"): ?>
                         <h3>Delete <i>Admin ID <?php
-                            print((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
+                            echo((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
                         ?></i>:</h3>
 
                         <?php if (isset($deleteAdminMsg) && !empty($deleteAdminMsg)): ?>
                             <?php if (!$allowDeleteAdmin || !$passChecking): ?>
                                 <span class='error-message'>
-                                    <?php print($deleteAdminMsg); ?>
+                                    <?php echo($deleteAdminMsg); ?>
                                 </span>
                             <?php else: ?>
                                 <span class='success-message'>
-                                    <?php print($deleteAdminMsg); ?>
+                                    <?php echo($deleteAdminMsg); ?>
                                 </span>
                             <?php endif; ?>
                         <?php endif; ?>
 
                         <?php if ($allowDeleteAdmin && !$passChecking): ?>
-                            <form id='manage-delete-form' method='post' action='./manageAdmin.php'>
+                            <form id='manage-delete-form' method='post' action='/admin/manageAdmin.php'>
                                 <input type='hidden' name='manage-mode' value='delete-admin'>
                                 <input type='hidden' name='check-form' value='yes'>
                                 <input type='hidden' name='admin-id' value='<?php
-                                    print((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
+                                    echo((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
                                 ?>'>
 
                                 <!-- If logged in admin's id is 1, can delete other admins without their password. -->
@@ -619,7 +618,7 @@
                                     <div>
                                         <label for='old-admin-password'>
                                             <i>Admin ID <?php
-                                                print((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
+                                                echo((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
                                             ?></i> Password:
                                         </label><br>
 
@@ -636,7 +635,7 @@
                                 </div>
                             </form>
 
-                            <form id='cancel-delete-form' method='post' action='./manageAdmin.php'></form>
+                            <form id='cancel-delete-form' method='post' action='/admin/manageAdmin.php'></form>
                             
                             <div class='button-section'>
                                 <button form='manage-delete-form' class='positive-button' type='submit'>
@@ -657,7 +656,7 @@
                     (isset($manageMode) && $manageMode == "edit-admin" && !$allowEditAdmin) ||
                     (isset($manageMode) && $manageMode == "delete-admin" && !$allowDeleteAdmin)
                 ): ?>
-                    <form method='post' action='./manageAdmin.php'>
+                    <form method='post' action='/admin/manageAdmin.php'>
                         <input type='hidden' name='manage-mode' value='add-admin'>
                         <button class='add-button'>
                             Add Admin
@@ -677,11 +676,10 @@
                         <tr>
                             <th>Admin ID</th>
                             <th>Name</th>
-
                             <?php
                                 // 6 Columns if currently logged in admin is main admin (Admin Id = 1).
                                 if (isset($mainAdmin) && $mainAdmin) {
-                                    print("<th>Password</th>");
+                                    echo("<th>Password</th>");
                                 }
                             ?>
                             <th>Last Login</th>
@@ -699,80 +697,87 @@
 
                             $rs = mysqli_query($serverConnect, $query);
                             $recordCount = 0;
-                            if ($rs) {
-                                while ($user = mysqli_fetch_assoc($rs)) {
-                                    $recordCount++;
-                                    print("
-                                        <tr>
-                                            <td>" . $user["id"] . "</td>
-                                            <td>" . $user["adminName"] . "</td>"
-                                    );
-                                    
-                                    if (isset($mainAdmin) && $mainAdmin) {
-                                        if ($user["id"] == $_SESSION['adminId']) {
-                                            print("<td><i>*Hidden*</i></td>");
-                                        }
-                                        else {
-                                            print("<td>" . $user["adminPassword"] . "</td>");
-                                        }
-                                    }
-
-                                    print("
-                                            <td>" . $user["lastLogin"] . "</td>
-                                            <td>
-                                                <form method='post' action='./manageAdmin.php'>
-                                                <input type='hidden' name='manage-mode' value='edit-admin'>
-                                                <input type='hidden' name='admin-id' value='" . $user["id"] . "'>
-                                                <input type='hidden' name='admin-name' value='" . $user["adminName"] . "'>
-                                                <button class='positive-button'>Edit</button>
-                                                </form>
-                                            </td>
-                                            <td>
-                                                <form method='post' action='./manageAdmin.php'>
-                                                <input type='hidden' name='manage-mode' value='delete-admin'>
-                                                <input type='hidden' name='admin-id' value='" . $user["id"] . "'>
-                                                <button class='negative-button'>Delete</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    ");
-                                }
-
-                                if (!$recordCount) {
-                                    if (isset($mainAdmin) && $mainAdmin) {
-                                        print("
-                                            <tr>
-                                                <td class='data-not-found' colspan='6'>* None to show</td>
-                                            </tr>
-                                        ");
-                                    }
-                                    else {
-                                        print("
-                                            <tr>
-                                                <td class='data-not-found' colspan='5'>* None to show</td>
-                                            </tr>
-                                        ");
-                                    }
-
-                                }
-                                else {
-                                    if (isset($mainAdmin) && $mainAdmin) {
-                                        print("
-                                            <tr>
-                                                <td colspan='6'>Total Displayed: " . $recordCount . "</td>
-                                            </tr>
-                                        ");
-                                    }
-                                    else {
-                                        print("
-                                            <tr>
-                                                <td colspan='5'>Total Displayed: " . $recordCount . "</td>
-                                            </tr>
-                                        ");
-                                    }
-                                }
-                            }
                         ?>
+                        
+                        <?php if ($rs): ?>
+                            <?php while ($user = mysqli_fetch_assoc($rs)): ?>
+                                <?php $recordCount++; ?>
+
+                                <tr>
+                                    <td>
+                                        <?php echo((isset($user["id"])) ? $user["id"]: ""); ?>
+                                    </td>
+
+                                    <td>
+                                        <?php echo((isset($user["adminName"])) ? $user["adminName"]: ""); ?>
+                                    </td>
+                                
+                                    <?php if (isset($mainAdmin) && $mainAdmin): ?>
+                                        <?php if (isset($user["id"]) && $user["id"] == $_SESSION['adminId']): ?>
+                                            <td>
+                                                <i>*Hidden*</i>
+                                            </td>
+                                        <?php else: ?>
+                                            <td>
+                                                <?php echo((isset($user["adminPassword"])) ? $user["adminPassword"]: ""); ?>
+                                            </td>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+
+                                    <td>
+                                        <?php echo((isset($user["lastLogin"])) ? $user["lastLogin"]: ""); ?>
+                                    </td>
+
+                                    <td>
+                                        <form method='post' action='/admin/manageAdmin.php'>
+                                            <input type='hidden' name='manage-mode' value='edit-admin'>
+                                            <input type='hidden' name='admin-id' value='<?php
+                                                echo((isset($user["id"])) ? $user["id"]: "");
+                                            ?>'>
+                                            <input type='hidden' name='admin-name' value='<?php
+                                                echo((isset($user["adminName"])) ? $user["adminName"]: "");
+                                            ?>'>
+
+                                            <button class='positive-button'>Edit</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form method='post' action='/admin/manageAdmin.php'>
+                                            <input type='hidden' name='manage-mode' value='delete-admin'>
+                                            <input type='hidden' name='admin-id' value='<?php
+                                                echo((isset($user["id"])) ? $user["id"]: "");
+                                            ?>'>
+
+                                            <button class='negative-button'>Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
+                        
+                        <tr>
+                            <?php if (!$recordCount): ?>
+                                <?php if (isset($mainAdmin) && $mainAdmin): ?>
+                                    <td class='data-not-found' colspan='6'>
+                                        * None to show
+                                    </td>
+                                <?php else: ?>
+                                    <td class='data-not-found' colspan='5'>
+                                        * None to show
+                                    </td>
+                                <?php endif; ?>
+                            <?php else: ?>
+                                <?php if (isset($mainAdmin) && $mainAdmin): ?>
+                                    <td colspan='6'>
+                                        Total Displayed: <?php echo($recordCount); ?>
+                                    </td>
+                                <?php else: ?>
+                                    <td colspan='5'>
+                                        Total Displayed: <?php echo($recordCount); ?>
+                                    </td>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </tr>
                     </tbody>
                 </table>
             </div>

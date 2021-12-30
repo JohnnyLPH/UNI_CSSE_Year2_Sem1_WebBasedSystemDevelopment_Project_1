@@ -1,10 +1,10 @@
  <!-- Admin Login Page for LINGsCARS -->
 <?php
-    require_once("./dbConnection.php");
-    require_once("./adminAuthenticate.php");
+    require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
+    require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     // Already logged in, redirect to admin dashboard.
     if (checkAdminLogin()) {
-        header("Location: ./adminDashboard.php");
+        header("Location: /admin/adminDashboard.php");
         exit;
     }
 
@@ -57,7 +57,7 @@
 
                 $adminName = $adminPassword = $adminLoginErr = "";
                 // Redirect to admin dashboard after login.
-                header("Location: ./adminDashboard.php");
+                header("Location: /admin/adminDashboard.php");
                 exit;
             }
             else {
@@ -66,7 +66,7 @@
             }
         }
     }
-    // Close after use.
+    // Close as it's not used anymore.
     mysqli_close($serverConnect);
 ?>
 
@@ -76,8 +76,8 @@
         <title>Admin Login | LINGsCARS</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
-        <link rel="stylesheet" href="./css/admin.css">
-        <link rel="shortcut icon" href="./favicon.ico">
+        <link rel="stylesheet" href="/css/admin.css">
+        <link rel="shortcut icon" href="/favicon.ico">
     </head>
 
     <body>
@@ -96,12 +96,14 @@
                     echo $adminLoginErr;
                 ?>
             </span>
-            <form id="admin-login-form" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+            <form id="admin-login-form" method="post" action="/admin/adminLogin.php">
                 <div>
                     <label for="admin-name">
                         Admin Name:
                     </label><br>
-                    <input id="admin-name" type="text" name="admin-name" placeholder="Admin Name" value="<?php echo $adminName;?>">
+                    <input id="admin-name" type="text" name="admin-name" placeholder="Admin Name" value="<?php
+                        echo $adminName;
+                    ?>">
                 </div>
 
                 <div>

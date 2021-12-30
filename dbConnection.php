@@ -12,12 +12,14 @@
     $serverConnect = mysqli_connect($dbHost, $dbUsername, $dbPassword);
     if (!$serverConnect) {
         echo "-Error Connecting to DB Server!<br>";
-        // trigger_error(mysqli_error(), E_USER_ERROR);
+        // trigger_error("-Error Connecting to DB Server!", E_USER_ERROR);
+        exit;
     }
 
     $dbSelect = mysqli_select_db($serverConnect, $dbName);
     if (!$dbSelect) {
         echo "Error Selecting DB!<br>";
-        // trigger_error(mysqli_error(), E_USER_ERROR); 
+        // trigger_error("-Error Selecting DB!", E_USER_ERROR);
+        exit;
     }
 ?>
