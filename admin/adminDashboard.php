@@ -36,6 +36,8 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="/css/admin.css">
         <link rel="shortcut icon" href="/favicon.ico">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     </head>
 
     <body>
@@ -82,6 +84,95 @@
                 </i>
             </h2>
 
+            <div class="dashboard-content">
+                <div class='chart-container'>
+                    <?php
+                        // Try to fetch data from Admins table.
+                        $query = "SELECT lastLogin FROM Admins ORDER BY lastLogin DESC;";
+
+                        $rs = mysqli_query($serverConnect, $query);
+                        $currentDate = strtotime(date("Y-m-d H:i:s"));
+                        $addToYValues = array(0, 0, 0, 0);
+                    ?>
+
+                    <?php if ($rs): ?>
+                        <div class='chart'>
+                            <canvas id="adminChart"></canvas>
+
+                            <script>
+                                var xValues = ["Within Day", "Within Week (7d)", "Within Month (30d)", "Over Month (30d)"];
+
+                                var yValues = [];
+
+                                <?php while ($record = mysqli_fetch_assoc($rs)): ?>
+                                    <?php
+                                        if (isset($record['lastLogin']) && !empty($record['lastLogin'])) {
+                                            if ($currentDate - strtotime($record['lastLogin']) < 86400) {
+                                                $addToYValues[0]++;
+                                                $addToYValues[1]++;
+                                                $addToYValues[2]++;
+                                            }
+                                            else if ($currentDate - strtotime($record['lastLogin']) < 86400 * 7) {
+                                                $addToYValues[1]++;
+                                                $addToYValues[2]++;
+                                            }
+                                            else if ($currentDate - strtotime($record['lastLogin']) < 86400 * 7) {
+                                                $addToYValues[2]++;
+                                            }
+                                            else {
+                                                $addToYValues[3]++;
+                                            }
+                                        }
+                                        else {
+                                            $addToYValues[3]++;
+                                        }
+                                    ?>
+                                <?php endwhile; ?>
+
+                                <?php for ($y = 0; $y < 4; $y++): ?>
+                                    yValues[<?php echo $y; ?>] = <?php echo $addToYValues[$y]; ?>;
+                                <?php endfor; ?>
+
+
+                                var barColors = [
+                                "#b91d47",
+                                "#00aba9",
+                                "#2b5797",
+                                "#e8c3b9",
+                                ];
+
+                                new Chart(
+                                    "adminChart", {
+                                        type: "doughnut",
+                                        data: {
+                                            labels: xValues,
+                                            datasets: [{
+                                                backgroundColor: barColors,
+                                                data: yValues
+                                            }]
+                                        },
+                                        options: {
+                                            title: {
+                                                display: true,
+                                                text: "Admin Last Login"
+                                            }
+                                        }
+                                    }
+                                );
+                            </script>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php
+                        // Try to fetch data from Admins table.
+                        $query = "SELECT lastLogin FROM Admins ORDER BY lastLogin DESC;";
+
+                        $rs = mysqli_query($serverConnect, $query);
+                        $currentDate = strtotime(date("Y-m-d H:i:s"));
+                        $addToYValues = array(0, 0, 0, 0);
+                    ?>
+                </div>
+            </div>
             
         </main>
         

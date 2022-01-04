@@ -383,7 +383,7 @@
                         }
                         
                         if ($passChecking) {
-                            $deleteAdminMsg = "* Admin ID $adminId have been deleted successfully!";
+                            $deleteAdminMsg = "* Admin ID $adminId has been deleted successfully!";
                         }
                     }
                 }
@@ -400,6 +400,8 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="/css/admin.css">
         <link rel="shortcut icon" href="/favicon.ico">
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     </head>
 
     <body>
@@ -656,130 +658,210 @@
                     (isset($manageMode) && $manageMode == "edit-admin" && !$allowEditAdmin) ||
                     (isset($manageMode) && $manageMode == "delete-admin" && !$allowDeleteAdmin)
                 ): ?>
+                    <div class='chart-container'>
+                        <?php
+                            // Try to fetch data from Admins table.
+                            $query = "SELECT lastLogin FROM Admins ORDER BY lastLogin DESC;";
+
+                            $rs = mysqli_query($serverConnect, $query);
+                            $currentDate = strtotime(date("Y-m-d H:i:s"));
+                            $addToYValues = array(0, 0, 0, 0);
+                        ?>
+
+                        <?php if ($rs): ?>
+                            <div class='chart'>
+                                <canvas id="adminChart"></canvas>
+
+                                <script>
+                                    var xValues = ["Within Day", "Within Week (7d)", "Within Month (30d)", "Over Month (30d)"];
+
+                                    var yValues = [];
+
+                                    <?php while ($record = mysqli_fetch_assoc($rs)): ?>
+                                        <?php
+                                            if (isset($record['lastLogin']) && !empty($record['lastLogin'])) {
+                                                if ($currentDate - strtotime($record['lastLogin']) < 86400) {
+                                                    $addToYValues[0]++;
+                                                    $addToYValues[1]++;
+                                                    $addToYValues[2]++;
+                                                }
+                                                else if ($currentDate - strtotime($record['lastLogin']) < 86400 * 7) {
+                                                    $addToYValues[1]++;
+                                                    $addToYValues[2]++;
+                                                }
+                                                else if ($currentDate - strtotime($record['lastLogin']) < 86400 * 7) {
+                                                    $addToYValues[2]++;
+                                                }
+                                                else {
+                                                    $addToYValues[3]++;
+                                                }
+                                            }
+                                            else {
+                                                $addToYValues[3]++;
+                                            }
+                                        ?>
+                                    <?php endwhile; ?>
+
+                                    <?php for ($y = 0; $y < 4; $y++): ?>
+                                        yValues[<?php echo $y; ?>] = <?php echo $addToYValues[$y]; ?>;
+                                    <?php endfor; ?>
+
+
+                                    var barColors = [
+                                    "#b91d47",
+                                    "#00aba9",
+                                    "#2b5797",
+                                    "#e8c3b9",
+                                    ];
+
+                                    new Chart(
+                                        "adminChart", {
+                                            type: "doughnut",
+                                            data: {
+                                                labels: xValues,
+                                                datasets: [{
+                                                    backgroundColor: barColors,
+                                                    data: yValues
+                                                }]
+                                            },
+                                            options: {
+                                                title: {
+                                                    display: true,
+                                                    text: "Admin Last Login"
+                                                }
+                                            }
+                                        }
+                                    );
+                                </script>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
                     <form method='post' action='/admin/manageAdmin.php'>
                         <input type='hidden' name='manage-mode' value='add-admin'>
-                        <button class='add-button'>
+                        <button>
                             Add Admin
                         </button>
                     </form>
-                <?php endif; ?>
 
-                <?php
-                    $mainAdmin = false;
-                    if ($_SESSION['adminId'] == 1) {
-                        $mainAdmin = true;
-                    }
-                ?>
-                <table class="db-table">
-                    <thead>
-                        <!-- 5 Columns -->
-                        <tr>
-                            <th>Admin ID</th>
-                            <th>Name</th>
+                    <?php
+                        $mainAdmin = false;
+                        if ($_SESSION['adminId'] == 1) {
+                            $mainAdmin = true;
+                        }
+                    ?>
+                    <h3>Available Admins:</h3>
+                    <table class="db-table">
+                        <thead>
+                            <!-- 5 Columns -->
+                            <tr>
+                                <th>Admin ID</th>
+                                <th>Name</th>
+                                <?php
+                                    // 6 Columns if currently logged in admin is main admin (Admin Id = 1).
+                                    if (isset($mainAdmin) && $mainAdmin) {
+                                        echo("<th>Password</th>");
+                                    }
+                                ?>
+                                <th>Last Login</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             <?php
-                                // 6 Columns if currently logged in admin is main admin (Admin Id = 1).
-                                if (isset($mainAdmin) && $mainAdmin) {
-                                    echo("<th>Password</th>");
-                                }
-                            ?>
-                            <th>Last Login</th>
-                            <th>Edit</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                            $query = "SELECT id, adminName, lastLogin FROM Admins ORDER BY lastLogin DESC;";
-                            
-                            if (isset($mainAdmin) && $mainAdmin) {
-                                $query = "SELECT * FROM Admins ORDER BY lastLogin DESC;";
-                            }
-
-                            $rs = mysqli_query($serverConnect, $query);
-                            $recordCount = 0;
-                        ?>
-                        
-                        <?php if ($rs): ?>
-                            <?php while ($user = mysqli_fetch_assoc($rs)): ?>
-                                <?php $recordCount++; ?>
-
-                                <tr>
-                                    <td>
-                                        <?php echo((isset($user["id"])) ? $user["id"]: ""); ?>
-                                    </td>
-
-                                    <td>
-                                        <?php echo((isset($user["adminName"])) ? $user["adminName"]: ""); ?>
-                                    </td>
+                                $query = "SELECT id, adminName, lastLogin FROM Admins ORDER BY lastLogin DESC;";
                                 
-                                    <?php if (isset($mainAdmin) && $mainAdmin): ?>
-                                        <?php if (isset($user["id"]) && $user["id"] == $_SESSION['adminId']): ?>
-                                            <td>
-                                                <i>*Hidden*</i>
-                                            </td>
-                                        <?php else: ?>
-                                            <td>
-                                                <?php echo((isset($user["adminPassword"])) ? $user["adminPassword"]: ""); ?>
-                                            </td>
+                                if (isset($mainAdmin) && $mainAdmin) {
+                                    $query = "SELECT * FROM Admins ORDER BY lastLogin DESC;";
+                                }
+
+                                $rs = mysqli_query($serverConnect, $query);
+                                $recordCount = 0;
+                            ?>
+                            
+                            <?php if ($rs): ?>
+                                <?php while ($user = mysqli_fetch_assoc($rs)): ?>
+                                    <?php $recordCount++; ?>
+
+                                    <tr>
+                                        <td>
+                                            <?php echo((isset($user["id"])) ? $user["id"]: ""); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo((isset($user["adminName"])) ? $user["adminName"]: ""); ?>
+                                        </td>
+                                    
+                                        <?php if (isset($mainAdmin) && $mainAdmin): ?>
+                                            <?php if (isset($user["id"]) && $user["id"] == $_SESSION['adminId']): ?>
+                                                <td>
+                                                    <i>*Hidden*</i>
+                                                </td>
+                                            <?php else: ?>
+                                                <td>
+                                                    <?php echo((isset($user["adminPassword"])) ? $user["adminPassword"]: ""); ?>
+                                                </td>
+                                            <?php endif; ?>
                                         <?php endif; ?>
-                                    <?php endif; ?>
 
-                                    <td>
-                                        <?php echo((isset($user["lastLogin"])) ? $user["lastLogin"]: ""); ?>
-                                    </td>
+                                        <td>
+                                            <?php echo((isset($user["lastLogin"])) ? $user["lastLogin"]: ""); ?>
+                                        </td>
 
-                                    <td>
-                                        <form method='post' action='/admin/manageAdmin.php'>
-                                            <input type='hidden' name='manage-mode' value='edit-admin'>
-                                            <input type='hidden' name='admin-id' value='<?php
-                                                echo((isset($user["id"])) ? $user["id"]: "");
-                                            ?>'>
-                                            <input type='hidden' name='admin-name' value='<?php
-                                                echo((isset($user["adminName"])) ? $user["adminName"]: "");
-                                            ?>'>
+                                        <td>
+                                            <form method='post' action='/admin/manageAdmin.php'>
+                                                <input type='hidden' name='manage-mode' value='edit-admin'>
+                                                <input type='hidden' name='admin-id' value='<?php
+                                                    echo((isset($user["id"])) ? $user["id"]: "");
+                                                ?>'>
+                                                <input type='hidden' name='admin-name' value='<?php
+                                                    echo((isset($user["adminName"])) ? $user["adminName"]: "");
+                                                ?>'>
 
-                                            <button class='positive-button'>Edit</button>
-                                        </form>
-                                    </td>
-                                    <td>
-                                        <form method='post' action='/admin/manageAdmin.php'>
-                                            <input type='hidden' name='manage-mode' value='delete-admin'>
-                                            <input type='hidden' name='admin-id' value='<?php
-                                                echo((isset($user["id"])) ? $user["id"]: "");
-                                            ?>'>
+                                                <button class='positive-button'>Edit</button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <form method='post' action='/admin/manageAdmin.php'>
+                                                <input type='hidden' name='manage-mode' value='delete-admin'>
+                                                <input type='hidden' name='admin-id' value='<?php
+                                                    echo((isset($user["id"])) ? $user["id"]: "");
+                                                ?>'>
 
-                                            <button class='negative-button'>Delete</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php endif; ?>
-                        
-                        <tr>
-                            <?php if (!$recordCount): ?>
-                                <?php if (isset($mainAdmin) && $mainAdmin): ?>
-                                    <td class='data-not-found' colspan='6'>
-                                        * None to show
-                                    </td>
-                                <?php else: ?>
-                                    <td class='data-not-found' colspan='5'>
-                                        * None to show
-                                    </td>
-                                <?php endif; ?>
-                            <?php else: ?>
-                                <?php if (isset($mainAdmin) && $mainAdmin): ?>
-                                    <td colspan='6'>
-                                        Total Displayed: <?php echo($recordCount); ?>
-                                    </td>
-                                <?php else: ?>
-                                    <td colspan='5'>
-                                        Total Displayed: <?php echo($recordCount); ?>
-                                    </td>
-                                <?php endif; ?>
+                                                <button class='negative-button'>Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
                             <?php endif; ?>
-                        </tr>
-                    </tbody>
-                </table>
+                            
+                            <tr>
+                                <?php if (!$recordCount): ?>
+                                    <?php if (isset($mainAdmin) && $mainAdmin): ?>
+                                        <td class='data-not-found' colspan='6'>
+                                            * None to show
+                                        </td>
+                                    <?php else: ?>
+                                        <td class='data-not-found' colspan='5'>
+                                            * None to show
+                                        </td>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <?php if (isset($mainAdmin) && $mainAdmin): ?>
+                                        <td colspan='6'>
+                                            Total Displayed: <?php echo($recordCount); ?>
+                                        </td>
+                                    <?php else: ?>
+                                        <td colspan='5'>
+                                            Total Displayed: <?php echo($recordCount); ?>
+                                        </td>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </tr>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
             </div>
         </main>
         
