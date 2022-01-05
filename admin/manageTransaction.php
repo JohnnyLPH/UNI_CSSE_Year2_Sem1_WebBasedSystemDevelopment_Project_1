@@ -56,7 +56,7 @@
                     <a href="/admin/manageMember.php">Manage Member</a>
                 </li>
                 <li>
-                    <a href="/admin/manageProduct.php">Manage Product</a>
+                    <a href="/admin/manageVehicle.php">Manage Vehicle</a>
                 </li>
                 <li>
                     <a href="/admin/manageTransaction.php" class="active">Manage Transaction</a>

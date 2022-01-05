@@ -233,16 +233,28 @@ table.db-table {
     display: flex;
 } */
 
-table.db-table, table.db-table th, table.db-table td {
+table, table th, table td {
     border: 2px solid black;
     border-collapse: collapse;
     font-size: 15px;
 }
 
-table.db-table th, table.db-table td {
+table th, table td {
     padding: 0 5px;
     height: 30px;
     /* font-size: small; */
+}
+
+table td.left-text {
+    text-align: left;
+}
+
+table td.right-text {
+    text-align: right;
+}
+
+table td.center-text {
+    text-align: center;
 }
 
 table.db-table tr .data-not-found {
@@ -251,7 +263,7 @@ table.db-table tr .data-not-found {
 }
 
 button {
-    background-color: rgb(84, 212, 174);
+    background-color: rgb(76, 192, 157);
     max-width: 250px;
 }
 
@@ -285,7 +297,7 @@ form button {
     padding: 10px 0;
     color: white;
     cursor: pointer;
-    font-size: large;
+    font-size: 15px;
     font-weight: bold;
     border-radius: 10px;
     border-width: 2px;
@@ -301,7 +313,8 @@ form button {
 
 .button-section .small-button {
     /* width: 10%; */
-    width: 100px;
+    width: 80px;
+    min-width: fit-content;
 }
 
 .positive-button {
@@ -343,4 +356,34 @@ table.db-table td button:hover, form button:hover, .button-section button:hover 
 #manage-add-form div input, #manage-edit-form div input, #manage-delete-form div input {
     width: 100%;
     min-height: 25px;
+}
+
+div.view-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+div.view-content table {
+    background-color: white;
+}
+
+div.view-content table tr td {
+    max-width: 300px;
+    text-align: justify;
+}
+
+div.view-content table tr td:first-child {
+    font-weight: bold;
+    text-align: right;
+}
+
+div.view-content table tr td img {
+    display: block;
+    margin: auto;
+    width: 100%;
+    max-height: 100px;
 }

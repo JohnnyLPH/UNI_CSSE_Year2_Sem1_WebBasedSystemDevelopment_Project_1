@@ -420,7 +420,7 @@
                     <a href="/admin/manageMember.php">Manage Member</a>
                 </li>
                 <li>
-                    <a href="/admin/manageProduct.php">Manage Product</a>
+                    <a href="/admin/manageVehicle.php">Manage Vehicle</a>
                 </li>
                 <li>
                     <a href="/admin/manageTransaction.php">Manage Transaction</a>
@@ -785,7 +785,7 @@
                                     <?php $recordCount++; ?>
 
                                     <tr>
-                                        <td>
+                                        <td class='center-text'>
                                             <?php echo((isset($user["id"])) ? $user["id"]: ""); ?>
                                         </td>
 
@@ -805,7 +805,7 @@
                                             <?php endif; ?>
                                         <?php endif; ?>
 
-                                        <td>
+                                        <td class='center-text'>
                                             <?php echo((isset($user["lastLogin"])) ? $user["lastLogin"]: ""); ?>
                                         </td>
 

@@ -27,7 +27,6 @@
         }
     }
 
-    
     function testInput($data) {
         $data = trim($data);
         $data = stripslashes($data);
@@ -38,7 +37,7 @@
     $manageMode = "";
     $passChecking = false;
 
-    $emailToSearch = "";
+    $wordToSearch = "";
 
     $viewMemberMsg = "";
     $allowViewMember = false;
@@ -51,7 +50,7 @@
             // Search Member
             if ($_POST["manage-mode"] == "search-member") {
                 $manageMode = $_POST["manage-mode"];
-                $emailToSearch = (isset($_POST['email-to-search'])) ? testInput($_POST['email-to-search']): "";
+                $wordToSearch = (isset($_POST['word-to-search'])) ? testInput($_POST['word-to-search']): "";
             }
             // View Member
             else if ($_POST["manage-mode"] == "view-member") {
@@ -175,7 +174,7 @@
                     <a href="/admin/manageMember.php" class="active">Manage Member</a>
                 </li>
                 <li>
-                    <a href="/admin/manageProduct.php">Manage Product</a>
+                    <a href="/admin/manageVehicle.php">Manage Vehicle</a>
                 </li>
                 <li>
                     <a href="/admin/manageTransaction.php">Manage Transaction</a>
@@ -211,7 +210,95 @@
                         <?php endif; ?>
 
                         <?php if ($allowViewMember): ?>
+                            <?php
+                                // Select everything except password to display.
+                                $query = "SELECT id, firstName, lastName, email, countryCode, phoneNo, gender, state, registerDate FROM Members WHERE id=$memberId;";
+                                $rs = mysqli_query($serverConnect, $query);
+                            ?>
 
+                            <?php if ($rs): ?>
+                                <?php if ($user = mysqli_fetch_assoc($rs)): ?>
+                                    <div class='view-content'>
+                                        <table>
+                                            <tr>
+                                                <td>Member ID</td>
+                                                <td>
+                                                    <?php echo((isset($user["id"])) ? $user["id"]: ""); ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>First Name</td>
+                                                <td>
+                                                    <?php echo((isset($user["firstName"])) ? $user["firstName"]: ""); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Last Name</td>
+                                                <td>
+                                                    <?php echo((isset($user["lastName"])) ? $user["lastName"]: ""); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Email</td>
+                                                <td>
+                                                    <?php echo((isset($user["email"])) ? $user["email"]: ""); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Country Code</td>
+                                                <td>
+                                                    <?php echo((isset($user["countryCode"])) ? $user["countryCode"]: ""); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Phone No.</td>
+                                                <td>
+                                                    <?php echo((isset($user["phoneNo"])) ? $user["phoneNo"]: ""); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Gender</td>
+                                                <td>
+                                                    <?php echo((isset($user["gender"])) ? $user["gender"]: ""); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>State</td>
+                                                <td>
+                                                    <?php echo((isset($user["state"])) ? $user["state"]: ""); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Register On</td>
+                                                <td>
+                                                    <?php echo((isset($user["registerDate"])) ? $user["registerDate"]: ""); ?>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <?php
+                                        $lastPage = "javascript:history.go(-1)";
+                                        if (isset($_SERVER['HTTP_REFERER'])) {
+                                            $lastPage = $_SERVER['HTTP_REFERER'];
+                                        }
+                                    ?>
+
+                                    <form id='cancel-view-form' method='post' action='<?php
+                                        echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageMember.php");
+                                    ?>'>
+                                        <button>Return Previous Page</button>
+                                    </form>
+                                <?php endif; ?>
+                            <?php endif; ?>
                         <?php endif; ?>
                     <!-- Delete Member -->
                     <?php elseif ($manageMode == "delete-member"): ?>
@@ -277,11 +364,11 @@
                     </form>
 
                     <div class='button-section'>
-                        <input form='manage-search-form' type='text' name='email-to-search' placeholder='Enter Member Email' value='<?php
-                            echo((isset($emailToSearch) && !empty($emailToSearch)) ? testInput($emailToSearch): "");
+                        <input form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Member ID or Email' value='<?php
+                            echo((isset($wordToSearch) && !empty($wordToSearch)) ? testInput($wordToSearch): "");
                         ?>'>
                         
-                        <button form='manage-search-form' class='small-button'>Search</button>
+                        <button form='manage-search-form' class='small-button positive-button'>Search</button>
                         <button form='cancel-search-form' class='small-button negative-button'>Reset</button>
                     </div>
                 
@@ -303,7 +390,14 @@
                         <tbody>
                             <?php
                                 $query = "SELECT Members.id, Members.email, Members.phoneNo, Members.state, Members.registerDate, MemberLog.loginDate FROM Members LEFT JOIN MemberLog ON Members.id = MemberLog.memberId" .
-                                ((isset($emailToSearch) && !empty($emailToSearch)) ? " WHERE Members.email LIKE '%". testInput($emailToSearch) . "%'": "") .
+                                (
+                                    (isset($wordToSearch) && !empty($wordToSearch)) ?
+                                    " WHERE Members.id LIKE '%" .
+                                    testInput($wordToSearch) .
+                                    "%' OR Members.email LIKE '%" .
+                                    testInput($wordToSearch) .
+                                    "%'" : ""
+                                ) .
                                 " ORDER BY loginDate DESC;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
@@ -315,7 +409,7 @@
                                     <?php $recordCount++; ?>
 
                                     <tr>
-                                        <td>
+                                        <td class='center-text'>
                                             <?php echo((isset($user["id"])) ? $user["id"]: ""); ?>
                                         </td>
 
@@ -327,15 +421,15 @@
                                             <?php echo((isset($user["phoneNo"])) ? $user["phoneNo"]: ""); ?>
                                         </td>
 
-                                        <td>
+                                        <td class='center-text'>
                                             <?php echo((isset($user["state"])) ? $user["state"]: ""); ?>
                                         </td>
 
-                                        <td>
+                                        <td class='center-text'>
                                             <?php echo((isset($user["registerDate"])) ? $user["registerDate"]: ""); ?>
                                         </td>
 
-                                        <td>
+                                        <td class='center-text'>
                                             <?php echo((isset($user["loginDate"])) ? $user["loginDate"]: ""); ?>
                                         </td>
 
