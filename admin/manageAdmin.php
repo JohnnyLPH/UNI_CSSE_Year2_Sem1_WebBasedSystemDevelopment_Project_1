@@ -58,8 +58,12 @@
                     $adminPass2 = (isset($_POST['admin-password2'])) ? testInput($_POST['admin-password2']): "";
 
                     // Check if admin name is provided.
-                    if (empty($adminName) || strlen($adminName) < 3) {
-                        $addAdminMsg = "* Enter Admin Name (Min: 3 Char)!";
+                    if (
+                        empty($adminName) ||
+                        strlen($adminName) < 3 || strlen($adminName) > 128 ||
+                        !preg_match("/^[A-Za-z0-9]{1}[A-Za-z0-9]+(\s[A-Za-z0-9]{1}[A-Za-z0-9]+)*$/",$adminName)
+                    ) {
+                        $addAdminMsg = "* Enter Admin Name<br>(3 - 128 Char; Alphabets & Digits;<br>Min 2 Char per Word; Allow 1 Space Between)!";
                     }
                     // Check if admin name is already used.
                     else {
@@ -84,10 +88,10 @@
                         // Min 1 special character, 1 uppercase, 1 lowercase, 3 digit.
                         if (
                             empty($adminPass) ||
-                            strlen($adminPass) < 6 ||
+                            strlen($adminPass) < 6 || strlen($adminPass) > 256 ||
                             !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $adminPass)
                         ) {
-                            $addAdminMsg = "* Enter a Password (Min: 1 special character, 1 uppercase, 1 lowercase, 3 digits)!";
+                            $addAdminMsg = "* Enter a Password<br>(1 Special Char, 1 Upper, 1 Lower, 3 Digits;<br>6 - 256 Char; Space Ignored at Start & End)!";
                         }
                         // Check if password is reentered.
                         else if (empty($adminPass2)) {
@@ -162,15 +166,46 @@
                 }
                 // Check form.
                 else if (isset($_POST["check-form"]) && $_POST["check-form"] == "yes") {
-                    $passChecking = true;
+                    // Check if new admin name is provided.
+                    if (
+                        empty($newAdminName) ||
+                        strlen($newAdminName) < 3 || strlen($newAdminName) > 128 ||
+                        !preg_match("/^[A-Za-z0-9]{1}[A-Za-z0-9]+(\s[A-Za-z0-9]{1}[A-Za-z0-9]+)*$/",$newAdminName)
+                    ) {
+                        $editAdminMsg = "* Enter Admin Name<br>(3 - 128 Char; Alphabets & Digits;<br>Min 2 Char per Word; Allow 1 Space Between)!";
+                    }
+                    // Check if there is no change to admin name.
+                    else if ($newAdminName == $adminName) {
+                        $passChecking = true;
+                    }
+                    // Check if new admin name is already used.
+                    else {
+                        $query = "SELECT id,adminName FROM Admins WHERE adminName='$newAdminName';";
+                        $rs = mysqli_query($serverConnect, $query);
+
+                        $passChecking = true;
+
+                        if ($rs) {
+                            if ($user = mysqli_fetch_assoc($rs)) {
+                                if ($user["adminName"] == $newAdminName) {
+                                    $editAdminMsg = "* Admin Name has already been used!";
+                                    $passChecking = false;
+                                }
+                            }
+                        }
+                    }
 
                     // If logged in admin's id is 1, can edit other admins without their password.
                     // If edit own details, must enter password.
-                    if ($_SESSION["adminId"] != 1 || $adminId == "1") {
+                    if ($passChecking && ($_SESSION["adminId"] != 1 || $adminId == "1")) {
                         $passChecking = false;
 
                         // Check if original password is provided.
-                        if (empty($oldAdminPass)) {
+                        if (
+                            empty($oldAdminPass) ||
+                            strlen($oldAdminPass) < 6 || strlen($oldAdminPass) > 256 ||
+                            !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $oldAdminPass)
+                        ) {
                             $editAdminMsg = "* Enter Old Password to Save Changes!";
                         }
                         // Check if original password is correct.
@@ -188,36 +223,6 @@
                             
                             if (!$passChecking) {
                                 $editAdminMsg = "* Invalid Old Password!";
-                            }
-                        }
-                    }
-
-                    // Check if admin name is changed.
-                    if ($passChecking) {
-                        $passChecking = false;
-
-                        // Check if new admin name is provided.
-                        if (empty($newAdminName) || strlen($newAdminName) < 3) {
-                            $editAdminMsg = "* Enter Admin Name (Min: 3 Char)!";
-                        }
-                        // Check is there is no change to admin name.
-                        else if ($newAdminName == $adminName) {
-                            $passChecking = true;
-                        }
-                        // Check if new admin name is already used.
-                        else {
-                            $query = "SELECT id,adminName FROM Admins WHERE adminName='$newAdminName';";
-                            $rs = mysqli_query($serverConnect, $query);
-
-                            $passChecking = true;
-
-                            if ($rs) {
-                                if ($user = mysqli_fetch_assoc($rs)) {
-                                    if ($user["adminName"] == $newAdminName) {
-                                        $editAdminMsg = "* Admin Name has already been used!";
-                                        $passChecking = false;
-                                    }
-                                }
                             }
                         }
                     }
@@ -247,10 +252,10 @@
                             // Check if new password is provided and has at least 6 char.
                             if (
                                 empty($newAdminPass) ||
-                                strlen($newAdminPass) < 6 ||
+                                strlen($newAdminPass) < 6 || strlen($newAdminPass) > 256 ||
                                 !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $newAdminPass)
                             ) {
-                                $editAdminMsg = "* Invalid New Password (Min: 1 special character, 1 uppercase, 1 lowercase, 3 digits)!";
+                                $editAdminMsg = "* Invalid New Password<br>(1 Special Char, 1 Upper, 1 Lower, 3 Digits;<br>6 - 256 Char; Space Ignored at Start & End)!";
                             }
                             // Check if new password is reentered.
                             else if (empty($newAdminPass2)) {
@@ -317,16 +322,24 @@
                     $passChecking = true;
 
                     // Check if password of logged in admin is provided.
-                    if (empty($currentAdminPass)) {
+                    if (
+                        empty($currentAdminPass) ||
+                        strlen($currentAdminPass) < 6 || strlen($currentAdminPass) > 256 ||
+                        !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $currentAdminPass)
+                    ) {
                         $deleteAdminMsg = "* Enter Your Password to Confirm Delete!";
                         $passChecking = false;
                     }
 
-                    // If logged in admin's id is 1, can delete other admins without their password.
+                    // If logged in admin's id is not 1, cannot delete other admins without their password.
                     if ($passChecking && $_SESSION["adminId"] != 1) {
                         $passChecking = false;
 
-                        if (empty($oldAdminPass)) {
+                        if (
+                            empty($oldAdminPass) ||
+                            strlen($oldAdminPass) < 6 || strlen($oldAdminPass) > 256 ||
+                            !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $oldAdminPass)
+                        ) {
                             $deleteAdminMsg = "* Enter Admin ID $adminId Password to Confirm Delete!";
                         }
                         // Check password of admin to be deleted.
@@ -469,7 +482,7 @@
 
                                     <input id='admin-name' type='text' name='admin-name' placeholder='Admin Name (Min: 3 Char)' value='<?php
                                         echo((isset($_POST['admin-name'])) ? testInput($_POST['admin-name']): '');
-                                    ?>'>
+                                    ?>' minlength="3" maxlength="128" required>
                                 </div>
 
                                 <div>
@@ -477,7 +490,7 @@
                                         Password:
                                     </label><br>
 
-                                    <input id='admin-password' type='password' name='admin-password' placeholder='Password (Min: 6 Char)'>
+                                    <input id='admin-password' type='password' name='admin-password' placeholder='Password (Min: 6 Char)' minlength="6" maxlength="256" required>
                                 </div>
 
                                 <div>
@@ -485,7 +498,7 @@
                                         Reconfirm Password:
                                     </label><br>
 
-                                    <input id='admin-password2' type='password' name='admin-password2' placeholder='Reenter Password'>
+                                    <input id='admin-password2' type='password' name='admin-password2' placeholder='Reenter Password' minlength="6" maxlength="256" required>
                                 </div>
                             </form>
 
@@ -542,7 +555,7 @@
                                         else if (isset($_POST['admin-name']) && !empty($_POST['admin-name'])) {
                                             echo(testInput($_POST['admin-name']));
                                         }
-                                    ?>'>
+                                    ?>' minlength="3" maxlength="128" required>
                                 </div>
         
                                 <div>
@@ -550,7 +563,7 @@
                                         New Password:
                                     </label><br>
 
-                                    <input id='new-admin-password' type='password' name='new-admin-password' placeholder='Leave Empty = No Change'>
+                                    <input id='new-admin-password' type='password' name='new-admin-password' placeholder='Leave Empty = No Change' minlength="6" maxlength="256">
                                 </div>
         
                                 <div>
@@ -558,7 +571,7 @@
                                         Reconfirm New Password:
                                     </label><br>
 
-                                    <input id='new-admin-password2' type='password' name='new-admin-password2' placeholder='Reenter or Leave Empty'>
+                                    <input id='new-admin-password2' type='password' name='new-admin-password2' placeholder='Reenter or Leave Empty' minlength="6" maxlength="256">
                                 </div>
 
                                 <!-- If logged in admin's id is 1, can edit other admins without their password. -->
@@ -572,7 +585,7 @@
                                             Old Password:
                                         </label><br>
 
-                                        <input id='old-admin-password' type='password' name='old-admin-password' placeholder='Required to save changes'>
+                                        <input id='old-admin-password' type='password' name='old-admin-password' placeholder='Required to save changes' minlength="6" maxlength="256" required>
                                     </div>
                                 <?php endif; ?>
                             </form>
@@ -624,7 +637,7 @@
                                             ?></i> Password:
                                         </label><br>
 
-                                        <input id='old-admin-password' type='password' name='old-admin-password' placeholder='Required to confirm delete'>
+                                        <input id='old-admin-password' type='password' name='old-admin-password' placeholder='Required to confirm delete' minlength="6" maxlength="256" required>
                                     </div>
                                 <?php endif; ?>
 
@@ -633,7 +646,7 @@
                                         Your Password:
                                     </label><br>
 
-                                    <input id='current-admin-password' type='password' name='current-admin-password' placeholder='Required to confirm delete'>
+                                    <input id='current-admin-password' type='password' name='current-admin-password' placeholder='Required to confirm delete' minlength="6" maxlength="256" required>
                                 </div>
                             </form>
 

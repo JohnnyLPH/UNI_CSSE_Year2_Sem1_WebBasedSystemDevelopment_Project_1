@@ -81,6 +81,7 @@ main h2, h3 {
     margin: auto;
     color: red;
     text-align: center;
+    font-size: medium;
     font-style: italic;
 }
 
@@ -89,6 +90,7 @@ main h2, h3 {
     margin: auto;
     color: green;
     text-align: center;
+    font-size: medium;
     font-style: italic;
 }
 
@@ -348,14 +350,18 @@ table.db-table td button:hover, form button:hover, .button-section button:hover 
 
 #manage-add-form div, #manage-edit-form div, #manage-delete-form div {
     width: fit-content;
-    min-width: 230px;
+    min-width: 250px;
     margin: auto;
     padding: 5px;
 }
 
-#manage-add-form div input, #manage-edit-form div input, #manage-delete-form div input {
+#manage-add-form div input, #manage-add-form div textarea, #manage-edit-form div input, #manage-delete-form div input {
     width: 100%;
-    min-height: 25px;
+    min-height: 30px;
+}
+
+#manage-add-form div textarea {
+    resize: none;
 }
 
 div.view-content {

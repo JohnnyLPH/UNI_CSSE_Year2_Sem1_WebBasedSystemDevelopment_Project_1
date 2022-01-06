@@ -102,7 +102,11 @@
                     $passChecking = true;
 
                     // Check if password of logged in admin is provided.
-                    if (empty($currentAdminPass)) {
+                    if (
+                        empty($currentAdminPass) ||
+                        strlen($currentAdminPass) < 6 || strlen($currentAdminPass) > 256 ||
+                        !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $currentAdminPass)
+                    ) {
                         $deleteMemberMsg = "* Enter Your Password to Confirm Delete!";
                         $passChecking = false;
                     }
@@ -331,7 +335,7 @@
                                         Your Password:
                                     </label><br>
 
-                                    <input id='current-admin-password' type='password' name='current-admin-password' placeholder='Required to confirm delete'>
+                                    <input id='current-admin-password' type='password' name='current-admin-password' placeholder='Required to confirm delete' minlength="6" maxlength="256" required>
                                 </div>
                             </form>
 
@@ -366,10 +370,13 @@
                     <div class='button-section'>
                         <input form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Member ID or Email' value='<?php
                             echo((isset($wordToSearch) && !empty($wordToSearch)) ? testInput($wordToSearch): "");
-                        ?>'>
+                        ?>' minlength="1" maxlength="256" required>
                         
                         <button form='manage-search-form' class='small-button positive-button'>Search</button>
-                        <button form='cancel-search-form' class='small-button negative-button'>Reset</button>
+
+                        <button form='cancel-search-form' class='small-button negative-button'<?php
+                            echo((isset($wordToSearch) && !empty($wordToSearch)) ? "": " disabled");
+                        ?>>Reset</button>
                     </div>
                 
                     <h3>Found Members:</h3>
