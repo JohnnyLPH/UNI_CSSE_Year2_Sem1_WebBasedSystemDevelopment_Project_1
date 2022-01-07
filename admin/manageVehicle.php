@@ -191,6 +191,8 @@
 
                         // Car brand is not added before.
                         if (!$passChecking || empty($brandId)) {
+                            $passChecking = false;
+
                             $query = "INSERT INTO Brands(brandName) VALUES ('$carBrand');";
 
                             $rs = mysqli_query($serverConnect, $query);
@@ -209,6 +211,7 @@
 
                                 if (!$passChecking || empty($brandId)) {
                                     $addCarMsg = "* ERROR: Failed to get Brand ID!";
+                                    $passChecking = false;
                                 }
                             }
                             else {
@@ -231,15 +234,14 @@
                             else {
                                 $passChecking = false;
                                 $addCarMsg = "* ERROR: Failed to add new Car!";
+                            }
+                        }
 
-                                // Better to manually delete the folder as this is too dangerous!
-                                // Delete the image only.
-                                if (!unlink($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName)) {
-                                    $addCarMsg .= "<br>Image has been successfully deleted!";
-                                }
-                                else {
-                                    $addCarMsg .= "<br>$targetImagePath" . "$carImageNameImage cannot be deleted!";
-                                }
+                        if (!$passChecking) {
+                            // Better to manually delete the folder as this is too dangerous!
+                            // Delete the image only.
+                            if (file_exists($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName)) {
+                                unlink($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName);
                             }
                         }
                     }
@@ -271,6 +273,94 @@
             // Delete Car
             else if ($_POST["manage-mode"] == "delete-car") {
                 $manageMode = $_POST["manage-mode"];
+
+                $carId = (isset($_POST['car-id'])) ? testInput($_POST['car-id']): "";
+                $currentAdminPass = (isset($_POST['current-admin-password'])) ? testInput($_POST['current-admin-password']): "";
+
+                // Check if the car is allowed to be deleted.
+                if (!empty($carId)) {
+                    $query = "SELECT id FROM Cars WHERE id=$carId;";
+                    $rs = mysqli_query($serverConnect, $query);
+
+                    if ($rs) {
+                        if ($car = mysqli_fetch_assoc($rs)) {
+                            // Allow to delete.
+                            $allowDeleteCar = true;
+                        }
+                    }
+                }
+
+                if (!$allowDeleteCar) {
+                    $deleteCarMsg = "* You are not allowed to delete the selected Car!";
+                }
+                else if (isset($_POST["check-form"]) && $_POST["check-form"] == "yes") {
+                    $passChecking = true;
+
+                    // Check if password of logged in admin is provided.
+                    if (
+                        empty($currentAdminPass) ||
+                        strlen($currentAdminPass) < 6 || strlen($currentAdminPass) > 256 ||
+                        !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $currentAdminPass)
+                    ) {
+                        $deleteCarMsg = "* Enter Your Password to Confirm Delete!";
+                        $passChecking = false;
+                    }
+
+                    // Check password of logged in admin.
+                    if ($passChecking) {
+                        $passChecking = false;
+
+                        $query = "SELECT adminPassword FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+                        $rs = mysqli_query($serverConnect, $query);
+
+                        if ($rs) {
+                            if ($user = mysqli_fetch_assoc($rs)) {
+                                if ($user["adminPassword"] == $currentAdminPass) {
+                                    $passChecking = true;
+                                }
+                            }
+                        }
+
+                        if (!$passChecking) {
+                            $deleteCarMsg = "* Invalid Password Entered!";
+                        }
+                    }
+                    
+                    if ($passChecking) {
+                        // Get the image folder path to delete the image in it.
+                        $imagePathDel = "";
+                        $imageToDel = "";
+                        $query = "SELECT imagePath, carImage FROM Cars WHERE id=$carId;";
+                        $rs = mysqli_query($serverConnect, $query);
+    
+                        if ($rs) {
+                            if ($car = mysqli_fetch_assoc($rs)) {
+                                $imagePathDel = (isset($car['imagePath'])) ? testInput($car['imagePath']): "";
+                                $imageToDel = (isset($car['carImage'])) ? testInput($car['carImage']): "";
+                            }
+                        }
+
+                        $query = "DELETE FROM Cars WHERE id=$carId;";
+                        $rs = mysqli_query($serverConnect, $query);
+
+                        if (!($rs)) {
+                            $passChecking = false;
+                            $deleteCarMsg = "* ERROR: Failed to delete Car ID $carId! Recheck if it is used in other tables!";
+                        }
+                        
+                        if ($passChecking) {
+                            $deleteCarMsg = "* Car ID $carId has been deleted successfully!";
+
+                            // Check if folder exists.
+                            if (is_dir($_SERVER['DOCUMENT_ROOT'] . $imagePathDel)) {
+                                // Delete the image.
+                                if (file_exists($_SERVER['DOCUMENT_ROOT'] . $imagePathDel . $imageToDel)) {
+                                    unlink($_SERVER['DOCUMENT_ROOT'] . $imagePathDel . $imageToDel);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -561,6 +651,51 @@
                         <?php endif; ?>
                     <!-- Delete Car -->
                     <?php elseif ($manageMode == "delete-car"): ?>
+                        <h3>Delete <i>Car ID <?php
+                            echo((isset($_POST['car-id'])) ? testInput($_POST['car-id']): "");
+                        ?></i>:</h3>
+
+                        <?php if (isset($deleteCarMsg) && !empty($deleteCarMsg)): ?>
+                            <?php if (!$allowDeleteCar || !$passChecking): ?>
+                                <span class='error-message'>
+                                    <?php echo($deleteCarMsg); ?>
+                                </span>
+                            <?php else: ?>
+                                <span class='success-message'>
+                                    <?php echo($deleteCarMsg); ?>
+                                </span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+
+                        <?php if ($allowDeleteCar && !$passChecking): ?>
+                            <form id='manage-delete-form' method='post' action='/admin/manageVehicle.php'>
+                                <input type='hidden' name='manage-mode' value='delete-car'>
+                                <input type='hidden' name='check-form' value='yes'>
+                                <input type='hidden' name='car-id' value='<?php
+                                    echo((isset($_POST['car-id'])) ? testInput($_POST['car-id']): "");
+                                ?>'>
+
+                                <div>
+                                    <label for='current-admin-password'>
+                                        Your Password:
+                                    </label><br>
+
+                                    <input id='current-admin-password' type='password' name='current-admin-password' placeholder='Required to confirm delete' minlength="6" maxlength="256" required>
+                                </div>
+                            </form>
+
+                            <form id='cancel-delete-form' method='post' action='/admin/manageVehicle.php'></form>
+                            
+                            <div class='button-section'>
+                                <button form='manage-delete-form' class='positive-button' type='submit'>
+                                    Confirm Delete
+                                </button>
+                                
+                                <button form='cancel-delete-form' class='negative-button'>
+                                    Cancel
+                                </button>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 <?php endif; ?>
                 
