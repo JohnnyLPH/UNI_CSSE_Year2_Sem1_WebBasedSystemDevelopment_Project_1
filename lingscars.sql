@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 06, 2022 at 04:06 PM
+-- Generation Time: Jan 08, 2022 at 09:03 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -39,8 +39,8 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `adminName`, `adminPassword`, `lastLogin`) VALUES
-(1, 'admin', 'G03abc-abc03G', '2022-01-06 12:21:38'),
-(2, 'LPH', 'HelloWorld123-', '2022-01-06 22:33:17'),
+(1, 'admin', 'G03abc-abc03G', '2022-01-08 12:08:35'),
+(2, 'LPH', 'HelloWorld123-', '2022-01-08 12:09:37'),
 (9, 'Yuki', 'Yuki123-', '2021-12-30 00:11:32'),
 (10, 'James', 'Ja123-', NULL),
 (16, 'anotherAdmin', 'aB#123', NULL),
@@ -67,7 +67,15 @@ CREATE TABLE `brands` (
 INSERT INTO `brands` (`id`, `brandName`) VALUES
 (1, 'Seat'),
 (2, 'Skoda'),
-(3, 'Volkswagen');
+(3, 'Volkswagen'),
+(4, 'Peugeot'),
+(5, 'Vauxhall'),
+(6, 'Mazda'),
+(7, 'Suzuki'),
+(8, 'Citroen'),
+(9, 'Hyundai'),
+(10, 'Cupra'),
+(11, 'Audi');
 
 -- --------------------------------------------------------
 
@@ -94,10 +102,23 @@ CREATE TABLE `cars` (
 --
 
 INSERT INTO `cars` (`id`, `brandId`, `carModel`, `monthPrice`, `leaseTime`, `initialPay`, `carDesc`, `carImage`, `imagePath`, `dateAdded`, `dateEdited`) VALUES
-(1, 1, 'Arona', 228, 48, 9, '1.0 TSI SE Technology (95bhp) Hatchback 5dr Petrol Manual', 'transparent.png', '/img/car/seat_arona_1641480811/', '2022-01-05 18:41:05', '2022-01-05 18:41:05'),
+(1, 1, 'Arona', 228, 48, 9, '1.0 TSI SE Technology (95bhp) Hatchback 5dr Petrol Manual', 'transparent.png', '/img/car/seat_arona_1641480811/', '2022-01-05 18:41:05', '2022-01-08 15:29:33'),
 (2, 1, 'Ibiza', 228, 36, 9, '1.0 TSI FR (95bhp) Hatchback 5dr Petrol Manual', 'transparent.png', '/img/car/seat_ibiza_1641480845/', '2022-01-06 22:54:05', '2022-01-06 22:54:05'),
 (3, 2, 'Octavia Estate', 240, 24, 9, '1.0 TSI SE Technology (110bhp) (5 seats) Estate 5dr Petrol Manual', 'transparent.png', '/img/car/skoda_octavia_estate_1641481253/', '2022-01-06 23:00:53', '2022-01-06 23:00:53'),
-(4, 3, 'Golf MK8', 263, 36, 9, '1.5 TSI Life (150bhp) Hatchback 5dr Petrol Manual', 'transparent.png', '/img/car/volkswagen_golf_mk8_1641481510/', '2022-01-06 23:05:10', '2022-01-06 23:05:10');
+(4, 3, 'Golf MK8', 263, 36, 9, '1.5 TSI Life (150bhp) Hatchback 5dr Petrol Manual', 'transparent.png', '/img/car/volkswagen_golf_mk8_1641481510/', '2022-01-06 23:05:10', '2022-01-06 23:05:10'),
+(5, 4, 'Partner Van', 265, 18, 3, '1.5 1000 BlueHDi 100 Professional Premium (102bhp) (3 seats) Van Diesel Manual', 'transparent.png', '/img/car/peugeot_partner_van_1641482723/', '2022-01-06 23:25:23', '2022-01-06 23:25:23'),
+(6, 5, 'Combo Cargo Van', 280, 36, 6, '1.5 2300 D ps H1 Dynamic (100bhp) Van Diesel Manual', 'transparent.png', '/img/car/vauxhall_combo_cargo_van_1641482891/', '2022-01-06 23:28:11', '2022-01-06 23:28:11'),
+(7, 6, 'MX-30', 281, 36, 9, '35.5 107kW SE-L Lux kWh 35.5kWh (145bhp) Hatchback 5dr Electric Automatic', 'transparent.png', '/img/car/mazda_mx-30_1641523361/', '2022-01-07 10:42:41', '2022-01-08 15:46:37'),
+(8, 7, 'Swace', 293, 36, 6, '1.8 Hybrid SZ5 (122bhp) Estate 5dr Petrol/electric CVT', 'transparent.png', '/img/car/suzuki_swace_1641523446/', '2022-01-07 10:44:06', '2022-01-07 10:44:06'),
+(9, 8, 'e-C4', 304, 36, 9, '100kW Sense Plus 50kWh Hatchback 5dr Electric Automatic', 'transparent.png', '/img/car/citroen_e-c4_1641523675/', '2022-01-07 10:47:55', '2022-01-08 15:48:41'),
+(10, 9, 'Ioniq', 304, 36, 9, '100kW Premium SE 38kWh (136bhp) Hatchback 5dr 1cc', 'transparent.png', '/img/car/hyundai_ioniq_1641523942/', '2022-01-07 10:52:22', '2022-01-08 15:48:21'),
+(11, 9, 'Santa Fe Estate', 347, 18, 9, '1.6 TGDi Hybrid Premium (230bhp) Estate 5dr Petrol/electric Automatic', 'transparent.png', '/img/car/hyundai_santa_fe_estate_1641524078/', '2022-01-07 10:54:38', '2022-01-07 10:54:38'),
+(13, 10, 'Leon', 352, 48, 9, '2.0 TSI VZ2 (245bhp) Hatchback 5dr Petrol DSG', 'transparent.png', '/img/car/cupra_leon_1641526302/', '2022-01-07 11:31:42', '2022-01-07 11:31:42'),
+(14, 11, 'Q2 EState', 383, 36, 9, '30 TFSI Technik (110bhp) Estate 5dr Petrol Manual', 'transparent.png', '/img/car/audi_q2_estate_1641526403/', '2022-01-07 11:33:23', '2022-01-07 11:33:23'),
+(15, 3, 'Tiguan Allspace Estate', 384, 36, 9, '1.5 TSI Life (150bhp) Estate 5dr Petrol DSG', 'transparent.png', '/img/car/volkswagen_tiguan_allspace_estate_1641526597/', '2022-01-07 11:36:37', '2022-01-07 11:36:37'),
+(16, 9, 'Tucson', 391, 36, 9, '1.6 TGDi Hybrid 2WD Ultimate (230bhp) Estate 5dr Petrol/electric Automatic', 'transparent.png', '/img/car/hyundai_tucson_1641526663/', '2022-01-07 11:37:43', '2022-01-07 11:37:43'),
+(17, 2, 'Superb Estate', 394, 36, 6, '1.4 TSI iV SE Technology DSG (218bhp) (5 seats) Estate 5dr Petrol/plugin Elec Hybrid', 'transparent.png', '/img/car/skoda_superb_estate_1641526757/', '2022-01-07 11:39:17', '2022-01-07 11:39:17'),
+(19, 11, 'A4 Estate', 478, 36, 9, '2.0 35 TFSI (150bhp) Technik Estate 5dr 1984cc', 'transparent.png', '/img/car/audi_a4_estate_1641527000/', '2022-01-07 11:43:20', '2022-01-08 15:29:13');
 
 -- --------------------------------------------------------
 
@@ -207,13 +228,13 @@ ALTER TABLE `admins`
 -- AUTO_INCREMENT for table `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `cars`
 --
 ALTER TABLE `cars`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `memberlog`
