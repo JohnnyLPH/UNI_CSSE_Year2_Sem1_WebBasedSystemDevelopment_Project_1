@@ -296,7 +296,7 @@
                                         }
                                     ?>
 
-                                    <form id='cancel-view-form' method='post' action='<?php
+                                    <form method='post' action='<?php
                                         echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageMember.php");
                                     ?>'>
                                         <button>Return Previous Page</button>

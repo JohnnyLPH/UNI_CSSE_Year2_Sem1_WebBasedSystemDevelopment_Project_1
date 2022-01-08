@@ -272,6 +272,7 @@ button {
 form button {
     display: block;
     margin: auto;
+    margin-bottom: 10px;
     padding: 10px 0;
     color: white;
     cursor: pointer;
@@ -284,6 +285,11 @@ form button {
     min-width: 80px;
     max-width: 500px;
     /* min-height: 35px; */
+}
+
+table.db-table td button {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .button-section {
@@ -355,12 +361,12 @@ table.db-table td button:hover, form button:hover, .button-section button:hover 
     padding: 5px;
 }
 
-#manage-add-form div input, #manage-add-form div textarea, #manage-edit-form div input, #manage-delete-form div input {
+#manage-add-form div input, #manage-add-form div textarea, #manage-edit-form div input, #manage-edit-form div textarea, #manage-delete-form div input {
     width: 100%;
     min-height: 30px;
 }
 
-#manage-add-form div textarea {
+#manage-add-form div textarea, #manage-edit-form div textarea {
     resize: none;
 }
 
@@ -392,4 +398,8 @@ div.view-content table tr td img {
     margin: auto;
     width: 100%;
     max-height: 100px;
+}
+
+.multiline-text {
+    white-space: pre-wrap;
 }
