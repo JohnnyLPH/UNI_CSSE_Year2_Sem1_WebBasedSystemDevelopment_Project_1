@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 08, 2022 at 09:03 AM
+-- Generation Time: Jan 10, 2022 at 03:42 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -39,15 +39,18 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `adminName`, `adminPassword`, `lastLogin`) VALUES
-(1, 'admin', 'G03abc-abc03G', '2022-01-08 12:08:35'),
-(2, 'LPH', 'HelloWorld123-', '2022-01-08 12:09:37'),
+(1, 'admin', 'G03abc-abc03G', '2022-01-10 14:19:41'),
+(2, 'LPH', 'HelloWorld123-', '2022-01-10 19:04:21'),
 (9, 'Yuki', 'Yuki123-', '2021-12-30 00:11:32'),
-(10, 'James', 'Ja123-', NULL),
+(10, 'James', 'Ja123-', '2022-01-10 15:29:02'),
 (16, 'anotherAdmin', 'aB#123', NULL),
 (21, 'WBSD', 'aB#123', NULL),
 (22, 'LastTest', 'aB#123', NULL),
 (23, 'TestChart', 'aB#123', NULL),
-(24, 'Dire', 'aB#123', NULL);
+(24, 'Dire', 'aB#123', NULL),
+(26, 'TestQueryString', 'aB#123', NULL),
+(27, 'anotherNewAdmin', 'aB#123', NULL),
+(29, 'anotherNewAdmin2', 'aB#123', NULL);
 
 -- --------------------------------------------------------
 
@@ -175,7 +178,66 @@ INSERT INTO `members` (`id`, `firstName`, `lastName`, `email`, `countryCode`, `p
 (3, 'James', 'Pill', 'ja@email.com', '+60', '192659162', '123aB#', 'male', 'Selangor', '2022-01-04 11:35:52'),
 (4, 'Assa', 'Lisa', 'asalid@email.com', '+60', '119281621', 'aS#123', 'female', 'Negeri Sembilan', '2022-01-04 11:35:52'),
 (5, 'Nice', 'Ara', 'asnice@email.com', '+60', '147397412', 'aB#123', 'male', 'Selangor', '2022-01-04 11:35:52'),
-(6, 'Dwayne', 'Johnson', 'dj@email.com', '+60', '166668866', 'aB#123', 'male', 'Kuala Lumpur', '2022-01-04 11:35:52');
+(6, 'Dwayne', 'Johnson', 'dj@email.com', '+60', '166668866', 'aB#123', 'male', 'Kuala Lumpur', '2022-01-04 11:35:52'),
+(9, 'Dave', 'Jobs', 'daveJ@email.com', '+60', '169283926', 'aB#123', 'male', 'Sarawak', '2022-01-10 15:36:38');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `orders`
+--
+
+CREATE TABLE `orders` (
+  `id` int(11) NOT NULL,
+  `memberId` int(11) NOT NULL,
+  `stage` tinyint(4) NOT NULL,
+  `editable` tinyint(1) NOT NULL DEFAULT 1,
+  `fullName` varchar(30) NOT NULL,
+  `personal` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`personal`)),
+  `currentAddress` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`currentAddress`)),
+  `job` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`job`)),
+  `bank` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`bank`)),
+  `orderStatus` tinyint(4) NOT NULL,
+  `orderStatusMessage` text DEFAULT NULL,
+  `proposalDate` datetime DEFAULT NULL,
+  `reviewDate` datetime DEFAULT NULL,
+  `confirmDate` datetime DEFAULT NULL,
+  `receipt` blob DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `memberId`, `stage`, `editable`, `fullName`, `personal`, `currentAddress`, `job`, `bank`, `orderStatus`, `orderStatusMessage`, `proposalDate`, `reviewDate`, `confirmDate`, `receipt`) VALUES
+(1, 1, 1, 1, '', '{}', '{}', '{}', '{}', 1, NULL, '2022-01-10 12:51:45', NULL, NULL, NULL),
+(2, 2, 1, 1, '', '{}', '{}', '{}', '{}', 1, NULL, '2022-01-10 13:04:16', NULL, NULL, NULL),
+(3, 4, 6, 0, '', '{}', '{}', '{}', '{}', 2, NULL, '2022-01-10 13:48:41', NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `transactions`
+--
+
+CREATE TABLE `transactions` (
+  `id` int(11) NOT NULL,
+  `memberId` int(11) NOT NULL,
+  `carId` int(11) NOT NULL,
+  `orderId` int(11) NOT NULL,
+  `transactionDate` datetime NOT NULL DEFAULT current_timestamp(),
+  `creditCard` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}',
+  `receipt` varchar(256) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `transactions`
+--
+
+INSERT INTO `transactions` (`id`, `memberId`, `carId`, `orderId`, `transactionDate`, `creditCard`, `receipt`) VALUES
+(1, 1, 1, 1, '2022-01-10 10:13:11', '{\"cardNo\":\"1234123412341234\", \"paymentAmount\":\"2052\"}', 'testReceipt'),
+(2, 2, 9, 2, '2022-01-10 11:04:35', '{\"cardNo\":\"3412341234123412\", \"paymentAmount\":\"2736\"}', ''),
+(3, 4, 13, 3, '2022-01-10 20:50:36', '{\"cardNo\":\"3916295610293619\", \"paymentAmount\":\"3168\"}', '');
 
 --
 -- Indexes for dumped tables
@@ -215,6 +277,18 @@ ALTER TABLE `members`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `transactions`
+--
+ALTER TABLE `transactions`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -222,7 +296,7 @@ ALTER TABLE `members`
 -- AUTO_INCREMENT for table `admins`
 --
 ALTER TABLE `admins`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `brands`
@@ -234,7 +308,7 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `cars`
 --
 ALTER TABLE `cars`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `memberlog`
@@ -246,7 +320,19 @@ ALTER TABLE `memberlog`
 -- AUTO_INCREMENT for table `members`
 --
 ALTER TABLE `members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `orders`
+--
+ALTER TABLE `orders`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `transactions`
+--
+ALTER TABLE `transactions`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -262,7 +348,7 @@ ALTER TABLE `cars`
 -- Constraints for table `memberlog`
 --
 ALTER TABLE `memberlog`
-  ADD CONSTRAINT `UserLog` FOREIGN KEY (`memberId`) REFERENCES `members` (`id`);
+  ADD CONSTRAINT `Member's Log` FOREIGN KEY (`memberId`) REFERENCES `members` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
