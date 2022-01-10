@@ -50,13 +50,16 @@
         <nav class="fixed_nav_bar">
             <ul>
                 <li>
-                    <a href="/admin/adminDashboard.php" class="active">Home</a>
+                    <a href="/admin/index.php" class="active">Home</a>
                 </li>
                 <li>
                     <a href="/admin/manageMember.php">Manage Member</a>
                 </li>
                 <li>
                     <a href="/admin/manageVehicle.php">Manage Vehicle</a>
+                </li>
+                <li>
+                    <a href="/admin/manageOrder.php">Manage Order</a>
                 </li>
                 <li>
                     <a href="/admin/manageTransaction.php">Manage Transaction</a>

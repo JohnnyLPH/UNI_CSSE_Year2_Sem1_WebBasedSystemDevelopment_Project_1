@@ -4,7 +4,7 @@
     require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     // Already logged in, redirect to admin dashboard.
     if (checkAdminLogin()) {
-        header("Location: /admin/adminDashboard.php");
+        header("Location: /admin/index.php");
         exit;
     }
 
@@ -57,7 +57,7 @@
 
                 $adminName = $adminPassword = $adminLoginErr = "";
                 // Redirect to admin dashboard after login.
-                header("Location: /admin/adminDashboard.php");
+                header("Location: /admin/index.php");
                 exit;
             }
             else {

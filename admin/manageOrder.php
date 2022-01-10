@@ -1,4 +1,4 @@
-<!-- Admin Dashboard: Manage Transaction for LINGsCARS -->
+<!-- Admin Dashboard: Manage Order for LINGsCARS -->
 <?php
     require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
     require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
@@ -45,38 +45,72 @@
 
     $wordToSearch = "";
 
-    $viewTransacMsg = "";
-    $allowViewTransac = false;
+    $viewOrderMsg = "";
+    $allowViewOrder = false;
+
+    $editOrderMsg = "";
+    $allowEditOrder = false;
     
     if (!empty($manageMode)) {
-        // Search Transaction
-        if ($manageMode == "search-transaction") {
+        // Search Order
+        if ($manageMode == "search-order") {
             $wordToSearch = (isset($queryString['word-to-search'])) ? testInput($queryString['word-to-search']): "";
         }
-        // View Summary
-        else if ($manageMode == "view-summary") {
-
-        }
-        // View Transaction
-        else if ($manageMode == "view-transaction") {
-            $transacId = (isset($queryString['transaction-id'])) ? testInput($queryString['transaction-id']): "";
+        // View Order
+        else if ($manageMode == "view-order") {
+            $orderId = (isset($queryString['order-id'])) ? testInput($queryString['order-id']): "";
             
-            // Check if the transaction is allowed to be viewed.
-            if (!empty($transacId) && is_numeric($transacId)) {
-                $query = "SELECT id FROM Transactions WHERE id=$transacId;";
+            // Check if the order is allowed to be viewed.
+            if (!empty($orderId) && is_numeric($orderId)) {
+                $query = "SELECT id FROM Orders WHERE id=$orderId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
-                    if ($transac = mysqli_fetch_assoc($rs)) {
+                    if ($record = mysqli_fetch_assoc($rs)) {
                         // Allow to view.
-                        $allowViewTransac = true;
+                        $allowViewOrder = true;
                     }
                 }
             }
 
-            if (!$allowViewTransac) {
-                $viewTransacMsg = "* You are not allowed to view the selected Transaction!";
+            if (!$allowViewOrder) {
+                $viewOrderMsg = "* You are not allowed to view the selected Order!";
             }
+        }
+        // Edit Order
+        else if ($manageMode == "edit-order") {
+            $orderId = (isset($queryString['order-id'])) ? testInput($queryString['order-id']): "";
+            $orderStatus = (isset($_POST['order-status'])) ? testInput($_POST['order-status']): "";
+            $oldOlderStatus = "";
+            
+            // Check if the order is allowed to be edited.
+            if (!empty($orderId) && is_numeric($orderId)) {
+                $query = "SELECT Orders.id, Orders.orderStatus FROM Orders WHERE Orders.id=$orderId;";
+                $rs = mysqli_query($serverConnect, $query);
+
+                if ($rs) {
+                    if ($record = mysqli_fetch_assoc($rs)) {
+                        // Order status 2 for those waiting for review.
+                        if (isset($record['orderStatus']) && $record['orderStatus'] == 2) {
+                            // Allow to edit.
+                            $allowEditOrder = true;
+
+                            $oldOlderStatus = (isset($record['orderStatus'])) ? testInput($record['orderStatus']): "";
+                        }
+                    }
+                }
+            }
+
+            if (!$allowEditOrder) {
+                $editOrderMsg = "* You are not allowed to edit the selected Order!";
+            }
+            else if (
+                $_SERVER["REQUEST_METHOD"] == "POST" &&
+                isset($queryString["check-form"]) && $queryString["check-form"] == "yes"
+            ) {
+
+            }
+
         }
         // Invalid Mode
         else {
@@ -88,7 +122,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Admin Dashboard: Manage Transaction | LINGsCARS</title>
+        <title>Admin Dashboard: Manage Order | LINGsCARS</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
         <link rel="stylesheet" href="/css/admin.css">
@@ -116,10 +150,10 @@
                     <a href="/admin/manageVehicle.php">Manage Vehicle</a>
                 </li>
                 <li>
-                    <a href="/admin/manageOrder.php">Manage Order</a>
+                    <a href="/admin/manageOrder.php" class="active">Manage Order</a>
                 </li>
                 <li>
-                    <a href="/admin/manageTransaction.php" class="active">Manage Transaction</a>
+                    <a href="/admin/manageTransaction.php">Manage Transaction</a>
                 </li>
                 <li>
                     <a href="/admin/manageAdmin.php">Manage Admin</a>
@@ -132,36 +166,31 @@
 
         <main>
             <h2>
-                Manage Transaction
+                Manage Order
             </h2>
 
             <div class="manage-section">
                 <?php if (isset($manageMode) && !empty($manageMode)): ?>
-                    <!-- View Summary -->
-                    <?php if ($manageMode == "view-summary"): ?>
-                    <!-- View Transaction -->
-                    <?php elseif ($manageMode == "view-transaction"): ?>
-                        <h3>View <i>Transaction ID <?php
-                            echo((isset($transacId)) ? testInput($transacId): "");
+                    <!-- View Order -->
+                    <?php if ($manageMode == "view-order"): ?>
+                        <h3>View <i>Order ID <?php
+                            echo((isset($orderId)) ? testInput($orderId): "");
                         ?></i>:</h3>
 
-                        <?php if (isset($viewTransacMsg) && !empty($viewTransacMsg)): ?>
-                            <?php if (!$allowViewTransac): ?>
+                        <?php if (isset($viewOrderMsg) && !empty($viewOrderMsg)): ?>
+                            <?php if (!$allowViewOrder): ?>
                                 <span class='error-message'>
-                                    <?php echo($viewTransacMsg); ?>
+                                    <?php echo($viewOrderMsg); ?>
                                 </span>
                             <?php endif; ?>
                         <?php endif; ?>
 
-                        <?php if ($allowViewTransac): ?>
+                        <?php if ($allowViewOrder): ?>
                             <?php
-                                $query = "SELECT Transactions.id, Transactions.memberId, Members.email, Transactions.carId, Cars.carModel, Brands.brandName, Transactions.orderId, Orders.orderStatus, Orders.confirmDate, Transactions.transactionDate, Transactions.creditCard, Transactions.receipt
-                                FROM Transactions
-                                INNER JOIN Members ON Transactions.memberId = Members.id
-                                INNER JOIN Cars ON Transactions.carId = Cars.id
-                                INNER JOIN Brands ON Cars.brandId = Brands.id
-                                INNER JOIN Orders ON Transactions.orderId = Orders.id
-                                WHERE Transactions.id=$transacId;";
+                                $query = "SELECT Orders.id, Orders.memberId, Orders.stage, Orders.editable, Orders.personal, Orders.currentAddress, Orders.job, Orders.bank, Orders.orderStatus, Orders.proposalDate, Orders.reviewDate, Orders.confirmDate, Orders.receipt
+                                FROM Orders
+                                INNER JOIN Members ON Orders.memberId = Members.id
+                                WHERE Orders.id=$orderId;";
 
                                 $rs = mysqli_query($serverConnect, $query);
                             ?>
@@ -171,7 +200,7 @@
                                     <div class='view-content'>
                                         <table>
                                             <tr>
-                                                <td>Transaction ID</td>
+                                                <td>Order ID</td>
                                                 <td>
                                                     <?php echo((isset($record["id"])) ? $record["id"]: "-"); ?>
                                                 </td>
@@ -194,55 +223,44 @@
                                             </tr>
                                             
                                             <tr>
-                                                <td>Member Email</td>
+                                                <td>Stage</td>
                                                 <td>
-                                                    <?php echo((isset($record["email"])) ? $record["email"]: "-"); ?>
+                                                    <?php echo((isset($record["stage"])) ? $record["stage"]: "-"); ?>
                                                 </td>
                                             </tr>
-
+                                            
                                             <tr>
-                                                <td>Car ID</td>
+                                                <td>Editable</td>
                                                 <td>
-                                                    <form method='get' action='/admin/manageVehicle.php'>
-                                                        <input type='hidden' name='manage-mode' value='view-car'>
-                                                        <input type='hidden' name='car-id' value='<?php
-                                                            echo((isset($record["carId"])) ? $record["carId"]: "");
-                                                        ?>'>
-
-                                                        <button><?php
-                                                            echo((isset($record["carId"])) ? $record["carId"]: "-");
-                                                        ?></button>
-                                                    </form>
+                                                    <?php echo((isset($record["editable"])) ? $record["editable"]: "-"); ?>
                                                 </td>
                                             </tr>
-
+                                            
                                             <tr>
-                                                <td>Car Brand</td>
+                                                <td>Personal Details</td>
                                                 <td>
-                                                    <?php echo((isset($record["brandName"])) ? $record["brandName"]: "-"); ?>
+                                                    <?php var_dump((isset($record["personal"])) ? json_decode($record["personal"], true): ""); ?>
                                                 </td>
                                             </tr>
-
+                                            
                                             <tr>
-                                                <td>Car Model</td>
+                                                <td>Current Address</td>
                                                 <td>
-                                                    <?php echo((isset($record["carModel"])) ? $record["carModel"]: "-"); ?>
+                                                    <?php var_dump((isset($record["currentAddress"])) ? json_decode($record["currentAddress"], true): ""); ?>
                                                 </td>
                                             </tr>
-
+                                            
                                             <tr>
-                                                <td>Order ID</td>
+                                                <td>Job Details</td>
                                                 <td>
-                                                    <form method='get' action='/admin/manageOrder.php'>
-                                                        <input type='hidden' name='manage-mode' value='view-order'>
-                                                        <input type='hidden' name='order-id' value='<?php
-                                                            echo((isset($record["orderId"])) ? $record["orderId"]: "");
-                                                        ?>'>
-
-                                                        <button><?php
-                                                            echo((isset($record["orderId"])) ? $record["orderId"]: "-");
-                                                        ?></button>
-                                                    </form>
+                                                    <?php var_dump((isset($record["job"])) ? json_decode($record["job"], true): ""); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Bank Details</td>
+                                                <td>
+                                                    <?php var_dump((isset($record["bank"])) ? json_decode($record["bank"], true): ""); ?>
                                                 </td>
                                             </tr>
 
@@ -252,44 +270,25 @@
                                                     <?php echo((isset($record["orderStatus"])) ? $record["orderStatus"]: "-"); ?>
                                                 </td>
                                             </tr>
-                                            
+
                                             <tr>
-                                                <td>Order Date</td>
+                                                <td>Proposal Date</td>
+                                                <td>
+                                                    <?php echo((isset($record["proposalDate"])) ? $record["proposalDate"]: "-"); ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Review Date</td>
+                                                <td>
+                                                    <?php echo((isset($record["reviewDate"])) ? $record["reviewDate"]: "-"); ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Confirm Date</td>
                                                 <td>
                                                     <?php echo((isset($record["confirmDate"])) ? $record["confirmDate"]: "-"); ?>
-                                                </td>
-                                            </tr>
-                                            
-                                            <tr>
-                                                <td>Transaction Date</td>
-                                                <td>
-                                                    <?php echo((isset($record["transactionDate"])) ? $record["transactionDate"]: "-"); ?>
-                                                </td>
-                                            </tr>
-                                            
-                                            <tr>
-                                                <td>Credit Card No.</td>
-                                                <td>
-                                                    <?php
-                                                        echo(
-                                                            (isset($record["creditCard"]) && isset(json_decode($record["creditCard"], true)['cardNo'])) ?
-                                                            json_decode($record["creditCard"], true)['cardNo']:
-                                                            "-"
-                                                        );
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                            
-                                            <tr>
-                                                <td>Amount (£)</td>
-                                                <td>
-                                                    <?php
-                                                        echo(
-                                                            (isset($record["creditCard"]) && isset(json_decode($record["creditCard"], true)['paymentAmount'])) ?
-                                                            json_decode($record["creditCard"], true)["paymentAmount"]:
-                                                            "-"
-                                                        );
-                                                    ?>
                                                 </td>
                                             </tr>
                                             
@@ -301,6 +300,18 @@
                                             </tr>
                                         </table>
                                     </div>
+                                    
+                                    <?php if (isset($record["orderStatus"]) && $record["orderStatus"] == 2): ?>
+                                        <!-- Waiting for review -->
+                                        <form method='get' action='/admin/manageOrder.php'>
+                                            <input type='hidden' name='manage-mode' value='edit-order'>
+                                            <input type='hidden' name='order-id' value='<?php
+                                                echo((isset($record["id"])) ? $record["id"]: "");
+                                            ?>'>
+
+                                            <button class='positive-button'>Review Order</button>
+                                        </form>
+                                    <?php endif; ?>
 
                                     <?php
                                         $lastPage = "javascript:history.go(-1)";
@@ -317,27 +328,76 @@
                                 <?php endif; ?>
                             <?php endif; ?>
                         <?php endif; ?>
+                    <!-- Edit Order -->
+                    <?php elseif ($manageMode == "edit-order"): ?>
+                        <h3>Edit <i>Order ID <?php
+                            echo((isset($orderId)) ? $orderId: "");
+                        ?></i>:</h3>
+
+                        <?php if (isset($editOrderMsg) && !empty($editOrderMsg)): ?>
+                            <?php if (!$allowEditOrder || !$passChecking): ?>
+                                <span class='error-message'>
+                                    <?php echo($editOrderMsg); ?>
+                                </span>
+                            <?php else: ?>
+                                <span class='success-message'>
+                                    <?php echo($editOrderMsg); ?>
+                                </span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+
+                        <?php if ($allowEditOrder && !$passChecking): ?>
+                            <?php
+                                $newQueryString = array();
+                                $newQueryString['manage-mode'] = 'edit-order';
+                                $newQueryString['check-form'] = 'yes';
+                                $newQueryString['order-id'] = (isset($orderId)) ? $orderId: "";
+                            ?>
+
+                            <form id='manage-edit-form' method='post' action='/admin/manageOrder.php?<?php
+                                echo(http_build_query($newQueryString));
+                            ?>'>
+                                <div>
+                                    <label for='order-status'>
+                                        Order Status:
+                                    </label><br>
+
+                                    <input id='order-status' type='number' min="1" max="4" name='order-status' placeholder='I dont know:)' value='<?php
+                                        echo((!empty($orderStatus)) ? $orderStatus: $oldOlderStatus);
+                                    ?>' required>
+                                </div>
+                            </form>
+
+                            <form id='cancel-edit-form' method='get' action='/admin/manageOrder.php'></form>
+
+                            <div class='button-section'>
+                                <button form='manage-edit-form' class='positive-button' type='submit'>
+                                    Confirm Edit
+                                </button>
+                                
+                                <button form='cancel-edit-form' class='negative-button'>
+                                    Cancel
+                                </button>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 <?php endif; ?>
                 
                 <?php if (
                     (isset($manageMode) && empty($manageMode)) ||
                     $passChecking ||
-                    (isset($manageMode) && $manageMode == "search-transaction") ||
-                    (isset($manageMode) && $manageMode == "view-transaction" && !$allowViewTransac)
+                    (isset($manageMode) && $manageMode == "search-order") ||
+                    (isset($manageMode) && $manageMode == "view-order" && !$allowViewOrder) ||
+                    (isset($manageMode) && $manageMode == "edit-order" && !$allowEditOrder)
                 ): ?>
-                    <form id='cancel-search-form' method='get' action='/admin/manageTransaction.php'></form>
+                    <form id='cancel-search-form' method='get' action='/admin/manageOrder.php'></form>
 
-                    <form id='manage-search-form' method='get' action='/admin/manageTransaction.php'>
-                        <input type='hidden' name='manage-mode' value='search-transaction'>
-                    </form>
-
-                    <form id='manage-summary-form' method='get' action='/admin/manageTransaction.php'>
-                        <input type='hidden' name='manage-mode' value='view-summary'>
+                    <form id='manage-search-form' method='get' action='/admin/manageOrder.php'>
+                        <input type='hidden' name='manage-mode' value='search-order'>
                     </form>
                 
                     <div class='button-section'>
-                        <input form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Transaction/Member/Car/Order ID' value='<?php
+                        <input form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Order/Member ID or Order Status' value='<?php
                             echo((isset($wordToSearch) && !empty($wordToSearch)) ? testInput($wordToSearch): "");
                         ?>' minlength="1" maxlength="100" required>
                         
@@ -346,86 +406,76 @@
                         <button form='cancel-search-form' class='small-button negative-button'<?php
                             echo((isset($wordToSearch) && !empty($wordToSearch)) ? "": " disabled");
                         ?>>Reset</button>
-
-                        <button form='manage-summary-form' class='small-button'>Summary</button>
                     </div>
                     
-                    <h3>Found Transactions:</h3>
+                    <h3>Found Orders:</h3>
                     <table class="db-table">
                         <thead>
                             <!-- 7 Columns -->
                             <tr>
-                                <th>Transaction ID</th>
-                                <th>Member ID</th>
-                                <th>Car ID</th>
                                 <th>Order ID</th>
-                                <th>Transaction Date</th>
-                                <th>Amount (£)</th>
+                                <th>Member ID</th>
+                                <th>Order Status</th>
+                                <th>Proposal Date</th>
+                                <th>Review Date</th>
+                                <th>Confirm Date</th>
                                 <th>View</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                                // Select from Transactions table.
-                                $query = "SELECT Transactions.id, Transactions.memberId, Transactions.carId, Transactions.orderId, Transactions.transactionDate, Transactions.creditCard FROM Transactions" .
+                                // Select from Orders table.
+                                $query = "SELECT Orders.id, Orders.memberId, Orders.orderStatus, Orders.proposalDate, Orders.reviewDate, Orders.confirmDate FROM Orders" .
                                 (
                                     (isset($wordToSearch) && !empty($wordToSearch)) ?
-                                    " WHERE Transactions.id LIKE '%" .
+                                    " WHERE Orders.id LIKE '%" .
                                     testInput($wordToSearch) .
-                                    "%' OR Transactions.memberId LIKE '%" .
+                                    "%' OR Orders.memberId LIKE '%" .
                                     testInput($wordToSearch) .
-                                    "%' OR Transactions.carId LIKE '%" .
-                                    testInput($wordToSearch) .
-                                    "%' OR Transactions.orderId LIKE '%" .
+                                    "%' OR Orders.orderStatus LIKE '%" .
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY Transactions.transactionDate DESC LIMIT 25;";
+                                " ORDER BY CASE WHEN Orders.orderStatus=2 THEN 1 WHEN Orders.orderStatus > 2 THEN 2 ELSE 3 END LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;
                             ?>
                             
                             <?php if ($rs): ?>
-                                <?php while ($transac = mysqli_fetch_assoc($rs)): ?>
+                                <?php while ($record = mysqli_fetch_assoc($rs)): ?>
                                     <?php $recordCount++; ?>
 
                                     <tr>
                                         <td class='center-text'>
-                                            <?php echo((isset($transac["id"])) ? $transac["id"]: "-"); ?>
+                                            <?php echo((isset($record["id"])) ? $record["id"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($transac["memberId"])) ? $transac["memberId"]: "-"); ?>
+                                            <?php echo((isset($record["memberId"])) ? $record["memberId"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($transac["carId"])) ? $transac["carId"]: "-"); ?>
+                                            <?php echo((isset($record["orderStatus"])) ? $record["orderStatus"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($transac["orderId"])) ? $transac["orderId"]: "-"); ?>
+                                            <?php echo((isset($record["proposalDate"])) ? $record["proposalDate"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($transac["transactionDate"])) ? $transac["transactionDate"]: "-"); ?>
+                                            <?php echo((isset($record["reviewDate"])) ? $record["reviewDate"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php
-                                                echo(
-                                                    (isset($transac["creditCard"]) && isset(json_decode($transac["creditCard"], true)['paymentAmount'])) ?
-                                                    json_decode($transac["creditCard"], true)['paymentAmount']:
-                                                    "-"
-                                                );
-                                            ?>
+                                            <?php echo((isset($record["confirmDate"])) ? $record["confirmDate"]: "-"); ?>
                                         </td>
 
                                         <td>
-                                            <form method='get' action='/admin/manageTransaction.php'>
-                                                <input type='hidden' name='manage-mode' value='view-transaction'>
-                                                <input type='hidden' name='transaction-id' value='<?php
-                                                    echo((isset($transac["id"])) ? $transac["id"]: "");
+                                            <form method='get' action='/admin/manageOrder.php'>
+                                                <input type='hidden' name='manage-mode' value='view-order'>
+                                                <input type='hidden' name='order-id' value='<?php
+                                                    echo((isset($record["id"])) ? $record["id"]: "");
                                                 ?>'>
 
                                                 <button class='positive-button'>View</button>
@@ -442,7 +492,7 @@
                                     </td>
                                 <?php else: ?>
                                     <td colspan='7'>
-                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Transaction Date]
+                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Order Status]
                                     </td>
                                 <?php endif; ?>
                             </tr>

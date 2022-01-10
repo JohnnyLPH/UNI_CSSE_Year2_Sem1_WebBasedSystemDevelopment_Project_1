@@ -34,7 +34,13 @@
         return $data;
     }
 
-    $manageMode = "";
+    $queryString = array();
+
+    if (isset($_SERVER['QUERY_STRING'])) {
+        parse_str($_SERVER['QUERY_STRING'], $queryString);
+    }
+
+    $manageMode = (isset($queryString['manage-mode'])) ? $queryString['manage-mode']: "";
     $passChecking = false;
 
     $addAdminMsg = "";
@@ -45,332 +51,313 @@
     $deleteAdminMsg = "";
     $allowDeleteAdmin = false;
     
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_POST["manage-mode"])) {
-            // Add Admin
-            if ($_POST["manage-mode"] == "add-admin") {
-                $manageMode = $_POST["manage-mode"];
+    if (!empty($manageMode)) {
+        // Add Admin
+        if ($manageMode == "add-admin") {
+            // Check form.
+            if (
+                $_SERVER["REQUEST_METHOD"] == "POST" &&
+                isset($queryString["check-form"]) && $queryString["check-form"] == "yes"
+            ) {
+                $adminName = (isset($_POST['admin-name'])) ? testInput($_POST['admin-name']): "";
+                $adminPass = (isset($_POST['admin-password'])) ? testInput($_POST['admin-password']): "";
+                $adminPass2 = (isset($_POST['admin-password2'])) ? testInput($_POST['admin-password2']): "";
 
-                // Check form.
-                if (isset($_POST["check-form"]) && $_POST["check-form"] == "yes") {
-                    $adminName = (isset($_POST['admin-name'])) ? testInput($_POST['admin-name']): "";
-                    $adminPass = (isset($_POST['admin-password'])) ? testInput($_POST['admin-password']): "";
-                    $adminPass2 = (isset($_POST['admin-password2'])) ? testInput($_POST['admin-password2']): "";
+                // Check if admin name is provided.
+                if (
+                    empty($adminName) ||
+                    strlen($adminName) < 3 || strlen($adminName) > 128 ||
+                    !preg_match("/^[A-Za-z0-9]{1}[A-Za-z0-9]+(\s[A-Za-z0-9]{1}[A-Za-z0-9]+)*$/",$adminName)
+                ) {
+                    $addAdminMsg = "* Enter Admin Name<br>(3 - 128 Char; Alphabets & Digits;<br>Min 2 Char per Word; Allow 1 Space Between)!";
+                }
+                // Check if admin name is already used.
+                else {
+                    $query = "SELECT id, adminName FROM Admins WHERE adminName='$adminName';";
+                    $rs = mysqli_query($serverConnect, $query);
 
-                    // Check if admin name is provided.
-                    if (
-                        empty($adminName) ||
-                        strlen($adminName) < 3 || strlen($adminName) > 128 ||
-                        !preg_match("/^[A-Za-z0-9]{1}[A-Za-z0-9]+(\s[A-Za-z0-9]{1}[A-Za-z0-9]+)*$/",$adminName)
-                    ) {
-                        $addAdminMsg = "* Enter Admin Name<br>(3 - 128 Char; Alphabets & Digits;<br>Min 2 Char per Word; Allow 1 Space Between)!";
-                    }
-                    // Check if admin name is already used.
-                    else {
-                        $query = "SELECT id, adminName FROM Admins WHERE adminName='$adminName';";
-                        $rs = mysqli_query($serverConnect, $query);
-
-                        $passChecking = true;
-                        if ($rs) {
-                            if ($user = mysqli_fetch_assoc($rs)) {
-                                if ($user["adminName"] == $adminName) {
-                                    $addAdminMsg = "* Admin Name is already used!";
-                                    $passChecking = false;
-                                }
+                    $passChecking = true;
+                    if ($rs) {
+                        if ($user = mysqli_fetch_assoc($rs)) {
+                            if ($user["adminName"] == $adminName) {
+                                $addAdminMsg = "* Admin Name is already used!";
+                                $passChecking = false;
                             }
                         }
                     }
+                }
+                
+                // Continue checking.
+                if ($passChecking) {
+                    $passChecking = false;
+                    // Check if password is provided and has at least 6 char.
+                    // Min 1 special character, 1 uppercase, 1 lowercase, 3 digit.
+                    if (
+                        empty($adminPass) ||
+                        strlen($adminPass) < 6 || strlen($adminPass) > 256 ||
+                        !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $adminPass)
+                    ) {
+                        $addAdminMsg = "* Enter a Password<br>(1 Special Char, 1 Upper, 1 Lower, 3 Digits;<br>6 - 256 Char; Space Ignored at Start & End)!";
+                    }
+                    // Check if password is reentered.
+                    else if (empty($adminPass2)) {
+                        $addAdminMsg = "* Reenter the Password!";
+                    }
+                    // Check if reentered password is the same.
+                    else if ($adminPass != $adminPass2) {
+                        $addAdminMsg = "* Password entered must be the same!";
+                    }
+                    // Password is okay.
+                    else {
+                        $passChecking = true;
+                    }
+                }
+
+                // Try to insert new record.
+                if ($passChecking) {
+                    $query = "INSERT INTO Admins(adminName, adminPassword)
+                    VALUES
+                    ('$adminName', '$adminPass')
+                    ;";
+
+                    $rs = mysqli_query($serverConnect, $query);
                     
-                    // Continue checking.
-                    if ($passChecking) {
+                    if ($rs) {
+                        $addAdminMsg = "* New Admin has been successfully added!";
+                    }
+                    else {
                         $passChecking = false;
-                        // Check if password is provided and has at least 6 char.
-                        // Min 1 special character, 1 uppercase, 1 lowercase, 3 digit.
-                        if (
-                            empty($adminPass) ||
-                            strlen($adminPass) < 6 || strlen($adminPass) > 256 ||
-                            !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $adminPass)
-                        ) {
-                            $addAdminMsg = "* Enter a Password<br>(1 Special Char, 1 Upper, 1 Lower, 3 Digits;<br>6 - 256 Char; Space Ignored at Start & End)!";
+                        $addAdminMsg = "* ERROR: Failed to add new Admin!";
+                    }
+                }
+            }
+        }
+        // Edit Admin
+        else if ($manageMode == "edit-admin") {
+            $adminId = (isset($queryString['admin-id'])) ? testInput($queryString['admin-id']): "";
+            $adminName = "";
+            $newAdminName = (isset($_POST['new-admin-name'])) ? testInput($_POST['new-admin-name']): "";
+            $newAdminPass = (isset($_POST['new-admin-password'])) ? testInput($_POST['new-admin-password']): "";
+            $newAdminPass2 = (isset($_POST['new-admin-password2'])) ? testInput($_POST['new-admin-password2']): "";
+            $oldAdminPass = (isset($_POST['old-admin-password'])) ? testInput($_POST['old-admin-password']): "";
+
+            // Check admin id first to see if the admin can be edited.
+            if (!empty($adminId) && is_numeric($adminId)) {
+                $allowEditAdmin = true;
+            }
+
+            if ($allowEditAdmin) {
+                $allowEditAdmin = false;
+
+                $query = "SELECT id, adminName FROM Admins WHERE id=$adminId;";
+                $rs = mysqli_query($serverConnect, $query);
+
+                if ($rs) {
+                    if ($user = mysqli_fetch_assoc($rs)) {
+                        // Allow to edit.
+                        $allowEditAdmin = true;
+                        $adminName = (isset($user['adminName'])) ? testInput($user['adminName']): "";
+                    }
+                }
+
+                if ($adminId == "1" && $_SESSION["adminId"] != 1) {
+                    $allowEditAdmin = false;
+                }
+            }
+
+            if (!$allowEditAdmin) {
+                $editAdminMsg = "* You are not allowed to edit the selected Admin!";
+            }
+            // Check form.
+            else if (
+                $_SERVER["REQUEST_METHOD"] == "POST" &&
+                isset($queryString["check-form"]) && $queryString["check-form"] == "yes"
+            ) {
+                // Check if new admin name is provided.
+                if (
+                    empty($newAdminName) ||
+                    strlen($newAdminName) < 3 || strlen($newAdminName) > 128 ||
+                    !preg_match("/^[A-Za-z0-9]{1}[A-Za-z0-9]+(\s[A-Za-z0-9]{1}[A-Za-z0-9]+)*$/",$newAdminName)
+                ) {
+                    $editAdminMsg = "* Enter Admin Name<br>(3 - 128 Char; Alphabets & Digits;<br>Min 2 Char per Word; Allow 1 Space Between)!";
+                }
+                // Check if there is no change to admin name.
+                else if ($newAdminName == $adminName) {
+                    $passChecking = true;
+                }
+                // Check if new admin name is already used.
+                else {
+                    $query = "SELECT id,adminName FROM Admins WHERE adminName='$newAdminName';";
+                    $rs = mysqli_query($serverConnect, $query);
+
+                    $passChecking = true;
+
+                    if ($rs) {
+                        if ($user = mysqli_fetch_assoc($rs)) {
+                            if ($user["adminName"] == $newAdminName) {
+                                $editAdminMsg = "* Admin Name has already been used!";
+                                $passChecking = false;
+                            }
                         }
-                        // Check if password is reentered.
-                        else if (empty($adminPass2)) {
-                            $addAdminMsg = "* Reenter the Password!";
+                    }
+                }
+
+                // If logged in admin's id is 1, can edit other admins without their password.
+                // If edit own details, must enter password.
+                if ($passChecking && ($_SESSION["adminId"] != 1 || $adminId == "1")) {
+                    $passChecking = false;
+
+                    // Check if original password is provided.
+                    if (
+                        empty($oldAdminPass) ||
+                        strlen($oldAdminPass) < 6 || strlen($oldAdminPass) > 256 ||
+                        !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $oldAdminPass)
+                    ) {
+                        $editAdminMsg = "* Enter Old Password to Save Changes!";
+                    }
+                    // Check if original password is correct.
+                    else {
+                        $query = "SELECT adminPassword FROM Admins WHERE id=$adminId;";
+                        $rs = mysqli_query($serverConnect, $query);
+
+                        if ($rs) {
+                            if ($user = mysqli_fetch_assoc($rs)) {
+                                if ($user["adminPassword"] == $oldAdminPass) {
+                                    $passChecking = true;
+                                }
+                            }
+                        }
+                        
+                        if (!$passChecking) {
+                            $editAdminMsg = "* Invalid Old Password!";
+                        }
+                    }
+                }
+
+                // Check if new password is provided.
+                if ($passChecking) {
+                    // Both empty, no change to password.
+                    if (empty($newAdminPass) && empty($newAdminPass2)) {
+                        // Admin name has changed (update admin name only).
+                        if ($newAdminName != $adminName) {
+                            $query = "UPDATE Admins SET adminName='$newAdminName' WHERE id=$adminId;";
+
+                            $rs = mysqli_query($serverConnect, $query);
+
+                            if (!($rs)) {
+                                $passChecking = false;
+                                $editAdminMsg = "* ERROR: Failed to save changes!";
+                            }
+                            // Change admin name stored in session.
+                            else if ($_SESSION['adminId'] == "$adminId") {
+                                $_SESSION['adminName'] = $newAdminName;
+                            }
+                        }
+                    }
+                    else {
+                        $passChecking = false;
+                        // Check if new password is provided and has at least 6 char.
+                        if (
+                            empty($newAdminPass) ||
+                            strlen($newAdminPass) < 6 || strlen($newAdminPass) > 256 ||
+                            !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $newAdminPass)
+                        ) {
+                            $editAdminMsg = "* Invalid New Password<br>(1 Special Char, 1 Upper, 1 Lower, 3 Digits;<br>6 - 256 Char; Space Ignored at Start & End)!";
+                        }
+                        // Check if new password is reentered.
+                        else if (empty($newAdminPass2)) {
+                            $editAdminMsg = "* Reenter the New Password!";
                         }
                         // Check if reentered password is the same.
-                        else if ($adminPass != $adminPass2) {
-                            $addAdminMsg = "* Password entered must be the same!";
+                        else if ($newAdminPass != $newAdminPass2) {
+                            $editAdminMsg = "* New Password entered must be the same!";
                         }
                         // Password is okay.
                         else {
                             $passChecking = true;
-                        }
-                    }
+                            $query = "UPDATE Admins SET adminPassword='$newAdminPass' WHERE id=$adminId;";
 
-                    // Try to insert new record.
-                    if ($passChecking) {
-                        $query = "INSERT INTO Admins(adminName, adminPassword)
-                        VALUES
-                        ('$adminName', '$adminPass')
-                        ;";
-
-                        $rs = mysqli_query($serverConnect, $query);
-                        
-                        if ($rs) {
-                            $addAdminMsg = "* New Admin has been successfully added!";
-                        }
-                        else {
-                            $passChecking = false;
-                            $addAdminMsg = "* ERROR: Failed to add new Admin!";
-                        }
-                    }
-                }
-            }
-            // Edit Admin
-            else if ($_POST["manage-mode"] == "edit-admin") {
-                $manageMode = $_POST["manage-mode"];
-
-                $adminId = (isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "";
-                $adminName = (isset($_POST['admin-name'])) ? testInput($_POST['admin-name']): "";
-                $newAdminName = (isset($_POST['new-admin-name'])) ? testInput($_POST['new-admin-name']): "";
-                $newAdminPass = (isset($_POST['new-admin-password'])) ? testInput($_POST['new-admin-password']): "";
-                $newAdminPass2 = (isset($_POST['new-admin-password2'])) ? testInput($_POST['new-admin-password2']): "";
-                $oldAdminPass = (isset($_POST['old-admin-password'])) ? testInput($_POST['old-admin-password']): "";
-
-                
-                // Check admin id first to see if the admin can be edited.
-                if (!empty($adminId)) {
-                    $allowEditAdmin = true;
-                }
-
-                if ($allowEditAdmin) {
-                    $allowEditAdmin = false;
-
-                    $query = "SELECT id FROM Admins WHERE id=$adminId;";
-                    $rs = mysqli_query($serverConnect, $query);
-
-                    if ($rs) {
-                        if ($user = mysqli_fetch_assoc($rs)) {
-                            // Allow to edit.
-                            $allowEditAdmin = true;
-                        }
-                    }
-
-                    if ($adminId == "1" && $_SESSION["adminId"] != 1) {
-                        $allowEditAdmin = false;
-                    }
-                }
-
-                if (!$allowEditAdmin) {
-                    $editAdminMsg = "* You are not allowed to edit the selected Admin!";
-                }
-                // Check form.
-                else if (isset($_POST["check-form"]) && $_POST["check-form"] == "yes") {
-                    // Check if new admin name is provided.
-                    if (
-                        empty($newAdminName) ||
-                        strlen($newAdminName) < 3 || strlen($newAdminName) > 128 ||
-                        !preg_match("/^[A-Za-z0-9]{1}[A-Za-z0-9]+(\s[A-Za-z0-9]{1}[A-Za-z0-9]+)*$/",$newAdminName)
-                    ) {
-                        $editAdminMsg = "* Enter Admin Name<br>(3 - 128 Char; Alphabets & Digits;<br>Min 2 Char per Word; Allow 1 Space Between)!";
-                    }
-                    // Check if there is no change to admin name.
-                    else if ($newAdminName == $adminName) {
-                        $passChecking = true;
-                    }
-                    // Check if new admin name is already used.
-                    else {
-                        $query = "SELECT id,adminName FROM Admins WHERE adminName='$newAdminName';";
-                        $rs = mysqli_query($serverConnect, $query);
-
-                        $passChecking = true;
-
-                        if ($rs) {
-                            if ($user = mysqli_fetch_assoc($rs)) {
-                                if ($user["adminName"] == $newAdminName) {
-                                    $editAdminMsg = "* Admin Name has already been used!";
-                                    $passChecking = false;
-                                }
-                            }
-                        }
-                    }
-
-                    // If logged in admin's id is 1, can edit other admins without their password.
-                    // If edit own details, must enter password.
-                    if ($passChecking && ($_SESSION["adminId"] != 1 || $adminId == "1")) {
-                        $passChecking = false;
-
-                        // Check if original password is provided.
-                        if (
-                            empty($oldAdminPass) ||
-                            strlen($oldAdminPass) < 6 || strlen($oldAdminPass) > 256 ||
-                            !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $oldAdminPass)
-                        ) {
-                            $editAdminMsg = "* Enter Old Password to Save Changes!";
-                        }
-                        // Check if original password is correct.
-                        else {
-                            $query = "SELECT adminPassword FROM Admins WHERE id=$adminId;";
-                            $rs = mysqli_query($serverConnect, $query);
-
-                            if ($rs) {
-                                if ($user = mysqli_fetch_assoc($rs)) {
-                                    if ($user["adminPassword"] == $oldAdminPass) {
-                                        $passChecking = true;
-                                    }
-                                }
-                            }
-                            
-                            if (!$passChecking) {
-                                $editAdminMsg = "* Invalid Old Password!";
-                            }
-                        }
-                    }
-
-                    // Check if new password is provided.
-                    if ($passChecking) {
-                        // Both empty, no change to password.
-                        if (empty($newAdminPass) && empty($newAdminPass2)) {
-                            // Admin name has changed (update admin name only).
+                            // Admin name has changed.
                             if ($newAdminName != $adminName) {
-                                $query = "UPDATE Admins SET adminName='$newAdminName' WHERE id=$adminId;";
+                                $query = "UPDATE Admins SET adminPassword='$newAdminPass', adminName='$newAdminName' WHERE id=$adminId;";
+                            }
 
-                                $rs = mysqli_query($serverConnect, $query);
+                            $rs = mysqli_query($serverConnect, $query);
 
-                                if (!($rs)) {
-                                    $passChecking = false;
-                                    $editAdminMsg = "* ERROR: Failed to save changes!";
-                                }
-                                // Change admin name stored in session.
-                                else if ($_SESSION['adminId'] == "$adminId") {
-                                    $_SESSION['adminName'] = $newAdminName;
-                                }
+                            if (!($rs)) {
+                                $passChecking = false;
+                                $editAdminMsg = "* ERROR: Failed to save changes!";
+                            }
+                            // Change admin name stored in session.
+                            else if ($newAdminName != $adminName && $_SESSION['adminId'] == "$adminId") {
+                                $_SESSION['adminName'] = $newAdminName;
                             }
                         }
-                        else {
-                            $passChecking = false;
-                            // Check if new password is provided and has at least 6 char.
-                            if (
-                                empty($newAdminPass) ||
-                                strlen($newAdminPass) < 6 || strlen($newAdminPass) > 256 ||
-                                !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $newAdminPass)
-                            ) {
-                                $editAdminMsg = "* Invalid New Password<br>(1 Special Char, 1 Upper, 1 Lower, 3 Digits;<br>6 - 256 Char; Space Ignored at Start & End)!";
-                            }
-                            // Check if new password is reentered.
-                            else if (empty($newAdminPass2)) {
-                                $editAdminMsg = "* Reenter the New Password!";
-                            }
-                            // Check if reentered password is the same.
-                            else if ($newAdminPass != $newAdminPass2) {
-                                $editAdminMsg = "* New Password entered must be the same!";
-                            }
-                            // Password is okay.
-                            else {
-                                $passChecking = true;
-                                $query = "UPDATE Admins SET adminPassword='$newAdminPass' WHERE id=$adminId;";
+                    }
 
-                                // Admin name has changed.
-                                if ($newAdminName != $adminName) {
-                                    $query = "UPDATE Admins SET adminPassword='$newAdminPass', adminName='$newAdminName' WHERE id=$adminId;";
-                                }
-
-                                $rs = mysqli_query($serverConnect, $query);
-
-                                if (!($rs)) {
-                                    $passChecking = false;
-                                    $editAdminMsg = "* ERROR: Failed to save changes!";
-                                }
-                                // Change admin name stored in session.
-                                else if ($newAdminName != $adminName && $_SESSION['adminId'] == "$adminId") {
-                                    $_SESSION['adminName'] = $newAdminName;
-                                }
-                            }
-                        }
-
-                        if ($passChecking) {
-                            $editAdminMsg = "* Changes have been saved successfully!";
-                        }
+                    if ($passChecking) {
+                        $editAdminMsg = "* Changes have been saved successfully!";
                     }
                 }
             }
-            // Delete Admin
-            else if ($_POST["manage-mode"] == "delete-admin") {
-                $manageMode = $_POST["manage-mode"];
+        }
+        // Delete Admin
+        else if ($manageMode == "delete-admin") {
+            $adminId = (isset($queryString['admin-id'])) ? testInput($queryString['admin-id']): "";
+            $oldAdminPass = (isset($_POST['old-admin-password'])) ? testInput($_POST['old-admin-password']): "";
+            $currentAdminPass = (isset($_POST['current-admin-password'])) ? testInput($_POST['current-admin-password']): "";
 
-                $adminId = (isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "";
-                $oldAdminPass = (isset($_POST['old-admin-password'])) ? testInput($_POST['old-admin-password']): "";
-                $currentAdminPass = (isset($_POST['current-admin-password'])) ? testInput($_POST['current-admin-password']): "";
+            // Check if the admin is allowed to be deleted.
+            if (!empty($adminId) && is_numeric($adminId) && $adminId != "1") {
+                $query = "SELECT id FROM Admins WHERE id=$adminId;";
+                $rs = mysqli_query($serverConnect, $query);
 
-                // Check if the admin is allowed to be deleted.
-                if (!empty($adminId) && $adminId != "1") {
-                    $query = "SELECT id FROM Admins WHERE id=$adminId;";
-                    $rs = mysqli_query($serverConnect, $query);
-
-                    if ($rs) {
-                        if ($user = mysqli_fetch_assoc($rs)) {
-                            // Allow to delete.
-                            $allowDeleteAdmin = true;
-                        }
+                if ($rs) {
+                    if ($user = mysqli_fetch_assoc($rs)) {
+                        // Allow to delete.
+                        $allowDeleteAdmin = true;
                     }
                 }
+            }
 
-                if (!$allowDeleteAdmin) {
-                    $deleteAdminMsg = "* You are not allowed to delete the selected Admin!";
+            if (!$allowDeleteAdmin) {
+                $deleteAdminMsg = "* You are not allowed to delete the selected Admin!";
+            }
+            else if (
+                $_SERVER["REQUEST_METHOD"] == "POST" &&
+                isset($queryString["check-form"]) && $queryString["check-form"] == "yes"
+            ) {
+                $passChecking = true;
+
+                // Check if password of logged in admin is provided.
+                if (
+                    empty($currentAdminPass) ||
+                    strlen($currentAdminPass) < 6 || strlen($currentAdminPass) > 256 ||
+                    !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $currentAdminPass)
+                ) {
+                    $deleteAdminMsg = "* Enter Your Password to Confirm Delete!";
+                    $passChecking = false;
                 }
-                else if (isset($_POST["check-form"]) && $_POST["check-form"] == "yes") {
-                    $passChecking = true;
 
-                    // Check if password of logged in admin is provided.
+                // If logged in admin's id is not 1, cannot delete other admins without their password.
+                if ($passChecking && $_SESSION["adminId"] != 1) {
+                    $passChecking = false;
+
                     if (
-                        empty($currentAdminPass) ||
-                        strlen($currentAdminPass) < 6 || strlen($currentAdminPass) > 256 ||
-                        !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $currentAdminPass)
+                        empty($oldAdminPass) ||
+                        strlen($oldAdminPass) < 6 || strlen($oldAdminPass) > 256 ||
+                        !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $oldAdminPass)
                     ) {
-                        $deleteAdminMsg = "* Enter Your Password to Confirm Delete!";
-                        $passChecking = false;
+                        $deleteAdminMsg = "* Enter Admin ID $adminId Password to Confirm Delete!";
                     }
-
-                    // If logged in admin's id is not 1, cannot delete other admins without their password.
-                    if ($passChecking && $_SESSION["adminId"] != 1) {
-                        $passChecking = false;
-
-                        if (
-                            empty($oldAdminPass) ||
-                            strlen($oldAdminPass) < 6 || strlen($oldAdminPass) > 256 ||
-                            !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $oldAdminPass)
-                        ) {
-                            $deleteAdminMsg = "* Enter Admin ID $adminId Password to Confirm Delete!";
-                        }
-                        // Check password of admin to be deleted.
-                        else {
-                            $query = "SELECT adminPassword FROM Admins WHERE id=$adminId;";
-                            $rs = mysqli_query($serverConnect, $query);
-
-                            if ($rs) {
-                                if ($user = mysqli_fetch_assoc($rs)) {
-                                    if ($user["adminPassword"] == $oldAdminPass) {
-                                        $passChecking = true;
-                                    }
-                                }
-                            }
-
-                            if (!$passChecking) {
-                                $deleteAdminMsg = "* Invalid Password Entered!";
-                            }
-                        }
-                    }
-
-                    // Check password of logged in admin.
-                    if ($passChecking) {
-                        $passChecking = false;
-
-                        $query = "SELECT adminPassword FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+                    // Check password of admin to be deleted.
+                    else {
+                        $query = "SELECT adminPassword FROM Admins WHERE id=$adminId;";
                         $rs = mysqli_query($serverConnect, $query);
 
                         if ($rs) {
                             if ($user = mysqli_fetch_assoc($rs)) {
-                                if ($user["adminPassword"] == $currentAdminPass) {
+                                if ($user["adminPassword"] == $oldAdminPass) {
                                     $passChecking = true;
                                 }
                             }
@@ -380,27 +367,51 @@
                             $deleteAdminMsg = "* Invalid Password Entered!";
                         }
                     }
+                }
+
+                // Check password of logged in admin.
+                if ($passChecking) {
+                    $passChecking = false;
+
+                    $query = "SELECT adminPassword FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+                    $rs = mysqli_query($serverConnect, $query);
+
+                    if ($rs) {
+                        if ($user = mysqli_fetch_assoc($rs)) {
+                            if ($user["adminPassword"] == $currentAdminPass) {
+                                $passChecking = true;
+                            }
+                        }
+                    }
+
+                    if (!$passChecking) {
+                        $deleteAdminMsg = "* Invalid Password Entered!";
+                    }
+                }
+                
+                if ($passChecking) {
+                    $query = "DELETE FROM Admins WHERE id=$adminId;";
+                    $rs = mysqli_query($serverConnect, $query);
+
+                    if (!($rs)) {
+                        $passChecking = false;
+                        $deleteAdminMsg = "* ERROR: Failed to delete Admin ID $adminId!";
+                    }
+                    // If logged in admin is deleted.
+                    else if ($_SESSION['adminId'] == "$adminId") {
+                        header("Location: /admin/adminLogout.php");
+                        exit;
+                    }
                     
                     if ($passChecking) {
-                        $query = "DELETE FROM Admins WHERE id=$adminId;";
-                        $rs = mysqli_query($serverConnect, $query);
-
-                        if (!($rs)) {
-                            $passChecking = false;
-                            $deleteAdminMsg = "* ERROR: Failed to delete Admin ID $adminId!";
-                        }
-                        // If logged in admin is deleted.
-                        else if ($_SESSION['adminId'] == "$adminId") {
-                            header("Location: /admin/adminLogout.php");
-                            exit;
-                        }
-                        
-                        if ($passChecking) {
-                            $deleteAdminMsg = "* Admin ID $adminId has been deleted successfully!";
-                        }
+                        $deleteAdminMsg = "* Admin ID $adminId has been deleted successfully!";
                     }
                 }
             }
+        }
+        // Invalid Mode
+        else {
+            $manageMode = "";
         }
     }
 ?>
@@ -427,13 +438,16 @@
         <nav class="fixed_nav_bar">
             <ul>
                 <li>
-                    <a href="/admin/adminDashboard.php">Home</a>
+                    <a href="/admin/index.php">Home</a>
                 </li>
                 <li>
                     <a href="/admin/manageMember.php">Manage Member</a>
                 </li>
                 <li>
                     <a href="/admin/manageVehicle.php">Manage Vehicle</a>
+                </li>
+                <li>
+                    <a href="/admin/manageOrder.php">Manage Order</a>
                 </li>
                 <li>
                     <a href="/admin/manageTransaction.php">Manage Transaction</a>
@@ -471,17 +485,22 @@
                         <?php endif; ?>
 
                         <?php if (!$passChecking): ?>
-                            <form id='manage-add-form' method='post' action='/admin/manageAdmin.php'>
-                                <input type='hidden' name='manage-mode' value='add-admin'>
-                                <input type='hidden' name='check-form' value='yes'>
+                            <?php
+                                $newQueryString = array();
+                                $newQueryString['manage-mode'] = 'add-admin';
+                                $newQueryString['check-form'] = 'yes';
+                            ?>
 
+                            <form id='manage-add-form' method='post' action='/admin/manageAdmin.php?<?php
+                                echo(http_build_query($newQueryString));
+                            ?>'>
                                 <div>
                                     <label for='admin-name'>
                                         Admin Name:
                                     </label><br>
 
                                     <input id='admin-name' type='text' name='admin-name' placeholder='Admin Name (Min: 3 Char)' value='<?php
-                                        echo((isset($_POST['admin-name'])) ? testInput($_POST['admin-name']): '');
+                                        echo((isset($adminName)) ? testInput($adminName): '');
                                     ?>' minlength="3" maxlength="128" required>
                                 </div>
 
@@ -502,7 +521,7 @@
                                 </div>
                             </form>
 
-                            <form id='cancel-add-form' method='post' action='/admin/manageAdmin.php'></form>
+                            <form id='cancel-add-form' method='get' action='/admin/manageAdmin.php'></form>
                             
                             <div class='button-section'>
                                 <button form='manage-add-form' class='positive-button' type='submit'>
@@ -517,7 +536,7 @@
                     <!-- Edit Admin -->
                     <?php elseif ($manageMode == "edit-admin"): ?>
                         <h3>Edit <i>Admin ID <?php
-                            echo((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
+                            echo((isset($queryString['admin-id'])) ? testInput($queryString['admin-id']): "");
                         ?></i>:</h3>
 
                         <?php if (isset($editAdminMsg) && !empty($editAdminMsg)): ?>
@@ -533,27 +552,27 @@
                         <?php endif; ?>
                         
                         <?php if ($allowEditAdmin && !$passChecking): ?>
-                            <form id='manage-edit-form' method='post' action='/admin/manageAdmin.php'>
-                                <input type='hidden' name='manage-mode' value='edit-admin'>
-                                <input type='hidden' name='check-form' value='yes'>
-                                <input type='hidden' name='admin-id' value='<?php
-                                    echo((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
-                                ?>'>
-                                <input type='hidden' name='admin-name' value='<?php
-                                    echo((isset($_POST['admin-name'])) ? testInput($_POST['admin-name']): "");
-                                ?>'>
+                            <?php
+                                $newQueryString = array();
+                                $newQueryString['manage-mode'] = 'edit-admin';
+                                $newQueryString['check-form'] = 'yes';
+                                $newQueryString['admin-id'] = (isset($adminId)) ? $adminId: "";
+                            ?>
 
+                            <form id='manage-edit-form' method='post' action='/admin/manageAdmin.php?<?php
+                                echo(http_build_query($newQueryString));
+                            ?>'>
                                 <div>
                                     <label for='new-admin-name'>
                                         Admin Name:
                                     </label><br>
 
                                     <input id='new-admin-name' type='text' name='new-admin-name' placeholder='Admin Name (Min: 3 Char)' value='<?php
-                                        if (isset($_POST['new-admin-name']) && !empty($_POST['new-admin-name'])) {
-                                            echo(testInput($_POST['new-admin-name']));
+                                        if (isset($newAdminName) && !empty($newAdminName)) {
+                                            echo(testInput($newAdminName));
                                         }
-                                        else if (isset($_POST['admin-name']) && !empty($_POST['admin-name'])) {
-                                            echo(testInput($_POST['admin-name']));
+                                        else if (isset($adminName) && !empty($adminName)) {
+                                            echo(testInput($adminName));
                                         }
                                     ?>' minlength="3" maxlength="128" required>
                                 </div>
@@ -578,7 +597,7 @@
                                 <!-- If edit own details, must enter password. -->
                                 <?php if (
                                     $_SESSION["adminId"] != 1 ||
-                                    (isset($_POST['admin-id']) && testInput($_POST['admin-id']) == "1")
+                                    (isset($adminId) && testInput($adminId) == "1")
                                 ): ?>
                                     <div>
                                         <label for='old-admin-password'>
@@ -590,7 +609,7 @@
                                 <?php endif; ?>
                             </form>
 
-                            <form id='cancel-edit-form' method='post' action='/admin/manageAdmin.php'></form>
+                            <form id='cancel-edit-form' method='get' action='/admin/manageAdmin.php'></form>
 
                             <div class='button-section'>
                                 <button form='manage-edit-form' class='positive-button' type='submit'>
@@ -605,7 +624,7 @@
                     <!-- Delete Admin -->
                     <?php elseif ($manageMode == "delete-admin"): ?>
                         <h3>Delete <i>Admin ID <?php
-                            echo((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
+                            echo((isset($adminId)) ? testInput($adminId): "");
                         ?></i>:</h3>
 
                         <?php if (isset($deleteAdminMsg) && !empty($deleteAdminMsg)): ?>
@@ -621,19 +640,22 @@
                         <?php endif; ?>
 
                         <?php if ($allowDeleteAdmin && !$passChecking): ?>
-                            <form id='manage-delete-form' method='post' action='/admin/manageAdmin.php'>
-                                <input type='hidden' name='manage-mode' value='delete-admin'>
-                                <input type='hidden' name='check-form' value='yes'>
-                                <input type='hidden' name='admin-id' value='<?php
-                                    echo((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
-                                ?>'>
+                            <?php
+                                $newQueryString = array();
+                                $newQueryString['manage-mode'] = 'delete-admin';
+                                $newQueryString['check-form'] = 'yes';
+                                $newQueryString['admin-id'] = (isset($adminId)) ? $adminId: "";
+                            ?>
 
+                            <form id='manage-delete-form' method='post' action='/admin/manageAdmin.php?<?php
+                                echo(http_build_query($newQueryString));
+                            ?>'>
                                 <!-- If logged in admin's id is 1, can delete other admins without their password. -->
                                 <?php if ($_SESSION["adminId"] != 1): ?>
                                     <div>
                                         <label for='old-admin-password'>
                                             <i>Admin ID <?php
-                                                echo((isset($_POST['admin-id'])) ? testInput($_POST['admin-id']): "");
+                                                echo((isset($adminId)) ? testInput($adminId): "");
                                             ?></i> Password:
                                         </label><br>
 
@@ -650,7 +672,7 @@
                                 </div>
                             </form>
 
-                            <form id='cancel-delete-form' method='post' action='/admin/manageAdmin.php'></form>
+                            <form id='cancel-delete-form' method='get' action='/admin/manageAdmin.php'></form>
                             
                             <div class='button-section'>
                                 <button form='manage-delete-form' class='positive-button' type='submit'>
@@ -664,7 +686,7 @@
                         <?php endif; ?>
                     <?php endif; ?>
                 <?php endif; ?>
-                    
+                
                 <?php if (
                     (isset($manageMode) && empty($manageMode)) ||
                     $passChecking ||
@@ -750,7 +772,7 @@
                         <?php endif; ?>
                     </div>
 
-                    <form method='post' action='/admin/manageAdmin.php'>
+                    <form method='get' action='/admin/manageAdmin.php'>
                         <input type='hidden' name='manage-mode' value='add-admin'>
                         <button>
                             Add Admin
@@ -783,10 +805,10 @@
                         </thead>
                         <tbody>
                             <?php
-                                $query = "SELECT id, adminName, lastLogin FROM Admins ORDER BY lastLogin DESC;";
+                                $query = "SELECT id, adminName, lastLogin FROM Admins ORDER BY lastLogin DESC LIMIT 25;";
                                 
                                 if (isset($mainAdmin) && $mainAdmin) {
-                                    $query = "SELECT * FROM Admins ORDER BY lastLogin DESC;";
+                                    $query = "SELECT * FROM Admins ORDER BY lastLogin DESC LIMIT 25;";
                                 }
 
                                 $rs = mysqli_query($serverConnect, $query);
@@ -799,11 +821,11 @@
 
                                     <tr>
                                         <td class='center-text'>
-                                            <?php echo((isset($user["id"])) ? $user["id"]: ""); ?>
+                                            <?php echo((isset($user["id"])) ? $user["id"]: "-"); ?>
                                         </td>
 
                                         <td>
-                                            <?php echo((isset($user["adminName"])) ? $user["adminName"]: ""); ?>
+                                            <?php echo((isset($user["adminName"])) ? $user["adminName"]: "-"); ?>
                                         </td>
                                     
                                         <?php if (isset($mainAdmin) && $mainAdmin): ?>
@@ -813,30 +835,27 @@
                                                 </td>
                                             <?php else: ?>
                                                 <td>
-                                                    <?php echo((isset($user["adminPassword"])) ? $user["adminPassword"]: ""); ?>
+                                                    <?php echo((isset($user["adminPassword"])) ? $user["adminPassword"]: "-"); ?>
                                                 </td>
                                             <?php endif; ?>
                                         <?php endif; ?>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($user["lastLogin"])) ? $user["lastLogin"]: ""); ?>
+                                            <?php echo((isset($user["lastLogin"])) ? $user["lastLogin"]: "-"); ?>
                                         </td>
 
                                         <td>
-                                            <form method='post' action='/admin/manageAdmin.php'>
+                                            <form method='get' action='/admin/manageAdmin.php'>
                                                 <input type='hidden' name='manage-mode' value='edit-admin'>
                                                 <input type='hidden' name='admin-id' value='<?php
                                                     echo((isset($user["id"])) ? $user["id"]: "");
-                                                ?>'>
-                                                <input type='hidden' name='admin-name' value='<?php
-                                                    echo((isset($user["adminName"])) ? $user["adminName"]: "");
                                                 ?>'>
 
                                                 <button class='positive-button'>Edit</button>
                                             </form>
                                         </td>
                                         <td>
-                                            <form method='post' action='/admin/manageAdmin.php'>
+                                            <form method='get' action='/admin/manageAdmin.php'>
                                                 <input type='hidden' name='manage-mode' value='delete-admin'>
                                                 <input type='hidden' name='admin-id' value='<?php
                                                     echo((isset($user["id"])) ? $user["id"]: "");
@@ -863,11 +882,11 @@
                                 <?php else: ?>
                                     <?php if (isset($mainAdmin) && $mainAdmin): ?>
                                         <td colspan='6'>
-                                            Total Displayed: <?php echo($recordCount); ?>
+                                            Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Login Date]
                                         </td>
                                     <?php else: ?>
                                         <td colspan='5'>
-                                            Total Displayed: <?php echo($recordCount); ?>
+                                            Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Login Date]
                                         </td>
                                     <?php endif; ?>
                                 <?php endif; ?>

@@ -34,7 +34,13 @@
         return $data;
     }
 
-    $manageMode = "";
+    $queryString = array();
+
+    if (isset($_SERVER['QUERY_STRING'])) {
+        parse_str($_SERVER['QUERY_STRING'], $queryString);
+    }
+
+    $manageMode = (isset($queryString['manage-mode'])) ? $queryString['manage-mode']: "";
     $passChecking = false;
 
     $wordToSearch = "";
@@ -50,234 +56,18 @@
     $deleteCarMsg = "";
     $allowDeleteCar = false;
     
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_POST["manage-mode"])) {
-            // Search Car
-            if ($_POST["manage-mode"] == "search-car") {
-                $manageMode = $_POST["manage-mode"];
-                $wordToSearch = (isset($_POST['word-to-search'])) ? testInput($_POST['word-to-search']): "";
-            }
-            // Add Car
-            else if ($_POST["manage-mode"] == "add-car") {
-                $manageMode = $_POST["manage-mode"];
-
-                // Check form.
-                if (isset($_POST["check-form"]) && $_POST["check-form"] == "yes") {
-                    $carBrand = (isset($_POST['car-brand'])) ? testInput($_POST['car-brand']): "";
-                    $carModel = (isset($_POST['car-model'])) ? testInput($_POST['car-model']): "";
-                    $monthPrice = (isset($_POST['month-price'])) ? testInput($_POST['month-price']): "";
-                    $leaseTime = (isset($_POST['lease-time'])) ? testInput($_POST['lease-time']): "";
-                    $initialPay = (isset($_POST['initial-pay'])) ? testInput($_POST['initial-pay']): "";
-                    $carDesc = (isset($_POST['car-desc'])) ? testInput($_POST['car-desc']): "";
-                    
-                    // Refer common car brands only: https://www.carlogos.org/car-brands-a-z/
-                    // Check if car brand is provided. All letters, start word with 1 uppercase, 1 space / dash between.
-                    if (
-                        empty($carBrand) ||
-                        strlen($carBrand) < 3 || strlen($carBrand) > 100 ||
-                        !preg_match("/^[A-Z]{1}[A-Za-z]*([-\s]{1}[A-Z]{1}[A-Za-z]*)*$/",$carBrand)
-                    ) {
-                        $addCarMsg = "* Enter Car Brand<br>(Min: 3 Char; Alphabets Only; 1 Space/Dash Between;<br>Start Word with 1 Upper)!";
-                    }
-                    // Check if car model is provided. Letters or digits, 1 space / dash between.
-                    else if (
-                        empty($carModel) ||
-                        strlen($carModel) < 2 || strlen($carModel) > 100 ||
-                        !preg_match("/^[A-Za-z0-9]{1}[A-Za-z0-9]*([-\s]{1}[A-Za-z0-9]{1}[A-Za-z0-9]*)*$/",$carModel)
-                    ) {
-                        $addCarMsg = "* Enter Car Model<br>(Min: 2 Char; Alphabets & Digits; 1 Space/Dash Between)!";
-                    }
-                    // Check if month price is provided.
-                    else if (empty($monthPrice) || is_nan($monthPrice) || $monthPrice < 100 || $monthPrice > 1000) {
-                        $addCarMsg = "* Enter Price Per Month (Min: 100; Max: 1000)!";
-                    }
-                    // Check if lease time is provided.
-                    else if (empty($leaseTime) || is_nan($leaseTime) || $leaseTime < 6 || $leaseTime > 60) {
-                        $addCarMsg = "* Enter Lease Time (Min: 6; Max: 60; Months)!";
-                    }
-                    // Check if initial pay is provided.
-                    else if (empty($initialPay) || is_nan($initialPay) || $initialPay < 3 || $initialPay > 10) {
-                        $addCarMsg = "* Enter Initial Pay (Min: 3; Max: 10; * Price)!";
-                    }
-                    // Check if car description is provided.
-                    else if (empty($carDesc) || strlen($carDesc) < 5 || strlen($carDesc) > 512) {
-                        $addCarMsg = "* Enter Car Description (Min: 5 Char)!";
-                    }
-                    // Check if car model (same brand) is already added before.
-                    else {
-                        $query = "SELECT Brands.brandName, Cars.carModel FROM Cars INNER JOIN Brands ON Cars.brandId = Brands.id WHERE carModel='$carModel';";
-                        $rs = mysqli_query($serverConnect, $query);
-
-                        $passChecking = true;
-                        if ($rs) {
-                            if ($car = mysqli_fetch_assoc($rs)) {
-                                if ($car["brandName"] == $carBrand && $car["carModel"] == $carModel) {
-                                    $addCarMsg = "* Car Model is already added before!";
-                                    $passChecking = false;
-                                }
-                            }
-                        }
-                    }
-
-                    $currentDate = date("Y-m-d H:i:s");
-                    $carImageName = $targetImagePath = "";
-
-                    // Continue checking.
-                    if ($passChecking) {
-                        $passChecking = false;
-
-                        // Only allow PNG or JPG.
-                        $allowImageType = array('png', 'jpeg', 'jpg');
-                        $carImageName = (isset($_FILES['car-image']['name'])) ? testInput($_FILES['car-image']['name']): "";
-                        $carImageName = str_replace(" ", "_", $carImageName);
-
-                        // Get image type.
-                        $imageFileType = (!empty($carImageName)) ? pathinfo($carImageName, PATHINFO_EXTENSION): "";
-                        
-                        // Target path to store image.
-                        $targetImagePath = "/img/car/";
-                        $targetImagePath .= str_replace(" ", "_", strtolower($carBrand)) . "_";
-
-                        $targetImagePath .= str_replace(" ", "_", strtolower($carModel)) . "_";
-                        // $targetImagePath .= str_replace(" ", "_", strtolower($carModel));
-
-                        $targetImagePath .= strtotime($currentDate) . "/";
-                        // $targetImagePath .= "/";
-
-                        // Check if car image is provided (actual max is 2 MiB).
-                        if (
-                            !isset($_FILES['car-image']) ||
-                            $_FILES['car-image']['size'] < 1 || $_FILES['car-image']['size'] > 2097152 ||
-                            !in_array($imageFileType, $allowImageType)
-                        ) {
-                            $addCarMsg = "* Upload a Car Image (Max: 2 MB; Only PNG or JPG)!";
-                        }
-                        // Try to create folder and upload image.
-                        else {
-                            // Try to create folder if not exist, remember to add root path.
-                            if (!is_dir($_SERVER['DOCUMENT_ROOT'] . $targetImagePath)) {
-                                mkdir($_SERVER['DOCUMENT_ROOT'] . $targetImagePath, 0777, true);
-                            }
-
-                            // Try to store the image, check if file already exists first.
-                            if (
-                                file_exists($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName) ||
-                                !move_uploaded_file($_FILES["car-image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName)
-                            ) {
-                                $addCarMsg = "* ERROR: Failed to upload Car Image! Possibly Image already exists!";
-                            }
-                            else {
-                                $passChecking = true;
-                            }
-                        }
-                    }
-
-                    // Try to insert new record.
-                    if ($passChecking) {
-                        $passChecking = false;
-
-                        $brandId = "";
-
-                        // Check if car brand already exists or not.
-                        $query = "SELECT Brands.id, Brands.brandName FROM Brands WHERE Brands.brandName = '$carBrand';";
-                        $rs = mysqli_query($serverConnect, $query);
-
-                        if ($rs) {
-                            if ($car = mysqli_fetch_assoc($rs)) {
-                                if ($car["brandName"] == $carBrand) {
-                                    // Car brand is added before.
-                                    $brandId = $car['id'];
-                                    $passChecking = true;
-                                }
-                            }
-                        }
-
-                        // Car brand is not added before.
-                        if (!$passChecking || empty($brandId)) {
-                            $passChecking = false;
-
-                            $query = "INSERT INTO Brands(brandName) VALUES ('$carBrand');";
-
-                            $rs = mysqli_query($serverConnect, $query);
-                            
-                            if ($rs) {
-                                // Get the newly added brand id.
-                                $query = "SELECT Brands.id FROM Brands WHERE Brands.brandName = '$carBrand';";
-                                $rs = mysqli_query($serverConnect, $query);
-        
-                                if ($rs) {
-                                    if ($car = mysqli_fetch_assoc($rs)) {
-                                        $brandId = $car['id'];
-                                        $passChecking = true;
-                                    }
-                                }
-
-                                if (!$passChecking || empty($brandId)) {
-                                    $addCarMsg = "* ERROR: Failed to get Brand ID!";
-                                    $passChecking = false;
-                                }
-                            }
-                            else {
-                                $addCarMsg = "* ERROR: Failed to add new Car Brand!";
-                            }
-                        }
-
-                        // Try to insert new record.
-                        if ($passChecking && !empty($brandId)) {
-                            $query = "INSERT INTO Cars(brandId, carModel, monthPrice, leaseTime, initialPay, carDesc, carImage, imagePath, dateAdded)
-                            VALUES
-                            ('$brandId', '$carModel', '$monthPrice', '$leaseTime', '$initialPay', '$carDesc', '$carImageName', '$targetImagePath', '$currentDate')
-                            ;";
-
-                            $rs = mysqli_query($serverConnect, $query);
-                            
-                            if ($rs) {
-                                $addCarMsg = "* New Car has been successfully added!";
-                            }
-                            else {
-                                $passChecking = false;
-                                $addCarMsg = "* ERROR: Failed to add new Car!";
-                            }
-                        }
-
-                        if (!$passChecking) {
-                            // Better to manually delete the folder as this is too dangerous!
-                            // Delete the image only.
-                            if (file_exists($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName)) {
-                                unlink($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName);
-                            }
-                        }
-                    }
-                }
-            }
-            // View Car
-            else if ($_POST["manage-mode"] == "view-car") {
-                $manageMode = $_POST["manage-mode"];
-
-                $carId = (isset($_POST['car-id'])) ? testInput($_POST['car-id']): "";
-                
-                // Check if the car is allowed to be viewed.
-                if (!empty($carId)) {
-                    $query = "SELECT id FROM Cars WHERE id=$carId;";
-                    $rs = mysqli_query($serverConnect, $query);
-
-                    if ($rs) {
-                        if ($car = mysqli_fetch_assoc($rs)) {
-                            // Allow to view.
-                            $allowViewCar = true;
-                        }
-                    }
-                }
-
-                if (!$allowViewCar) {
-                    $viewCarMsg = "* You are not allowed to view the selected Car!";
-                }
-            }
-            // Edit Car
-            else if ($_POST["manage-mode"] == "edit-car") {
-                $manageMode = $_POST["manage-mode"];
-
-                $carId = (isset($_POST['car-id'])) ? testInput($_POST['car-id']): "";
+    if (!empty($manageMode)) {
+        // Search Car
+        if ($manageMode == "search-car") {
+            $wordToSearch = (isset($queryString['word-to-search'])) ? testInput($queryString['word-to-search']): "";
+        }
+        // Add Car
+        else if ($manageMode == "add-car") {
+            // Check form.
+            if (
+                $_SERVER["REQUEST_METHOD"] == "POST" &&
+                isset($queryString["check-form"]) && $queryString["check-form"] == "yes"
+            ) {
                 $carBrand = (isset($_POST['car-brand'])) ? testInput($_POST['car-brand']): "";
                 $carModel = (isset($_POST['car-model'])) ? testInput($_POST['car-model']): "";
                 $monthPrice = (isset($_POST['month-price'])) ? testInput($_POST['month-price']): "";
@@ -285,229 +75,471 @@
                 $initialPay = (isset($_POST['initial-pay'])) ? testInput($_POST['initial-pay']): "";
                 $carDesc = (isset($_POST['car-desc'])) ? testInput($_POST['car-desc']): "";
                 
-                // Check if the car is allowed to be edited.
-                if (!empty($carId) && !empty($carBrand) && !empty($carModel)) {
-                    $query = "SELECT Brands.brandName, Cars.carModel FROM Cars INNER JOIN Brands ON Cars.brandId = Brands.id WHERE Cars.id=$carId;";
+                // Refer common car brands only: https://www.carlogos.org/car-brands-a-z/
+                // Check if car brand is provided. All letters, start word with 1 uppercase, 1 space / dash between.
+                if (
+                    empty($carBrand) ||
+                    strlen($carBrand) < 3 || strlen($carBrand) > 100 ||
+                    !preg_match("/^[A-Z]{1}[A-Za-z]*([-\s]{1}[A-Z]{1}[A-Za-z]*)*$/",$carBrand)
+                ) {
+                    $addCarMsg = "* Enter Car Brand<br>(Min: 3 Char; Alphabets Only; 1 Space/Dash Between;<br>Start Word with 1 Upper)!";
+                }
+                // Check if car model is provided. Letters or digits, 1 space / dash between.
+                else if (
+                    empty($carModel) ||
+                    strlen($carModel) < 2 || strlen($carModel) > 100 ||
+                    !preg_match("/^[A-Za-z0-9]{1}[A-Za-z0-9]*([-\s]{1}[A-Za-z0-9]{1}[A-Za-z0-9]*)*$/",$carModel)
+                ) {
+                    $addCarMsg = "* Enter Car Model<br>(Min: 2 Char; Alphabets & Digits; 1 Space/Dash Between)!";
+                }
+                // Check if month price is provided.
+                else if (empty($monthPrice) || !is_numeric($monthPrice) || $monthPrice < 100 || $monthPrice > 1000) {
+                    $addCarMsg = "* Enter Price Per Month (Min: 100; Max: 1000)!";
+                }
+                // Check if lease time is provided.
+                else if (empty($leaseTime) || !is_numeric($leaseTime) || $leaseTime < 6 || $leaseTime > 60) {
+                    $addCarMsg = "* Enter Lease Time (Min: 6; Max: 60; Months)!";
+                }
+                // Check if initial pay is provided.
+                else if (empty($initialPay) || !is_numeric($initialPay) || $initialPay < 3 || $initialPay > 10) {
+                    $addCarMsg = "* Enter Initial Pay (Min: 3; Max: 10; * Price)!";
+                }
+                // Check if car description is provided.
+                else if (empty($carDesc) || strlen($carDesc) < 5 || strlen($carDesc) > 512) {
+                    $addCarMsg = "* Enter Car Description (Min: 5 Char)!";
+                }
+                // Check if car model (same brand) is already added before.
+                else {
+                    $query = "SELECT Brands.brandName, Cars.carModel FROM Cars INNER JOIN Brands ON Cars.brandId = Brands.id WHERE carModel='$carModel';";
                     $rs = mysqli_query($serverConnect, $query);
 
+                    $passChecking = true;
                     if ($rs) {
                         if ($car = mysqli_fetch_assoc($rs)) {
-                            if ($car['brandName'] == $carBrand && $car['carModel'] == $carModel) {
-                                // Allow to edit.
-                                $allowEditCar = true;
+                            if ($car["brandName"] == $carBrand && $car["carModel"] == $carModel) {
+                                $addCarMsg = "* Car Model is already added before!";
+                                $passChecking = false;
                             }
                         }
                     }
                 }
 
-                if (!$allowEditCar) {
-                    $editCarMsg = "* You are not allowed to edit the selected Car!";
-                }
-                else if (isset($_POST["check-form"]) && $_POST["check-form"] == "yes") {
-                    // Check if month price is provided.
-                    if (empty($monthPrice) || is_nan($monthPrice) || $monthPrice < 100 || $monthPrice > 1000) {
-                        $editCarMsg = "* Enter Price Per Month (Min: 100; Max: 1000)!";
-                    }
-                    // Check if lease time is provided.
-                    else if (empty($leaseTime) || is_nan($leaseTime) || $leaseTime < 6 || $leaseTime > 60) {
-                        $editCarMsg = "* Enter Lease Time (Min: 6; Max: 60; Months)!";
-                    }
-                    // Check if initial pay is provided.
-                    else if (empty($initialPay) || is_nan($initialPay) || $initialPay < 3 || $initialPay > 10) {
-                        $editCarMsg = "* Enter Initial Pay (Min: 3; Max: 10; * Price)!";
-                    }
-                    // Check if car description is provided.
-                    else if (empty($carDesc) || strlen($carDesc) < 5 || strlen($carDesc) > 512) {
-                        $editCarMsg = "* Enter Car Description (Min: 5 Char)!";
-                    }
-                    else {
-                        $passChecking = true;
-                    }
+                $currentDate = date("Y-m-d H:i:s");
+                $carImageName = $targetImagePath = "";
+
+                // Continue checking.
+                if ($passChecking) {
+                    $passChecking = false;
+
+                    // Only allow PNG or JPG.
+                    $allowImageType = array('png', 'jpeg', 'jpg');
+                    $carImageName = (isset($_FILES['car-image']['name'])) ? testInput($_FILES['car-image']['name']): "";
+                    $carImageName = str_replace(" ", "_", $carImageName);
+
+                    // Get image type.
+                    $imageFileType = (!empty($carImageName)) ? pathinfo($carImageName, PATHINFO_EXTENSION): "";
                     
-                    $newCarImage = false;
-                    $currentDate = date("Y-m-d H:i:s");
-                    $carImageName = $oldCarImage = $targetImagePath = "";
+                    // Target path to store image.
+                    $targetImagePath = "/img/car/";
+                    $targetImagePath .= str_replace(" ", "_", strtolower($carBrand)) . "_";
 
-                    // Continue checking.
-                    if ($passChecking) {
-                        $passChecking = false;
+                    $targetImagePath .= str_replace(" ", "_", strtolower($carModel)) . "_";
+                    // $targetImagePath .= str_replace(" ", "_", strtolower($carModel));
 
-                        // Only allow PNG or JPG.
-                        $allowImageType = array('png', 'jpeg', 'jpg');
-                        $carImageName = (isset($_FILES['car-image']['name'])) ? testInput($_FILES['car-image']['name']): "";
-                        $carImageName = str_replace(" ", "_", $carImageName);
+                    $targetImagePath .= strtotime($currentDate) . "/";
+                    // $targetImagePath .= "/";
 
-                        // Get image type.
-                        $imageFileType = (!empty($carImageName)) ? pathinfo($carImageName, PATHINFO_EXTENSION): "";
+                    // Check if car image is provided (actual max is 2 MiB).
+                    if (
+                        !isset($_FILES['car-image']) ||
+                        $_FILES['car-image']['size'] < 1 || $_FILES['car-image']['size'] > 2097152 ||
+                        !in_array($imageFileType, $allowImageType)
+                    ) {
+                        $addCarMsg = "* Upload a Car Image (Max: 2 MB; Only PNG or JPG)!";
+                    }
+                    // Try to create folder and upload image.
+                    else {
+                        // Try to create folder if not exist, remember to add root path.
+                        if (!is_dir($_SERVER['DOCUMENT_ROOT'] . $targetImagePath)) {
+                            mkdir($_SERVER['DOCUMENT_ROOT'] . $targetImagePath, 0777, true);
+                        }
 
-                        // No new image is provided.
-                        if (!isset($_FILES['car-image']) || empty($carImageName)) {
+                        // Try to store the image, check if file already exists first.
+                        if (
+                            file_exists($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName) ||
+                            !move_uploaded_file($_FILES["car-image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName)
+                        ) {
+                            $addCarMsg = "* ERROR: Failed to upload Car Image! Possibly Image already exists!";
+                        }
+                        else {
                             $passChecking = true;
                         }
-                        // Check if new image is valid (actual max is 2 MiB).
-                        else if (
-                            $_FILES['car-image']['size'] < 1 || $_FILES['car-image']['size'] > 2097152 ||
-                            !in_array($imageFileType, $allowImageType)
-                        ) {
-                            $editCarMsg = "* Upload a Car Image (Max: 2 MB; Only PNG or JPG)!";
-                        }
-                        // Check if the image already exists (file with same name detected).
-                        else {
-                            $query = "SELECT Cars.carImage, Cars.imagePath FROM Cars WHERE Cars.id=$carId;";
-                            $rs = mysqli_query($serverConnect, $query);
-
-                            if ($rs) {
-                                if ($car = mysqli_fetch_assoc($rs)) {
-                                    $oldCarImage = ((isset($car['carImage'])) ? $car['carImage']: "");
-                                    $targetImagePath = ((isset($car['imagePath'])) ? $car['imagePath']: "");
-                                }
-                            }
-
-                            // Folder not found.
-                            if (empty($targetImagePath) || !is_dir($_SERVER['DOCUMENT_ROOT'] . $targetImagePath)) {
-                                $editCarMsg = "* ERROR: Image Folder not found!";
-                            }
-                            // Image already exists.
-                            else if (file_exists($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName)) {
-                                $editCarMsg = "* Car Image already exists, try image with different name!";
-                            }
-                            else {
-                                $passChecking = true;
-                                $newCarImage = true;
-                            }
-                        }
-                    }
-
-                    // Try to update record (upload new image first if provided).
-                    if ($passChecking) {
-                        $query = "UPDATE Cars SET Cars.monthPrice='$monthPrice', Cars.leaseTime='$leaseTime', Cars.initialPay='$initialPay', Cars.carDesc='$carDesc', Cars.dateEdited='$currentDate' WHERE Cars.id=$carId;";
-
-                        // Check if new image is provided.
-                        if ($newCarImage) {
-                            $passChecking = false;
-                            
-                            // Delete old image.
-                            if (file_exists($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $oldCarImage)) {
-                                unlink($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $oldCarImage);
-                            }
-
-                            // Upload new image.
-                            if (!move_uploaded_file($_FILES["car-image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName)) {
-                                $editCarMsg = "* ERROR: Failed to upload new Car Image!";
-                            }
-                            else {
-                                $query = "UPDATE Cars SET Cars.monthPrice='$monthPrice', Cars.leaseTime='$leaseTime', Cars.initialPay='$initialPay', Cars.carDesc='$carDesc', Cars.dateEdited='$currentDate', Cars.carImage='$carImageName' WHERE Cars.id=$carId;";
-
-                                $passChecking = true;
-                            }
-                        }
-
-                        if ($passChecking) {
-                            $rs = mysqli_query($serverConnect, $query);
-                            
-                            if ($rs) {
-                                $editCarMsg = "* Changes have been saved successfully!";
-                            }
-                            else {
-                                $passChecking = false;
-                                $editCarMsg = "* ERROR: Failed to save changes!";
-                            }
-                        }
                     }
                 }
-            }
-            // Delete Car
-            else if ($_POST["manage-mode"] == "delete-car") {
-                $manageMode = $_POST["manage-mode"];
 
-                $carId = (isset($_POST['car-id'])) ? testInput($_POST['car-id']): "";
-                $currentAdminPass = (isset($_POST['current-admin-password'])) ? testInput($_POST['current-admin-password']): "";
+                // Try to insert new record.
+                if ($passChecking) {
+                    $passChecking = false;
 
-                // Check if the car is allowed to be deleted.
-                if (!empty($carId)) {
-                    $query = "SELECT id FROM Cars WHERE id=$carId;";
+                    $brandId = "";
+
+                    // Check if car brand already exists or not.
+                    $query = "SELECT Brands.id, Brands.brandName FROM Brands WHERE Brands.brandName = '$carBrand';";
                     $rs = mysqli_query($serverConnect, $query);
 
                     if ($rs) {
                         if ($car = mysqli_fetch_assoc($rs)) {
-                            // Allow to delete.
-                            $allowDeleteCar = true;
+                            if ($car["brandName"] == $carBrand) {
+                                // Car brand is added before.
+                                $brandId = $car['id'];
+                                $passChecking = true;
+                            }
                         }
                     }
-                }
 
-                if (!$allowDeleteCar) {
-                    $deleteCarMsg = "* You are not allowed to delete the selected Car!";
-                }
-                else if (isset($_POST["check-form"]) && $_POST["check-form"] == "yes") {
-                    $passChecking = true;
-
-                    // Check if password of logged in admin is provided.
-                    if (
-                        empty($currentAdminPass) ||
-                        strlen($currentAdminPass) < 6 || strlen($currentAdminPass) > 256 ||
-                        !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $currentAdminPass)
-                    ) {
-                        $deleteCarMsg = "* Enter Your Password to Confirm Delete!";
-                        $passChecking = false;
-                    }
-
-                    // Check password of logged in admin.
-                    if ($passChecking) {
+                    // Car brand is not added before.
+                    if (!$passChecking || empty($brandId)) {
                         $passChecking = false;
 
-                        $query = "SELECT adminPassword FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+                        $query = "INSERT INTO Brands(brandName) VALUES ('$carBrand');";
+
                         $rs = mysqli_query($serverConnect, $query);
-
+                        
                         if ($rs) {
-                            if ($user = mysqli_fetch_assoc($rs)) {
-                                if ($user["adminPassword"] == $currentAdminPass) {
+                            // Get the newly added brand id.
+                            $query = "SELECT Brands.id FROM Brands WHERE Brands.brandName = '$carBrand';";
+                            $rs = mysqli_query($serverConnect, $query);
+    
+                            if ($rs) {
+                                if ($car = mysqli_fetch_assoc($rs)) {
+                                    $brandId = $car['id'];
                                     $passChecking = true;
                                 }
                             }
-                        }
 
-                        if (!$passChecking) {
-                            $deleteCarMsg = "* Invalid Password Entered!";
+                            if (!$passChecking || empty($brandId)) {
+                                $addCarMsg = "* ERROR: Failed to get Brand ID!";
+                                $passChecking = false;
+                            }
+                        }
+                        else {
+                            $addCarMsg = "* ERROR: Failed to add new Car Brand!";
                         }
                     }
-                    
-                    if ($passChecking) {
-                        // Get the image folder path to delete the image in it.
-                        $imagePathDel = "";
-                        $imageToDel = "";
-                        $query = "SELECT imagePath, carImage FROM Cars WHERE id=$carId;";
+
+                    // Try to insert new record.
+                    if ($passChecking && !empty($brandId)) {
+                        $query = "INSERT INTO Cars(brandId, carModel, monthPrice, leaseTime, initialPay, carDesc, carImage, imagePath, dateAdded)
+                        VALUES
+                        ('$brandId', '$carModel', '$monthPrice', '$leaseTime', '$initialPay', '$carDesc', '$carImageName', '$targetImagePath', '$currentDate')
+                        ;";
+
                         $rs = mysqli_query($serverConnect, $query);
-    
+                        
+                        if ($rs) {
+                            $addCarMsg = "* New Car has been successfully added!";
+                        }
+                        else {
+                            $passChecking = false;
+                            $addCarMsg = "* ERROR: Failed to add new Car!";
+                        }
+                    }
+
+                    if (!$passChecking) {
+                        // Better to manually delete the folder as this is too dangerous!
+                        // Delete the image only.
+                        if (file_exists($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName)) {
+                            unlink($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName);
+                        }
+                    }
+                }
+            }
+        }
+        // View Car
+        else if ($manageMode == "view-car") {
+            $carId = (isset($queryString['car-id'])) ? testInput($queryString['car-id']): "";
+            
+            // Check if the car is allowed to be viewed.
+            if (!empty($carId) && is_numeric($carId)) {
+                $query = "SELECT id FROM Cars WHERE id=$carId;";
+                $rs = mysqli_query($serverConnect, $query);
+
+                if ($rs) {
+                    if ($car = mysqli_fetch_assoc($rs)) {
+                        // Allow to view.
+                        $allowViewCar = true;
+                    }
+                }
+            }
+
+            if (!$allowViewCar) {
+                $viewCarMsg = "* You are not allowed to view the selected Car!";
+            }
+        }
+        // Edit Car
+        else if ($manageMode == "edit-car") {
+            $carId = (isset($queryString['car-id'])) ? testInput($queryString['car-id']): "";
+            $carBrand = $carModel = $oldMonthPrice = $oldLeaseTime = $oldInitialPay = $oldCarDesc = "";
+
+            $monthPrice = (isset($_POST['month-price'])) ? testInput($_POST['month-price']): "";
+            $leaseTime = (isset($_POST['lease-time'])) ? testInput($_POST['lease-time']): "";
+            $initialPay = (isset($_POST['initial-pay'])) ? testInput($_POST['initial-pay']): "";
+            $carDesc = (isset($_POST['car-desc'])) ? testInput($_POST['car-desc']): "";
+            
+            // Check if the car is allowed to be edited.
+            if (!empty($carId) && is_numeric($carId)) {
+                $query = "SELECT Brands.brandName, Cars.carModel, Cars.monthPrice, Cars.leaseTime, Cars.initialPay, Cars.carDesc FROM Cars INNER JOIN Brands ON Cars.brandId = Brands.id WHERE Cars.id=$carId;";
+                $rs = mysqli_query($serverConnect, $query);
+
+                if ($rs) {
+                    if ($car = mysqli_fetch_assoc($rs)) {
+                        if (isset($car['brandName']) && !empty($car['brandName']) && isset($car['carModel']) && !empty($car['carModel'])) {
+                            // Allow to edit.
+                            $allowEditCar = true;
+                            $carBrand = testInput($car['brandName']);
+                            $carModel = testInput($car['carModel']);
+
+                            $oldMonthPrice = (isset($car['monthPrice'])) ? testInput($car['monthPrice']): "";
+                            
+                            $oldLeaseTime = (isset($car['leaseTime'])) ? testInput($car['leaseTime']): "";
+                            
+                            $oldInitialPay = (isset($car['initialPay'])) ? testInput($car['initialPay']): "";
+                            
+                            $oldCarDesc = (isset($car['carDesc'])) ? testInput($car['carDesc']): "";
+                        }
+                    }
+                }
+            }
+
+            if (!$allowEditCar) {
+                $editCarMsg = "* You are not allowed to edit the selected Car!";
+            }
+            else if (
+                $_SERVER["REQUEST_METHOD"] == "POST" &&
+                isset($queryString["check-form"]) && $queryString["check-form"] == "yes"
+            ) {
+                // Check if month price is provided.
+                if (empty($monthPrice) || !is_numeric($monthPrice) || $monthPrice < 100 || $monthPrice > 1000) {
+                    $editCarMsg = "* Enter Price Per Month (Min: 100; Max: 1000)!";
+                }
+                // Check if lease time is provided.
+                else if (empty($leaseTime) || !is_numeric($leaseTime) || $leaseTime < 6 || $leaseTime > 60) {
+                    $editCarMsg = "* Enter Lease Time (Min: 6; Max: 60; Months)!";
+                }
+                // Check if initial pay is provided.
+                else if (empty($initialPay) || !is_numeric($initialPay) || $initialPay < 3 || $initialPay > 10) {
+                    $editCarMsg = "* Enter Initial Pay (Min: 3; Max: 10; * Price)!";
+                }
+                // Check if car description is provided.
+                else if (empty($carDesc) || strlen($carDesc) < 5 || strlen($carDesc) > 512) {
+                    $editCarMsg = "* Enter Car Description (Min: 5 Char)!";
+                }
+                else {
+                    $passChecking = true;
+                }
+                
+                $newCarImage = false;
+                $currentDate = date("Y-m-d H:i:s");
+                $carImageName = $oldCarImage = $targetImagePath = "";
+
+                // Continue checking.
+                if ($passChecking) {
+                    $passChecking = false;
+
+                    // Only allow PNG or JPG.
+                    $allowImageType = array('png', 'jpeg', 'jpg');
+                    $carImageName = (isset($_FILES['car-image']['name'])) ? testInput($_FILES['car-image']['name']): "";
+                    $carImageName = str_replace(" ", "_", $carImageName);
+
+                    // Get image type.
+                    $imageFileType = (!empty($carImageName)) ? pathinfo($carImageName, PATHINFO_EXTENSION): "";
+
+                    // No new image is provided.
+                    if (!isset($_FILES['car-image']) || empty($carImageName)) {
+                        $passChecking = true;
+                    }
+                    // Check if new image is valid (actual max is 2 MiB).
+                    else if (
+                        $_FILES['car-image']['size'] < 1 || $_FILES['car-image']['size'] > 2097152 ||
+                        !in_array($imageFileType, $allowImageType)
+                    ) {
+                        $editCarMsg = "* Upload a Car Image (Max: 2 MB; Only PNG or JPG)!";
+                    }
+                    // Check if the image already exists (file with same name detected).
+                    else {
+                        $query = "SELECT Cars.carImage, Cars.imagePath FROM Cars WHERE Cars.id=$carId;";
+                        $rs = mysqli_query($serverConnect, $query);
+
                         if ($rs) {
                             if ($car = mysqli_fetch_assoc($rs)) {
-                                $imagePathDel = (isset($car['imagePath'])) ? testInput($car['imagePath']): "";
-                                $imageToDel = (isset($car['carImage'])) ? testInput($car['carImage']): "";
+                                $oldCarImage = ((isset($car['carImage'])) ? $car['carImage']: "");
+                                $targetImagePath = ((isset($car['imagePath'])) ? $car['imagePath']: "");
                             }
                         }
 
-                        $query = "DELETE FROM Cars WHERE id=$carId;";
-                        $rs = mysqli_query($serverConnect, $query);
-
-                        if (!($rs)) {
-                            $passChecking = false;
-                            $deleteCarMsg = "* ERROR: Failed to delete Car ID $carId! Recheck if it is used in other tables!";
+                        // Folder not found.
+                        if (empty($targetImagePath) || !is_dir($_SERVER['DOCUMENT_ROOT'] . $targetImagePath)) {
+                            $editCarMsg = "* ERROR: Image Folder not found!";
                         }
-                        
-                        if ($passChecking) {
-                            $deleteCarMsg = "* Car ID $carId has been deleted successfully!";
+                        // Image already exists.
+                        else if (file_exists($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName)) {
+                            $editCarMsg = "* Car Image already exists, try image with different name!";
+                        }
+                        else {
+                            $passChecking = true;
+                            $newCarImage = true;
+                        }
+                    }
+                }
 
-                            // Check if folder exists.
-                            if (is_dir($_SERVER['DOCUMENT_ROOT'] . $imagePathDel)) {
-                                // Delete the image.
-                                if (file_exists($_SERVER['DOCUMENT_ROOT'] . $imagePathDel . $imageToDel)) {
-                                    unlink($_SERVER['DOCUMENT_ROOT'] . $imagePathDel . $imageToDel);
-                                }
+                // Try to update record (upload new image first if provided).
+                if ($passChecking) {
+                    $query = "UPDATE Cars SET Cars.monthPrice='$monthPrice', Cars.leaseTime='$leaseTime', Cars.initialPay='$initialPay', Cars.carDesc='$carDesc', Cars.dateEdited='$currentDate' WHERE Cars.id=$carId;";
+                    
+                    $changeDetected = true;
+
+                    // Check if new image is provided.
+                    if ($newCarImage) {
+                        $passChecking = false;
+                        
+                        // Delete old image.
+                        if (file_exists($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $oldCarImage)) {
+                            unlink($_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $oldCarImage);
+                        }
+
+                        // Upload new image.
+                        if (!move_uploaded_file($_FILES["car-image"]["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . $targetImagePath . $carImageName)) {
+                            $editCarMsg = "* ERROR: Failed to upload new Car Image!";
+                        }
+                        else {
+                            $query = "UPDATE Cars SET Cars.monthPrice='$monthPrice', Cars.leaseTime='$leaseTime', Cars.initialPay='$initialPay', Cars.carDesc='$carDesc', Cars.dateEdited='$currentDate', Cars.carImage='$carImageName' WHERE Cars.id=$carId;";
+
+                            $passChecking = true;
+                        }
+                    }
+                    else {
+                        // No changes.
+                        if (!(
+                            $oldMonthPrice != $monthPrice ||
+                            $oldLeaseTime != $leaseTime ||
+                            $oldInitialPay != $initialPay ||
+                            $oldCarDesc != $carDesc
+                        )) {
+                            $changeDetected = false;
+                            $editCarMsg = "* Changes have been saved successfully!";
+                        }
+                    }
+
+                    if ($changeDetected && $passChecking) {
+                        $rs = mysqli_query($serverConnect, $query);
+                        
+                        if ($rs) {
+                            $editCarMsg = "* Changes have been saved successfully!";
+                        }
+                        else {
+                            $passChecking = false;
+                            $editCarMsg = "* ERROR: Failed to save changes!";
+                        }
+                    }
+                }
+            }
+        }
+        // Delete Car
+        else if ($manageMode == "delete-car") {
+            $carId = (isset($queryString['car-id'])) ? testInput($queryString['car-id']): "";
+            $currentAdminPass = (isset($_POST['current-admin-password'])) ? testInput($_POST['current-admin-password']): "";
+
+            // Check if the car is allowed to be deleted.
+            if (!empty($carId) && is_numeric($carId)) {
+                $query = "SELECT id FROM Cars WHERE id=$carId;";
+                $rs = mysqli_query($serverConnect, $query);
+
+                if ($rs) {
+                    if ($car = mysqli_fetch_assoc($rs)) {
+                        // Allow to delete.
+                        $allowDeleteCar = true;
+                    }
+                }
+            }
+
+            if (!$allowDeleteCar) {
+                $deleteCarMsg = "* You are not allowed to delete the selected Car!";
+            }
+            else if (
+                $_SERVER["REQUEST_METHOD"] == "POST" &&
+                isset($queryString["check-form"]) && $queryString["check-form"] == "yes"
+            ) {
+                $passChecking = true;
+
+                // Check if password of logged in admin is provided.
+                if (
+                    empty($currentAdminPass) ||
+                    strlen($currentAdminPass) < 6 || strlen($currentAdminPass) > 256 ||
+                    !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $currentAdminPass)
+                ) {
+                    $deleteCarMsg = "* Enter Your Password to Confirm Delete!";
+                    $passChecking = false;
+                }
+
+                // Check password of logged in admin.
+                if ($passChecking) {
+                    $passChecking = false;
+
+                    $query = "SELECT adminPassword FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+                    $rs = mysqli_query($serverConnect, $query);
+
+                    if ($rs) {
+                        if ($user = mysqli_fetch_assoc($rs)) {
+                            if ($user["adminPassword"] == $currentAdminPass) {
+                                $passChecking = true;
+                            }
+                        }
+                    }
+
+                    if (!$passChecking) {
+                        $deleteCarMsg = "* Invalid Password Entered!";
+                    }
+                }
+                
+                if ($passChecking) {
+                    // Get the image folder path to delete the image in it.
+                    $imagePathDel = "";
+                    $imageToDel = "";
+                    $query = "SELECT imagePath, carImage FROM Cars WHERE id=$carId;";
+                    $rs = mysqli_query($serverConnect, $query);
+
+                    if ($rs) {
+                        if ($car = mysqli_fetch_assoc($rs)) {
+                            $imagePathDel = (isset($car['imagePath'])) ? testInput($car['imagePath']): "";
+                            $imageToDel = (isset($car['carImage'])) ? testInput($car['carImage']): "";
+                        }
+                    }
+
+                    $query = "DELETE FROM Cars WHERE id=$carId;";
+                    $rs = mysqli_query($serverConnect, $query);
+
+                    if (!($rs)) {
+                        $passChecking = false;
+                        $deleteCarMsg = "* ERROR: Failed to delete Car ID $carId! Recheck if it is used in other tables!";
+                    }
+                    
+                    if ($passChecking) {
+                        $deleteCarMsg = "* Car ID $carId has been deleted successfully!";
+
+                        // Check if folder exists.
+                        if (is_dir($_SERVER['DOCUMENT_ROOT'] . $imagePathDel)) {
+                            // Delete the image.
+                            if (file_exists($_SERVER['DOCUMENT_ROOT'] . $imagePathDel . $imageToDel)) {
+                                unlink($_SERVER['DOCUMENT_ROOT'] . $imagePathDel . $imageToDel);
                             }
                         }
                     }
                 }
             }
+        }
+        // Invalid Mode
+        else {
+            $manageMode = "";
         }
     }
 ?>
@@ -534,13 +566,16 @@
         <nav class="fixed_nav_bar">
             <ul>
                 <li>
-                    <a href="/admin/adminDashboard.php">Home</a>
+                    <a href="/admin/index.php">Home</a>
                 </li>
                 <li>
                     <a href="/admin/manageMember.php">Manage Member</a>
                 </li>
                 <li>
                     <a href="/admin/manageVehicle.php" class="active">Manage Vehicle</a>
+                </li>
+                <li>
+                    <a href="/admin/manageOrder.php">Manage Order</a>
                 </li>
                 <li>
                     <a href="/admin/manageTransaction.php">Manage Transaction</a>
@@ -578,17 +613,22 @@
                         <?php endif; ?>
 
                         <?php if (!$passChecking): ?>
-                            <form id='manage-add-form' method='post' action='/admin/manageVehicle.php' enctype='multipart/form-data'>
-                                <input type='hidden' name='manage-mode' value='add-car'>
-                                <input type='hidden' name='check-form' value='yes'>
+                            <?php
+                                $newQueryString = array();
+                                $newQueryString['manage-mode'] = 'add-car';
+                                $newQueryString['check-form'] = 'yes';
+                            ?>
 
+                            <form id='manage-add-form' method='post' action='/admin/manageVehicle.php?<?php
+                                echo(http_build_query($newQueryString));
+                            ?>' enctype='multipart/form-data'>
                                 <div>
                                     <label for='car-brand'>
                                         Brand (No Edit if Saved):
                                     </label><br>
 
                                     <input id='car-brand' type='text' name='car-brand' placeholder='Car Brand (Min: 3 Char)' value='<?php
-                                        echo((isset($_POST['car-brand'])) ? testInput($_POST['car-brand']): '');
+                                        echo((isset($carBrand)) ? $carBrand: '');
                                     ?>' list='all-brand' minlength="3" maxlength="100" required>
                                     
                                     <?php
@@ -615,7 +655,7 @@
                                     </label><br>
 
                                     <input id='car-model' type='text' name='car-model' placeholder='Car Model (Min: 2 Char)' value='<?php
-                                        echo((isset($_POST['car-model'])) ? testInput($_POST['car-model']): '');
+                                        echo((isset($carModel)) ? $carModel: '');
                                     ?>' minlength="2" maxlength="100" required>
                                 </div>
 
@@ -625,7 +665,7 @@
                                     </label><br>
 
                                     <input id='month-price' type='number' min="100" max="1000" name='month-price' placeholder='(Min: 100; Max: 1000) Per Month' value='<?php
-                                        echo((isset($_POST['month-price'])) ? testInput($_POST['month-price']): '');
+                                        echo((isset($monthPrice)) ? $monthPrice: '');
                                     ?>' required>
                                 </div>
 
@@ -635,7 +675,7 @@
                                     </label><br>
 
                                     <input id='lease-time' type='number' min="6" max="60" name='lease-time' placeholder='(Min: 6; Max: 60) Months' value='<?php
-                                        echo((isset($_POST['lease-time'])) ? testInput($_POST['lease-time']): '');
+                                        echo((isset($leaseTime)) ? $leaseTime: '');
                                     ?>' required>
                                 </div>
 
@@ -645,7 +685,7 @@
                                     </label><br>
 
                                     <input id='initial-pay' type='number' min="3" max="10" name='initial-pay' placeholder='(Min: 3; Max: 10) * Price' value='<?php
-                                        echo((isset($_POST['initial-pay'])) ? testInput($_POST['initial-pay']): '');
+                                        echo((isset($initialPay)) ? $initialPay: '');
                                     ?>' required>
                                 </div>
 
@@ -655,7 +695,7 @@
                                     </label><br>
 
                                     <textarea id='car-desc' type='text' name='car-desc' placeholder='Car Description (Min: 5 Char)' rows='5' minlength="5" maxlength='512' required><?php
-                                        echo((isset($_POST['car-desc'])) ? testInput($_POST['car-desc']): '');
+                                        echo((isset($carDesc)) ? $carDesc: '');
                                     ?></textarea>
                                 </div>
 
@@ -668,7 +708,7 @@
                                 </div>
                             </form>
 
-                            <form id='cancel-add-form' method='post' action='/admin/manageVehicle.php'></form>
+                            <form id='cancel-add-form' method='get' action='/admin/manageVehicle.php'></form>
                             
                             <div class='button-section'>
                                 <button form='manage-add-form' class='positive-button' type='submit'>
@@ -683,7 +723,7 @@
                     <!-- View Car -->
                     <?php elseif ($manageMode == "view-car"): ?>
                         <h3>View <i>Car ID <?php
-                            echo((isset($_POST['car-id'])) ? testInput($_POST['car-id']): "");
+                            echo((isset($carId)) ? $carId: "");
                         ?></i>:</h3>
 
                         <?php if (isset($viewCarMsg) && !empty($viewCarMsg)): ?>
@@ -707,49 +747,49 @@
                                             <tr>
                                                 <td>Car ID</td>
                                                 <td>
-                                                    <?php echo((isset($car["id"])) ? $car["id"]: ""); ?>
+                                                    <?php echo((isset($car["id"])) ? $car["id"]: "-"); ?>
                                                 </td>
                                             </tr>
 
                                             <tr>
                                                 <td>Brand</td>
                                                 <td>
-                                                    <?php echo((isset($car["brandName"])) ? $car["brandName"]: ""); ?>
+                                                    <?php echo((isset($car["brandName"])) ? $car["brandName"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Model</td>
                                                 <td>
-                                                    <?php echo((isset($car["carModel"])) ? $car["carModel"]: ""); ?>
+                                                    <?php echo((isset($car["carModel"])) ? $car["carModel"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Price (£/mth)</td>
                                                 <td>
-                                                    <?php echo((isset($car["monthPrice"])) ? $car["monthPrice"]: ""); ?>
+                                                    <?php echo((isset($car["monthPrice"])) ? $car["monthPrice"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Lease Time (Month)</td>
                                                 <td>
-                                                    <?php echo((isset($car["leaseTime"])) ? $car["leaseTime"]: ""); ?>
+                                                    <?php echo((isset($car["leaseTime"])) ? $car["leaseTime"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Initial Pay (* £/mth)</td>
                                                 <td>
-                                                    <?php echo((isset($car["initialPay"])) ? $car["initialPay"]: ""); ?>
+                                                    <?php echo((isset($car["initialPay"])) ? $car["initialPay"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Description</td>
                                                 <td class='multiline-text'><?php
-                                                    echo((isset($car["carDesc"])) ? testInput($car["carDesc"]): ""); 
+                                                    echo((isset($car["carDesc"])) ? testInput($car["carDesc"]): "-"); 
                                                 ?></td>
                                             </tr>
                                             
@@ -767,41 +807,23 @@
                                             <tr>
                                                 <td>Added On</td>
                                                 <td>
-                                                    <?php echo((isset($car["dateAdded"])) ? $car["dateAdded"]: ""); ?>
+                                                    <?php echo((isset($car["dateAdded"])) ? $car["dateAdded"]: "-"); ?>
                                                 </td>
                                             </tr>
 
                                             <tr>
                                                 <td>Last Edit</td>
                                                 <td>
-                                                    <?php echo((isset($car["dateEdited"])) ? $car["dateEdited"]: ""); ?>
+                                                    <?php echo((isset($car["dateEdited"])) ? $car["dateEdited"]: "-"); ?>
                                                 </td>
                                             </tr>
                                         </table>
                                     </div>
 
-                                    <form method='post' action='/admin/manageVehicle.php'>
+                                    <form method='get' action='/admin/manageVehicle.php'>
                                         <input type='hidden' name='manage-mode' value='edit-car'>
                                         <input type='hidden' name='car-id' value='<?php
                                             echo((isset($car["id"])) ? $car["id"]: "");
-                                        ?>'>
-                                        <input type='hidden' name='car-brand' value='<?php
-                                            echo((isset($car["brandName"])) ? $car["brandName"]: "");
-                                        ?>'>
-                                        <input type='hidden' name='car-model' value='<?php
-                                            echo((isset($car["carModel"])) ? $car["carModel"]: "");
-                                        ?>'>
-                                        <input type='hidden' name='month-price' value='<?php
-                                            echo((isset($car["monthPrice"])) ? $car["monthPrice"]: "");
-                                        ?>'>
-                                        <input type='hidden' name='lease-time' value='<?php
-                                            echo((isset($car["leaseTime"])) ? $car["leaseTime"]: "");
-                                        ?>'>
-                                        <input type='hidden' name='initial-pay' value='<?php
-                                            echo((isset($car["initialPay"])) ? $car["initialPay"]: "");
-                                        ?>'>
-                                        <input type='hidden' name='car-desc' value='<?php
-                                            echo((isset($car["carDesc"])) ? $car["carDesc"]: "");
                                         ?>'>
 
                                         <button class='positive-button'>Edit Car</button>
@@ -814,7 +836,7 @@
                                         }
                                     ?>
 
-                                    <form method='post' action='<?php
+                                    <form method='get' action='<?php
                                         echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageVehicle.php");
                                     ?>'>
                                         <button>Return Previous Page</button>
@@ -825,7 +847,7 @@
                     <!-- Edit Car -->
                     <?php elseif ($manageMode == "edit-car"): ?>
                         <h3>Edit <i>Car ID <?php
-                            echo((isset($_POST['car-id'])) ? testInput($_POST['car-id']): "");
+                            echo((isset($carId)) ? $carId: "");
                         ?></i>:</h3>
 
                         <?php if (isset($editCarMsg) && !empty($editCarMsg)): ?>
@@ -841,27 +863,24 @@
                         <?php endif; ?>
 
                         <?php if ($allowEditCar && !$passChecking): ?>
-                            <form id='manage-edit-form' method='post' action='/admin/manageVehicle.php' enctype='multipart/form-data'>
-                                <input type='hidden' name='manage-mode' value='edit-car'>
-                                <input type='hidden' name='car-id' value='<?php
-                                    echo((isset($_POST["car-id"])) ? $_POST["car-id"]: "");
-                                ?>'>
-                                <input type='hidden' name='car-brand' value='<?php
-                                    echo((isset($_POST["car-brand"])) ? $_POST["car-brand"]: "");
-                                ?>'>
-                                <input type='hidden' name='car-model' value='<?php
-                                    echo((isset($_POST["car-model"])) ? $_POST["car-model"]: "");
-                                ?>'>
-                                <input type='hidden' name='check-form' value='yes'>
+                            <?php
+                                $newQueryString = array();
+                                $newQueryString['manage-mode'] = 'edit-car';
+                                $newQueryString['check-form'] = 'yes';
+                                $newQueryString['car-id'] = (isset($carId)) ? $carId: "";
+                            ?>
 
+                            <form id='manage-edit-form' method='post' action='/admin/manageVehicle.php?<?php
+                                echo(http_build_query($newQueryString));
+                            ?>' enctype='multipart/form-data'>
                                 <div>
                                     <label for='car-name'>
                                         Brand & Model:
                                     </label><br>
 
                                     <input id='car-name' type='text' value='<?php
-                                        echo((isset($_POST['car-brand'])) ? testInput($_POST['car-brand']): '');
-                                        echo((isset($_POST['car-model'])) ? " " . testInput($_POST['car-model']): '');
+                                        echo((isset($carBrand)) ? $carBrand: '');
+                                        echo((isset($carModel)) ? " " . $carModel: '');
                                     ?>' disabled>
                                 </div>
 
@@ -871,7 +890,7 @@
                                     </label><br>
 
                                     <input id='month-price' type='number' min="100" max="1000" name='month-price' placeholder='(Min: 100; Max: 1000) Per Month' value='<?php
-                                        echo((isset($_POST['month-price'])) ? testInput($_POST['month-price']): '');
+                                        echo((!empty($monthPrice)) ? $monthPrice: $oldMonthPrice);
                                     ?>' required>
                                 </div>
 
@@ -881,7 +900,7 @@
                                     </label><br>
 
                                     <input id='lease-time' type='number' min="6" max="60" name='lease-time' placeholder='(Min: 6; Max: 60) Months' value='<?php
-                                        echo((isset($_POST['lease-time'])) ? testInput($_POST['lease-time']): '');
+                                        echo((!empty($leaseTime)) ? $leaseTime: $oldLeaseTime);
                                     ?>' required>
                                 </div>
 
@@ -891,7 +910,7 @@
                                     </label><br>
 
                                     <input id='initial-pay' type='number' min="3" max="10" name='initial-pay' placeholder='(Min: 3; Max: 10) * Price' value='<?php
-                                        echo((isset($_POST['initial-pay'])) ? testInput($_POST['initial-pay']): '');
+                                        echo((!empty($initialPay)) ? $initialPay: $oldInitialPay);
                                     ?>' required>
                                 </div>
 
@@ -901,7 +920,7 @@
                                     </label><br>
 
                                     <textarea id='car-desc' type='text' name='car-desc' placeholder='Car Description (Min: 5 Char)' rows='5' minlength="5" maxlength='512' required><?php
-                                        echo((isset($_POST['car-desc'])) ? testInput($_POST['car-desc']): '');
+                                        echo((!empty($carDesc)) ? $carDesc: $oldCarDesc);
                                     ?></textarea>
                                 </div>
 
@@ -914,7 +933,7 @@
                                 </div>
                             </form>
 
-                            <form id='cancel-edit-form' method='post' action='/admin/manageVehicle.php'></form>
+                            <form id='cancel-edit-form' method='get' action='/admin/manageVehicle.php'></form>
 
                             <div class='button-section'>
                                 <button form='manage-edit-form' class='positive-button' type='submit'>
@@ -929,7 +948,7 @@
                     <!-- Delete Car -->
                     <?php elseif ($manageMode == "delete-car"): ?>
                         <h3>Delete <i>Car ID <?php
-                            echo((isset($_POST['car-id'])) ? testInput($_POST['car-id']): "");
+                            echo((isset($carId)) ? $carId: "");
                         ?></i>:</h3>
 
                         <?php if (isset($deleteCarMsg) && !empty($deleteCarMsg)): ?>
@@ -945,13 +964,16 @@
                         <?php endif; ?>
 
                         <?php if ($allowDeleteCar && !$passChecking): ?>
-                            <form id='manage-delete-form' method='post' action='/admin/manageVehicle.php'>
-                                <input type='hidden' name='manage-mode' value='delete-car'>
-                                <input type='hidden' name='check-form' value='yes'>
-                                <input type='hidden' name='car-id' value='<?php
-                                    echo((isset($_POST['car-id'])) ? testInput($_POST['car-id']): "");
-                                ?>'>
+                            <?php
+                                $newQueryString = array();
+                                $newQueryString['manage-mode'] = 'delete-car';
+                                $newQueryString['check-form'] = 'yes';
+                                $newQueryString['car-id'] = (isset($carId)) ? $carId: "";
+                            ?>
 
+                            <form id='manage-delete-form' method='post' action='/admin/manageVehicle.php?<?php
+                                echo(http_build_query($newQueryString));
+                            ?>'>
                                 <div>
                                     <label for='current-admin-password'>
                                         Your Password:
@@ -961,7 +983,7 @@
                                 </div>
                             </form>
 
-                            <form id='cancel-delete-form' method='post' action='/admin/manageVehicle.php'></form>
+                            <form id='cancel-delete-form' method='get' action='/admin/manageVehicle.php'></form>
                             
                             <div class='button-section'>
                                 <button form='manage-delete-form' class='positive-button' type='submit'>
@@ -984,13 +1006,13 @@
                     (isset($manageMode) && $manageMode == "edit-car" && !$allowEditCar) ||
                     (isset($manageMode) && $manageMode == "delete-car" && !$allowDeleteCar)
                 ): ?>
-                    <form id='cancel-search-form' method='post' action='/admin/manageVehicle.php'></form>
+                    <form id='cancel-search-form' method='get' action='/admin/manageVehicle.php'></form>
 
-                    <form id='manage-search-form' method='post' action='/admin/manageVehicle.php'>
+                    <form id='manage-search-form' method='get' action='/admin/manageVehicle.php'>
                         <input type='hidden' name='manage-mode' value='search-car'>
                     </form>
 
-                    <form id='manage-add-form' method='post' action='/admin/manageVehicle.php'>
+                    <form id='manage-add-form' method='get' action='/admin/manageVehicle.php'>
                         <input type='hidden' name='manage-mode' value='add-car'>
                     </form>
                 
@@ -1037,7 +1059,7 @@
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY Cars.dateEdited DESC;";
+                                " ORDER BY Cars.dateEdited DESC LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;
@@ -1049,31 +1071,31 @@
 
                                     <tr>
                                         <td class='center-text'>
-                                            <?php echo((isset($car["id"])) ? $car["id"]: ""); ?>
+                                            <?php echo((isset($car["id"])) ? $car["id"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($car["brandName"])) ? $car["brandName"]: ""); ?>
+                                            <?php echo((isset($car["brandName"])) ? $car["brandName"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($car["carModel"])) ? $car["carModel"]: ""); ?>
+                                            <?php echo((isset($car["carModel"])) ? $car["carModel"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($car["monthPrice"])) ? $car["monthPrice"]: ""); ?>
+                                            <?php echo((isset($car["monthPrice"])) ? $car["monthPrice"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($car["leaseTime"])) ? $car["leaseTime"]: ""); ?>
+                                            <?php echo((isset($car["leaseTime"])) ? $car["leaseTime"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($car["initialPay"])) ? $car["initialPay"]: ""); ?>
+                                            <?php echo((isset($car["initialPay"])) ? $car["initialPay"]: "-"); ?>
                                         </td>
 
                                         <td>
-                                            <form method='post' action='/admin/manageVehicle.php'>
+                                            <form method='get' action='/admin/manageVehicle.php'>
                                                 <input type='hidden' name='manage-mode' value='view-car'>
                                                 <input type='hidden' name='car-id' value='<?php
                                                     echo((isset($car["id"])) ? $car["id"]: "");
@@ -1082,8 +1104,9 @@
                                                 <button class='positive-button'>View</button>
                                             </form>
                                         </td>
+                                        
                                         <td>
-                                            <form method='post' action='/admin/manageVehicle.php'>
+                                            <form method='get' action='/admin/manageVehicle.php'>
                                                 <input type='hidden' name='manage-mode' value='delete-car'>
                                                 <input type='hidden' name='car-id' value='<?php
                                                     echo((isset($car["id"])) ? $car["id"]: "");
@@ -1098,13 +1121,13 @@
                             
                             <tr>
                                 <?php if (!$recordCount): ?>
-                                        <td class='data-not-found' colspan='8'>
-                                            * None to show
-                                        </td>
+                                    <td class='data-not-found' colspan='8'>
+                                        * None to show
+                                    </td>
                                 <?php else: ?>
-                                        <td colspan='8'>
-                                            Total Displayed: <?php echo($recordCount); ?>
-                                        </td>
+                                    <td colspan='8'>
+                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Edit Date]
+                                    </td>
                                 <?php endif; ?>
                             </tr>
                         </tbody>

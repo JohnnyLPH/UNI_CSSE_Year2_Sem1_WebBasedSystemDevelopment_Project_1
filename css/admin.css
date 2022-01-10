@@ -400,6 +400,20 @@ div.view-content table tr td img {
     max-height: 100px;
 }
 
+div.view-content table tr td button {
+    font-size: medium;
+    text-align: left;
+    margin: auto;
+    color: blue;
+    background-color: white;
+    border-width: 0;
+}
+
+div.view-content table tr td button:hover {
+    color: rgb(119, 0, 255);
+    text-decoration: underline;
+}
+
 .multiline-text {
     white-space: pre-wrap;
 }

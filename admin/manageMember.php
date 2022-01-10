@@ -34,7 +34,13 @@
         return $data;
     }
 
-    $manageMode = "";
+    $queryString = array();
+
+    if (isset($_SERVER['QUERY_STRING'])) {
+        parse_str($_SERVER['QUERY_STRING'], $queryString);
+    }
+
+    $manageMode = (isset($queryString['manage-mode'])) ? $queryString['manage-mode']: "";
     $passChecking = false;
 
     $wordToSearch = "";
@@ -45,107 +51,107 @@
     $deleteMemberMsg = "";
     $allowDeleteMember = false;
     
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        if (isset($_POST["manage-mode"])) {
-            // Search Member
-            if ($_POST["manage-mode"] == "search-member") {
-                $manageMode = $_POST["manage-mode"];
-                $wordToSearch = (isset($_POST['word-to-search'])) ? testInput($_POST['word-to-search']): "";
-            }
-            // View Member
-            else if ($_POST["manage-mode"] == "view-member") {
-                $manageMode = $_POST["manage-mode"];
+    if (!empty($manageMode)) {
+        // Search Member
+        if ($manageMode == "search-member") {
+            $wordToSearch = (isset($queryString['word-to-search'])) ? testInput($queryString['word-to-search']): "";
+        }
+        // View Member
+        else if ($manageMode == "view-member") {
+            $memberId = (isset($queryString['member-id'])) ? testInput($queryString['member-id']): "";
+            
+            // Check if the member is allowed to be viewed.
+            if (!empty($memberId)) {
+                $query = "SELECT id FROM Members WHERE id=$memberId;";
+                $rs = mysqli_query($serverConnect, $query);
 
-                $memberId = (isset($_POST['member-id'])) ? testInput($_POST['member-id']): "";
-                
-                // Check if the member is allowed to be viewed.
-                if (!empty($memberId)) {
-                    $query = "SELECT id FROM Members WHERE id=$memberId;";
+                if ($rs) {
+                    if ($user = mysqli_fetch_assoc($rs)) {
+                        // Allow to view.
+                        $allowViewMember = true;
+                    }
+                }
+            }
+
+            if (!$allowViewMember) {
+                $viewMemberMsg = "* You are not allowed to view the selected Member!";
+            }
+        }
+        // Delete Member
+        else if ($manageMode == "delete-member") {
+            $memberId = (isset($queryString['member-id'])) ? testInput($queryString['member-id']): "";
+            $currentAdminPass = (isset($_POST['current-admin-password'])) ? testInput($_POST['current-admin-password']): "";
+
+            // Check if the member is allowed to be deleted.
+            if (!empty($memberId)) {
+                $query = "SELECT id FROM Members WHERE id=$memberId;";
+                $rs = mysqli_query($serverConnect, $query);
+
+                if ($rs) {
+                    if ($user = mysqli_fetch_assoc($rs)) {
+                        // Allow to delete.
+                        $allowDeleteMember = true;
+                    }
+                }
+            }
+
+            if (!$allowDeleteMember) {
+                $deleteMemberMsg = "* You are not allowed to delete the selected Member!";
+            }
+            else if (
+                $_SERVER["REQUEST_METHOD"] == "POST" &&
+                isset($queryString["check-form"]) && $queryString["check-form"] == "yes"
+            ) {
+                $passChecking = true;
+
+                // Check if password of logged in admin is provided.
+                if (
+                    empty($currentAdminPass) ||
+                    strlen($currentAdminPass) < 6 || strlen($currentAdminPass) > 256 ||
+                    !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $currentAdminPass)
+                ) {
+                    $deleteMemberMsg = "* Enter Your Password to Confirm Delete!";
+                    $passChecking = false;
+                }
+
+                // Check password of logged in admin.
+                if ($passChecking) {
+                    $passChecking = false;
+
+                    $query = "SELECT adminPassword FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
                     $rs = mysqli_query($serverConnect, $query);
 
                     if ($rs) {
                         if ($user = mysqli_fetch_assoc($rs)) {
-                            // Allow to view.
-                            $allowViewMember = true;
-                        }
-                    }
-                }
-
-                if (!$allowViewMember) {
-                    $viewMemberMsg = "* You are not allowed to view the selected Member!";
-                }
-            }
-            // Delete Member
-            else if ($_POST["manage-mode"] == "delete-member") {
-                $manageMode = $_POST["manage-mode"];
-
-                $memberId = (isset($_POST['member-id'])) ? testInput($_POST['member-id']): "";
-                $currentAdminPass = (isset($_POST['current-admin-password'])) ? testInput($_POST['current-admin-password']): "";
-
-                // Check if the member is allowed to be deleted.
-                if (!empty($memberId)) {
-                    $query = "SELECT id FROM Members WHERE id=$memberId;";
-                    $rs = mysqli_query($serverConnect, $query);
-
-                    if ($rs) {
-                        if ($user = mysqli_fetch_assoc($rs)) {
-                            // Allow to delete.
-                            $allowDeleteMember = true;
-                        }
-                    }
-                }
-
-                if (!$allowDeleteMember) {
-                    $deleteMemberMsg = "* You are not allowed to delete the selected Member!";
-                }
-                else if (isset($_POST["check-form"]) && $_POST["check-form"] == "yes") {
-                    $passChecking = true;
-
-                    // Check if password of logged in admin is provided.
-                    if (
-                        empty($currentAdminPass) ||
-                        strlen($currentAdminPass) < 6 || strlen($currentAdminPass) > 256 ||
-                        !preg_match("/^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/", $currentAdminPass)
-                    ) {
-                        $deleteMemberMsg = "* Enter Your Password to Confirm Delete!";
-                        $passChecking = false;
-                    }
-
-                    // Check password of logged in admin.
-                    if ($passChecking) {
-                        $passChecking = false;
-
-                        $query = "SELECT adminPassword FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
-                        $rs = mysqli_query($serverConnect, $query);
-
-                        if ($rs) {
-                            if ($user = mysqli_fetch_assoc($rs)) {
-                                if ($user["adminPassword"] == $currentAdminPass) {
-                                    $passChecking = true;
-                                }
+                            if ($user["adminPassword"] == $currentAdminPass) {
+                                $passChecking = true;
                             }
                         }
+                    }
 
-                        if (!$passChecking) {
-                            $deleteMemberMsg = "* Invalid Password Entered!";
-                        }
+                    if (!$passChecking) {
+                        $deleteMemberMsg = "* Invalid Password Entered!";
+                    }
+                }
+                
+                if ($passChecking) {
+                    $query = "DELETE FROM Members WHERE id=$memberId;";
+                    $rs = mysqli_query($serverConnect, $query);
+
+                    if (!($rs)) {
+                        $passChecking = false;
+                        $deleteMemberMsg = "* ERROR: Failed to delete Member ID $memberId! Recheck if it is used in other tables!";
                     }
                     
                     if ($passChecking) {
-                        $query = "DELETE FROM Members WHERE id=$memberId;";
-                        $rs = mysqli_query($serverConnect, $query);
-
-                        if (!($rs)) {
-                            $passChecking = false;
-                            $deleteMemberMsg = "* ERROR: Failed to delete Member ID $memberId! Recheck if it is used in other tables!";
-                        }
-                        
-                        if ($passChecking) {
-                            $deleteMemberMsg = "* Member ID $memberId has been deleted successfully!";
-                        }
+                        $deleteMemberMsg = "* Member ID $memberId has been deleted successfully!";
                     }
                 }
             }
+        }
+        // Invalid Mode
+        else {
+            $manageMode = "";
         }
     }
 ?>
@@ -172,13 +178,16 @@
         <nav class="fixed_nav_bar">
             <ul>
                 <li>
-                    <a href="/admin/adminDashboard.php">Home</a>
+                    <a href="/admin/index.php">Home</a>
                 </li>
                 <li>
                     <a href="/admin/manageMember.php" class="active">Manage Member</a>
                 </li>
                 <li>
                     <a href="/admin/manageVehicle.php">Manage Vehicle</a>
+                </li>
+                <li>
+                    <a href="/admin/manageOrder.php">Manage Order</a>
                 </li>
                 <li>
                     <a href="/admin/manageTransaction.php">Manage Transaction</a>
@@ -202,7 +211,7 @@
                     <!-- View Member -->
                     <?php if ($manageMode == "view-member"): ?>
                         <h3>View <i>Member ID <?php
-                            echo((isset($_POST['member-id'])) ? testInput($_POST['member-id']): "");
+                            echo((isset($memberId)) ? $memberId: "");
                         ?></i>:</h3>
 
                         <?php if (isset($viewMemberMsg) && !empty($viewMemberMsg)): ?>
@@ -215,8 +224,8 @@
 
                         <?php if ($allowViewMember): ?>
                             <?php
-                                // Select everything except password to display.
-                                $query = "SELECT id, firstName, lastName, email, countryCode, phoneNo, gender, state, registerDate FROM Members WHERE id=$memberId;";
+                                // Select everything from Members table except password to display, select from MemberLog table too.
+                                $query = "SELECT Members.id, Members.firstName, Members.lastName, Members.email, Members.countryCode, Members.phoneNo, Members.gender, Members.state, Members.registerDate, MemberLog.loginDate FROM Members LEFT JOIN MemberLog ON Members.id = MemberLog.memberId WHERE Members.id=$memberId;";
                                 $rs = mysqli_query($serverConnect, $query);
                             ?>
 
@@ -227,63 +236,70 @@
                                             <tr>
                                                 <td>Member ID</td>
                                                 <td>
-                                                    <?php echo((isset($user["id"])) ? $user["id"]: ""); ?>
+                                                    <?php echo((isset($user["id"])) ? $user["id"]: "-"); ?>
                                                 </td>
                                             </tr>
 
                                             <tr>
                                                 <td>First Name</td>
                                                 <td>
-                                                    <?php echo((isset($user["firstName"])) ? $user["firstName"]: ""); ?>
+                                                    <?php echo((isset($user["firstName"])) ? $user["firstName"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Last Name</td>
                                                 <td>
-                                                    <?php echo((isset($user["lastName"])) ? $user["lastName"]: ""); ?>
+                                                    <?php echo((isset($user["lastName"])) ? $user["lastName"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Email</td>
                                                 <td>
-                                                    <?php echo((isset($user["email"])) ? $user["email"]: ""); ?>
+                                                    <?php echo((isset($user["email"])) ? $user["email"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Country Code</td>
                                                 <td>
-                                                    <?php echo((isset($user["countryCode"])) ? $user["countryCode"]: ""); ?>
+                                                    <?php echo((isset($user["countryCode"])) ? $user["countryCode"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Phone No.</td>
                                                 <td>
-                                                    <?php echo((isset($user["phoneNo"])) ? $user["phoneNo"]: ""); ?>
+                                                    <?php echo((isset($user["phoneNo"])) ? $user["phoneNo"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Gender</td>
                                                 <td>
-                                                    <?php echo((isset($user["gender"])) ? $user["gender"]: ""); ?>
+                                                    <?php echo((isset($user["gender"])) ? $user["gender"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>State</td>
                                                 <td>
-                                                    <?php echo((isset($user["state"])) ? $user["state"]: ""); ?>
+                                                    <?php echo((isset($user["state"])) ? $user["state"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Register On</td>
                                                 <td>
-                                                    <?php echo((isset($user["registerDate"])) ? $user["registerDate"]: ""); ?>
+                                                    <?php echo((isset($user["registerDate"])) ? $user["registerDate"]: "-"); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Last Login</td>
+                                                <td>
+                                                    <?php echo((isset($user["loginDate"])) ? $user["loginDate"]: "-"); ?>
                                                 </td>
                                             </tr>
                                         </table>
@@ -296,7 +312,7 @@
                                         }
                                     ?>
 
-                                    <form method='post' action='<?php
+                                    <form method='get' action='<?php
                                         echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageMember.php");
                                     ?>'>
                                         <button>Return Previous Page</button>
@@ -307,7 +323,7 @@
                     <!-- Delete Member -->
                     <?php elseif ($manageMode == "delete-member"): ?>
                         <h3>Delete <i>Member ID <?php
-                            echo((isset($_POST['member-id'])) ? testInput($_POST['member-id']): "");
+                            echo((isset($memberId)) ? testInput($memberId): "");
                         ?></i>:</h3>
 
                         <?php if (isset($deleteMemberMsg) && !empty($deleteMemberMsg)): ?>
@@ -323,13 +339,16 @@
                         <?php endif; ?>
 
                         <?php if ($allowDeleteMember && !$passChecking): ?>
-                            <form id='manage-delete-form' method='post' action='/admin/manageMember.php'>
-                                <input type='hidden' name='manage-mode' value='delete-member'>
-                                <input type='hidden' name='check-form' value='yes'>
-                                <input type='hidden' name='member-id' value='<?php
-                                    echo((isset($_POST['member-id'])) ? testInput($_POST['member-id']): "");
-                                ?>'>
+                            <?php
+                                $newQueryString = array();
+                                $newQueryString['manage-mode'] = 'delete-member';
+                                $newQueryString['check-form'] = 'yes';
+                                $newQueryString['member-id'] = (isset($memberId)) ? $memberId: "";
+                            ?>
 
+                            <form id='manage-delete-form' method='post' action='/admin/manageMember.php?<?php
+                                echo(http_build_query($newQueryString));
+                            ?>'>
                                 <div>
                                     <label for='current-admin-password'>
                                         Your Password:
@@ -339,7 +358,7 @@
                                 </div>
                             </form>
 
-                            <form id='cancel-delete-form' method='post' action='/admin/manageMember.php'></form>
+                            <form id='cancel-delete-form' method='get' action='/admin/manageMember.php'></form>
                             
                             <div class='button-section'>
                                 <button form='manage-delete-form' class='positive-button' type='submit'>
@@ -361,9 +380,9 @@
                     (isset($manageMode) && $manageMode == "view-member" && !$allowViewMember) ||
                     (isset($manageMode) && $manageMode == "delete-member" && !$allowDeleteMember)
                 ): ?>
-                    <form id='cancel-search-form' method='post' action='/admin/manageMember.php'></form>
+                    <form id='cancel-search-form' method='get' action='/admin/manageMember.php'></form>
 
-                    <form id='manage-search-form' method='post' action='/admin/manageMember.php'>
+                    <form id='manage-search-form' method='get' action='/admin/manageMember.php'>
                         <input type='hidden' name='manage-mode' value='search-member'>
                     </form>
 
@@ -405,7 +424,7 @@
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY loginDate DESC;";
+                                " ORDER BY loginDate DESC LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;
@@ -417,31 +436,31 @@
 
                                     <tr>
                                         <td class='center-text'>
-                                            <?php echo((isset($user["id"])) ? $user["id"]: ""); ?>
+                                            <?php echo((isset($user["id"])) ? $user["id"]: "-"); ?>
                                         </td>
 
                                         <td>
-                                            <?php echo((isset($user["email"])) ? $user["email"]: ""); ?>
+                                            <?php echo((isset($user["email"])) ? $user["email"]: "-"); ?>
                                         </td>
 
                                         <td>
-                                            <?php echo((isset($user["phoneNo"])) ? $user["phoneNo"]: ""); ?>
+                                            <?php echo((isset($user["phoneNo"])) ? $user["phoneNo"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($user["state"])) ? $user["state"]: ""); ?>
+                                            <?php echo((isset($user["state"])) ? $user["state"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($user["registerDate"])) ? $user["registerDate"]: ""); ?>
+                                            <?php echo((isset($user["registerDate"])) ? $user["registerDate"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($user["loginDate"])) ? $user["loginDate"]: ""); ?>
+                                            <?php echo((isset($user["loginDate"])) ? $user["loginDate"]: "-"); ?>
                                         </td>
 
                                         <td>
-                                            <form method='post' action='/admin/manageMember.php'>
+                                            <form method='get' action='/admin/manageMember.php'>
                                                 <input type='hidden' name='manage-mode' value='view-member'>
                                                 <input type='hidden' name='member-id' value='<?php
                                                     echo((isset($user["id"])) ? $user["id"]: "");
@@ -450,8 +469,9 @@
                                                 <button class='positive-button'>View</button>
                                             </form>
                                         </td>
+                                        
                                         <td>
-                                            <form method='post' action='/admin/manageMember.php'>
+                                            <form method='get' action='/admin/manageMember.php'>
                                                 <input type='hidden' name='manage-mode' value='delete-member'>
                                                 <input type='hidden' name='member-id' value='<?php
                                                     echo((isset($user["id"])) ? $user["id"]: "");
@@ -466,13 +486,13 @@
                             
                             <tr>
                                 <?php if (!$recordCount): ?>
-                                        <td class='data-not-found' colspan='8'>
-                                            * None to show
-                                        </td>
+                                    <td class='data-not-found' colspan='8'>
+                                        * None to show
+                                    </td>
                                 <?php else: ?>
-                                        <td colspan='8'>
-                                            Total Displayed: <?php echo($recordCount); ?>
-                                        </td>
+                                    <td colspan='8'>
+                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Login Date]
+                                    </td>
                                 <?php endif; ?>
                             </tr>
                         </tbody>
