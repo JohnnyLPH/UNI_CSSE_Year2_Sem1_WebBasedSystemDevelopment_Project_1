@@ -1,5 +1,5 @@
- <!-- Admin Login Page for LINGsCARS -->
 <?php
+    // Admin Login Page for LINGsCARS
     require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
     require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     // Already logged in, redirect to admin dashboard.
@@ -31,7 +31,7 @@
             $found = false;
             $adminId = 0;
             // Make sure Admins table (id, adminName, adminPassword, lastLogin) is already created.
-            $query = "SELECT id, adminName, adminPassword FROM Admins WHERE adminName='$adminName';";
+            $query = "SELECT id, adminName, adminPassword FROM admins WHERE adminName='$adminName';";
 
             $rs = mysqli_query($serverConnect, $query);
             if ($rs) {
@@ -48,7 +48,7 @@
                 $currentDate = date("Y-m-d H:i:s");
                 // Record new login date.
                 mysqli_query(
-                    $serverConnect, "UPDATE Admins SET lastLogin='$currentDate' WHERE adminName='$adminName';"
+                    $serverConnect, "UPDATE admins SET lastLogin='$currentDate' WHERE adminName='$adminName';"
                 );
 
                 $_SESSION["adminId"] = $adminId;

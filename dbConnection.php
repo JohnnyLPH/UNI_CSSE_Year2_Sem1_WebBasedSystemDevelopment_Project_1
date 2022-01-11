@@ -1,5 +1,5 @@
-<!-- For DB Connection -->
 <?php
+    // For DB Connection
     $dbHost = "localhost:3306";
 
     $dbUsername = "wbsd";

@@ -1,5 +1,5 @@
-<!-- Admin Dashboard: Manage Order for LINGsCARS -->
 <?php
+    // Admin Dashboard: Manage Order for LINGsCARS
     require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
     require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     if (!checkAdminLogin()) {
@@ -9,7 +9,7 @@
     // Check if admin is deleted.
     else {
         $foundAdmin = false;
-        $query = "SELECT id, adminName FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+        $query = "SELECT id, adminName FROM admins WHERE id=" . $_SESSION["adminId"] . ";";
 
         $rs = mysqli_query($serverConnect, $query);
         if ($rs) {
@@ -62,7 +62,7 @@
             
             // Check if the order is allowed to be viewed.
             if (!empty($orderId) && is_numeric($orderId)) {
-                $query = "SELECT id FROM Orders WHERE id=$orderId;";
+                $query = "SELECT id FROM orders WHERE id=$orderId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -85,7 +85,7 @@
             
             // Check if the order is allowed to be edited.
             if (!empty($orderId) && is_numeric($orderId)) {
-                $query = "SELECT Orders.id, Orders.orderStatus FROM Orders WHERE Orders.id=$orderId;";
+                $query = "SELECT orders.id, orders.orderStatus FROM orders WHERE orders.id=$orderId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -187,10 +187,10 @@
 
                         <?php if ($allowViewOrder): ?>
                             <?php
-                                $query = "SELECT Orders.id, Orders.memberId, Orders.stage, Orders.editable, Orders.personal, Orders.currentAddress, Orders.job, Orders.bank, Orders.orderStatus, Orders.proposalDate, Orders.reviewDate, Orders.confirmDate, Orders.receipt
-                                FROM Orders
-                                INNER JOIN Members ON Orders.memberId = Members.id
-                                WHERE Orders.id=$orderId;";
+                                $query = "SELECT orders.id, orders.memberId, orders.stage, orders.editable, orders.personal, orders.currentAddress, orders.job, orders.bank, orders.orderStatus, orders.proposalDate, orders.reviewDate, orders.confirmDate, orders.receipt
+                                FROM orders
+                                INNER JOIN members ON orders.memberId = members.id
+                                WHERE orders.id=$orderId;";
 
                                 $rs = mysqli_query($serverConnect, $query);
                             ?>
@@ -425,18 +425,18 @@
                         <tbody>
                             <?php
                                 // Select from Orders table.
-                                $query = "SELECT Orders.id, Orders.memberId, Orders.orderStatus, Orders.proposalDate, Orders.reviewDate, Orders.confirmDate FROM Orders" .
+                                $query = "SELECT orders.id, orders.memberId, orders.orderStatus, orders.proposalDate, orders.reviewDate, orders.confirmDate FROM orders" .
                                 (
                                     (isset($wordToSearch) && !empty($wordToSearch)) ?
-                                    " WHERE Orders.id LIKE '%" .
+                                    " WHERE orders.id LIKE '%" .
                                     testInput($wordToSearch) .
-                                    "%' OR Orders.memberId LIKE '%" .
+                                    "%' OR orders.memberId LIKE '%" .
                                     testInput($wordToSearch) .
-                                    "%' OR Orders.orderStatus LIKE '%" .
+                                    "%' OR orders.orderStatus LIKE '%" .
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY CASE WHEN Orders.orderStatus=2 THEN 1 WHEN Orders.orderStatus > 2 THEN 2 ELSE 3 END LIMIT 25;";
+                                " ORDER BY CASE WHEN orders.orderStatus=2 THEN 1 WHEN orders.orderStatus > 2 THEN 2 ELSE 3 END LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;

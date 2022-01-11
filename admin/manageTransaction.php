@@ -1,5 +1,5 @@
-<!-- Admin Dashboard: Manage Transaction for LINGsCARS -->
 <?php
+    // Admin Dashboard: Manage Transaction for LINGsCARS
     require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
     require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     if (!checkAdminLogin()) {
@@ -9,7 +9,7 @@
     // Check if admin is deleted.
     else {
         $foundAdmin = false;
-        $query = "SELECT id, adminName FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+        $query = "SELECT id, adminName FROM admins WHERE id=" . $_SESSION["adminId"] . ";";
 
         $rs = mysqli_query($serverConnect, $query);
         if ($rs) {
@@ -63,7 +63,7 @@
             
             // Check if the transaction is allowed to be viewed.
             if (!empty($transacId) && is_numeric($transacId)) {
-                $query = "SELECT id FROM Transactions WHERE id=$transacId;";
+                $query = "SELECT id FROM transactions WHERE id=$transacId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -155,13 +155,13 @@
 
                         <?php if ($allowViewTransac): ?>
                             <?php
-                                $query = "SELECT Transactions.id, Transactions.memberId, Members.email, Transactions.carId, Cars.carModel, Brands.brandName, Transactions.orderId, Orders.orderStatus, Orders.confirmDate, Transactions.transactionDate, Transactions.creditCard, Transactions.receipt
-                                FROM Transactions
-                                INNER JOIN Members ON Transactions.memberId = Members.id
-                                INNER JOIN Cars ON Transactions.carId = Cars.id
-                                INNER JOIN Brands ON Cars.brandId = Brands.id
-                                INNER JOIN Orders ON Transactions.orderId = Orders.id
-                                WHERE Transactions.id=$transacId;";
+                                $query = "SELECT transactions.id, transactions.memberId, members.email, transactions.carId, cars.carModel, brands.brandName, transactions.orderId, orders.orderStatus, orders.confirmDate, transactions.transactionDate, transactions.creditCard, transactions.receipt
+                                FROM transactions
+                                INNER JOIN members ON transactions.memberId = members.id
+                                INNER JOIN cars ON transactions.carId = cars.id
+                                INNER JOIN brands ON cars.brandId = brands.id
+                                INNER JOIN orders ON transactions.orderId = orders.id
+                                WHERE transactions.id=$transacId;";
 
                                 $rs = mysqli_query($serverConnect, $query);
                             ?>
@@ -367,20 +367,20 @@
                         <tbody>
                             <?php
                                 // Select from Transactions table.
-                                $query = "SELECT Transactions.id, Transactions.memberId, Transactions.carId, Transactions.orderId, Transactions.transactionDate, Transactions.creditCard FROM Transactions" .
+                                $query = "SELECT transactions.id, transactions.memberId, transactions.carId, transactions.orderId, transactions.transactionDate, transactions.creditCard FROM transactions" .
                                 (
                                     (isset($wordToSearch) && !empty($wordToSearch)) ?
-                                    " WHERE Transactions.id LIKE '%" .
+                                    " WHERE transactions.id LIKE '%" .
                                     testInput($wordToSearch) .
-                                    "%' OR Transactions.memberId LIKE '%" .
+                                    "%' OR transactions.memberId LIKE '%" .
                                     testInput($wordToSearch) .
-                                    "%' OR Transactions.carId LIKE '%" .
+                                    "%' OR transactions.carId LIKE '%" .
                                     testInput($wordToSearch) .
-                                    "%' OR Transactions.orderId LIKE '%" .
+                                    "%' OR transactions.orderId LIKE '%" .
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY Transactions.transactionDate DESC LIMIT 25;";
+                                " ORDER BY transactions.transactionDate DESC LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;

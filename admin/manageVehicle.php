@@ -1,5 +1,5 @@
-<!-- Admin Dashboard: Manage Vehicle for LINGsCARS -->
 <?php
+    // Admin Dashboard: Manage Vehicle for LINGsCARS
     require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
     require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     if (!checkAdminLogin()) {
@@ -9,7 +9,7 @@
     // Check if admin is deleted.
     else {
         $foundAdmin = false;
-        $query = "SELECT id, adminName FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+        $query = "SELECT id, adminName FROM admins WHERE id=" . $_SESSION["adminId"] . ";";
 
         $rs = mysqli_query($serverConnect, $query);
         if ($rs) {
@@ -110,7 +110,7 @@
                 }
                 // Check if car model (same brand) is already added before.
                 else {
-                    $query = "SELECT Brands.brandName, Cars.carModel FROM Cars INNER JOIN Brands ON Cars.brandId = Brands.id WHERE carModel='$carModel';";
+                    $query = "SELECT brands.brandName, cars.carModel FROM cars INNER JOIN brands ON cars.brandId = brands.id WHERE carModel='$carModel';";
                     $rs = mysqli_query($serverConnect, $query);
 
                     $passChecking = true;
@@ -184,7 +184,7 @@
                     $brandId = "";
 
                     // Check if car brand already exists or not.
-                    $query = "SELECT Brands.id, Brands.brandName FROM Brands WHERE Brands.brandName = '$carBrand';";
+                    $query = "SELECT brands.id, brands.brandName FROM brands WHERE brands.brandName = '$carBrand';";
                     $rs = mysqli_query($serverConnect, $query);
 
                     if ($rs) {
@@ -201,13 +201,13 @@
                     if (!$passChecking || empty($brandId)) {
                         $passChecking = false;
 
-                        $query = "INSERT INTO Brands(brandName) VALUES ('$carBrand');";
+                        $query = "INSERT INTO brands(brandName) VALUES ('$carBrand');";
 
                         $rs = mysqli_query($serverConnect, $query);
                         
                         if ($rs) {
                             // Get the newly added brand id.
-                            $query = "SELECT Brands.id FROM Brands WHERE Brands.brandName = '$carBrand';";
+                            $query = "SELECT brands.id FROM brands WHERE brands.brandName = '$carBrand';";
                             $rs = mysqli_query($serverConnect, $query);
     
                             if ($rs) {
@@ -229,7 +229,7 @@
 
                     // Try to insert new record.
                     if ($passChecking && !empty($brandId)) {
-                        $query = "INSERT INTO Cars(brandId, carModel, monthPrice, leaseTime, initialPay, carDesc, carImage, imagePath, dateAdded)
+                        $query = "INSERT INTO cars(brandId, carModel, monthPrice, leaseTime, initialPay, carDesc, carImage, imagePath, dateAdded)
                         VALUES
                         ('$brandId', '$carModel', '$monthPrice', '$leaseTime', '$initialPay', '$carDesc', '$carImageName', '$targetImagePath', '$currentDate')
                         ;";
@@ -261,7 +261,7 @@
             
             // Check if the car is allowed to be viewed.
             if (!empty($carId) && is_numeric($carId)) {
-                $query = "SELECT id FROM Cars WHERE id=$carId;";
+                $query = "SELECT id FROM cars WHERE id=$carId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -288,7 +288,7 @@
             
             // Check if the car is allowed to be edited.
             if (!empty($carId) && is_numeric($carId)) {
-                $query = "SELECT Brands.brandName, Cars.carModel, Cars.monthPrice, Cars.leaseTime, Cars.initialPay, Cars.carDesc FROM Cars INNER JOIN Brands ON Cars.brandId = Brands.id WHERE Cars.id=$carId;";
+                $query = "SELECT brands.brandName, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, cars.carDesc FROM cars INNER JOIN brands ON cars.brandId = brands.id WHERE cars.id=$carId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -367,7 +367,7 @@
                     }
                     // Check if the image already exists (file with same name detected).
                     else {
-                        $query = "SELECT Cars.carImage, Cars.imagePath FROM Cars WHERE Cars.id=$carId;";
+                        $query = "SELECT cars.carImage, cars.imagePath FROM cars WHERE cars.id=$carId;";
                         $rs = mysqli_query($serverConnect, $query);
 
                         if ($rs) {
@@ -394,7 +394,7 @@
 
                 // Try to update record (upload new image first if provided).
                 if ($passChecking) {
-                    $query = "UPDATE Cars SET Cars.monthPrice='$monthPrice', Cars.leaseTime='$leaseTime', Cars.initialPay='$initialPay', Cars.carDesc='$carDesc', Cars.dateEdited='$currentDate' WHERE Cars.id=$carId;";
+                    $query = "UPDATE cars SET cars.monthPrice='$monthPrice', cars.leaseTime='$leaseTime', cars.initialPay='$initialPay', cars.carDesc='$carDesc', cars.dateEdited='$currentDate' WHERE cars.id=$carId;";
                     
                     $changeDetected = true;
 
@@ -412,7 +412,7 @@
                             $editCarMsg = "* ERROR: Failed to upload new Car Image!";
                         }
                         else {
-                            $query = "UPDATE Cars SET Cars.monthPrice='$monthPrice', Cars.leaseTime='$leaseTime', Cars.initialPay='$initialPay', Cars.carDesc='$carDesc', Cars.dateEdited='$currentDate', Cars.carImage='$carImageName' WHERE Cars.id=$carId;";
+                            $query = "UPDATE cars SET cars.monthPrice='$monthPrice', cars.leaseTime='$leaseTime', cars.initialPay='$initialPay', cars.carDesc='$carDesc', cars.dateEdited='$currentDate', cars.carImage='$carImageName' WHERE cars.id=$carId;";
 
                             $passChecking = true;
                         }
@@ -451,7 +451,7 @@
 
             // Check if the car is allowed to be deleted.
             if (!empty($carId) && is_numeric($carId)) {
-                $query = "SELECT id FROM Cars WHERE id=$carId;";
+                $query = "SELECT id FROM cars WHERE id=$carId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -485,7 +485,7 @@
                 if ($passChecking) {
                     $passChecking = false;
 
-                    $query = "SELECT adminPassword FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+                    $query = "SELECT adminPassword FROM admins WHERE id=" . $_SESSION["adminId"] . ";";
                     $rs = mysqli_query($serverConnect, $query);
 
                     if ($rs) {
@@ -505,7 +505,7 @@
                     // Get the image folder path to delete the image in it.
                     $imagePathDel = "";
                     $imageToDel = "";
-                    $query = "SELECT imagePath, carImage FROM Cars WHERE id=$carId;";
+                    $query = "SELECT imagePath, carImage FROM cars WHERE id=$carId;";
                     $rs = mysqli_query($serverConnect, $query);
 
                     if ($rs) {
@@ -515,7 +515,7 @@
                         }
                     }
 
-                    $query = "DELETE FROM Cars WHERE id=$carId;";
+                    $query = "DELETE FROM cars WHERE id=$carId;";
                     $rs = mysqli_query($serverConnect, $query);
 
                     if (!($rs)) {
@@ -632,7 +632,7 @@
                                     ?>' list='all-brand' minlength="3" maxlength="100" required>
                                     
                                     <?php
-                                        $query = "SELECT brandName FROM Brands;";
+                                        $query = "SELECT brandName FROM brands;";
                                         $rs = mysqli_query($serverConnect, $query);
                                     ?>
 
@@ -736,7 +736,7 @@
 
                         <?php if ($allowViewCar): ?>
                             <?php
-                                $query = "SELECT Cars.id, Cars.carModel, Cars.monthPrice, Cars.leaseTime, Cars.initialPay, Cars.carDesc, Cars.carImage, Cars.imagePath, Cars.dateAdded, Cars.dateEdited, Brands.brandName FROM Cars INNER JOIN Brands ON Cars.brandId = Brands.id WHERE Cars.id=$carId;";
+                                $query = "SELECT cars.id, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, cars.carDesc, cars.carImage, cars.imagePath, cars.dateAdded, cars.dateEdited, brands.brandName FROM cars INNER JOIN brands ON cars.brandId = brands.id WHERE cars.id=$carId;";
                                 $rs = mysqli_query($serverConnect, $query);
                             ?>
 
@@ -1048,18 +1048,18 @@
                         <tbody>
                             <?php
                                 // Select from Cars and Brands tables.
-                                $query = "SELECT Cars.id, Cars.carModel, Cars.monthPrice, Cars.leaseTime, Cars.initialPay, Brands.brandName FROM Cars INNER JOIN Brands ON Cars.brandId = Brands.id" .
+                                $query = "SELECT cars.id, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, brands.brandName FROM cars INNER JOIN brands ON cars.brandId = brands.id" .
                                 (
                                     (isset($wordToSearch) && !empty($wordToSearch)) ?
-                                    " WHERE Cars.id LIKE '%" .
+                                    " WHERE cars.id LIKE '%" .
                                     testInput($wordToSearch) .
-                                    "%' OR Brands.brandName LIKE '%" .
+                                    "%' OR brands.brandName LIKE '%" .
                                     testInput($wordToSearch) .
-                                    "%' OR Cars.carModel LIKE '%" .
+                                    "%' OR cars.carModel LIKE '%" .
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY Cars.dateEdited DESC LIMIT 25;";
+                                " ORDER BY cars.dateEdited DESC LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;

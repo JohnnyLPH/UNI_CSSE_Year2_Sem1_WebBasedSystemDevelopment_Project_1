@@ -1,5 +1,5 @@
-<!-- Authenticate Admin Login -->
 <?php
+    // Authenticate Admin Login
     // require_once("./dbConnection.php");
     session_start();
     date_default_timezone_set("Asia/Kuala_Lumpur");

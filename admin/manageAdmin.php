@@ -1,5 +1,5 @@
-<!-- Admin Dashboard: Manage Admin for LINGsCARS -->
 <?php
+    // Admin Dashboard: Manage Admin for LINGsCARS
     require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
     require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     if (!checkAdminLogin()) {
@@ -9,7 +9,7 @@
     // Check if admin is deleted.
     else {
         $foundAdmin = false;
-        $query = "SELECT id, adminName FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+        $query = "SELECT id, adminName FROM admins WHERE id=" . $_SESSION["adminId"] . ";";
 
         $rs = mysqli_query($serverConnect, $query);
         if ($rs) {
@@ -73,7 +73,7 @@
                 }
                 // Check if admin name is already used.
                 else {
-                    $query = "SELECT id, adminName FROM Admins WHERE adminName='$adminName';";
+                    $query = "SELECT id, adminName FROM admins WHERE adminName='$adminName';";
                     $rs = mysqli_query($serverConnect, $query);
 
                     $passChecking = true;
@@ -115,7 +115,7 @@
 
                 // Try to insert new record.
                 if ($passChecking) {
-                    $query = "INSERT INTO Admins(adminName, adminPassword)
+                    $query = "INSERT INTO admins(adminName, adminPassword)
                     VALUES
                     ('$adminName', '$adminPass')
                     ;";
@@ -149,7 +149,7 @@
             if ($allowEditAdmin) {
                 $allowEditAdmin = false;
 
-                $query = "SELECT id, adminName FROM Admins WHERE id=$adminId;";
+                $query = "SELECT id, adminName FROM admins WHERE id=$adminId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -187,7 +187,7 @@
                 }
                 // Check if new admin name is already used.
                 else {
-                    $query = "SELECT id,adminName FROM Admins WHERE adminName='$newAdminName';";
+                    $query = "SELECT id,adminName FROM admins WHERE adminName='$newAdminName';";
                     $rs = mysqli_query($serverConnect, $query);
 
                     $passChecking = true;
@@ -217,7 +217,7 @@
                     }
                     // Check if original password is correct.
                     else {
-                        $query = "SELECT adminPassword FROM Admins WHERE id=$adminId;";
+                        $query = "SELECT adminPassword FROM admins WHERE id=$adminId;";
                         $rs = mysqli_query($serverConnect, $query);
 
                         if ($rs) {
@@ -240,7 +240,7 @@
                     if (empty($newAdminPass) && empty($newAdminPass2)) {
                         // Admin name has changed (update admin name only).
                         if ($newAdminName != $adminName) {
-                            $query = "UPDATE Admins SET adminName='$newAdminName' WHERE id=$adminId;";
+                            $query = "UPDATE admins SET adminName='$newAdminName' WHERE id=$adminId;";
 
                             $rs = mysqli_query($serverConnect, $query);
 
@@ -275,11 +275,11 @@
                         // Password is okay.
                         else {
                             $passChecking = true;
-                            $query = "UPDATE Admins SET adminPassword='$newAdminPass' WHERE id=$adminId;";
+                            $query = "UPDATE admins SET adminPassword='$newAdminPass' WHERE id=$adminId;";
 
                             // Admin name has changed.
                             if ($newAdminName != $adminName) {
-                                $query = "UPDATE Admins SET adminPassword='$newAdminPass', adminName='$newAdminName' WHERE id=$adminId;";
+                                $query = "UPDATE admins SET adminPassword='$newAdminPass', adminName='$newAdminName' WHERE id=$adminId;";
                             }
 
                             $rs = mysqli_query($serverConnect, $query);
@@ -309,7 +309,7 @@
 
             // Check if the admin is allowed to be deleted.
             if (!empty($adminId) && is_numeric($adminId) && $adminId != "1") {
-                $query = "SELECT id FROM Admins WHERE id=$adminId;";
+                $query = "SELECT id FROM admins WHERE id=$adminId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -352,7 +352,7 @@
                     }
                     // Check password of admin to be deleted.
                     else {
-                        $query = "SELECT adminPassword FROM Admins WHERE id=$adminId;";
+                        $query = "SELECT adminPassword FROM admins WHERE id=$adminId;";
                         $rs = mysqli_query($serverConnect, $query);
 
                         if ($rs) {
@@ -373,7 +373,7 @@
                 if ($passChecking) {
                     $passChecking = false;
 
-                    $query = "SELECT adminPassword FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+                    $query = "SELECT adminPassword FROM admins WHERE id=" . $_SESSION["adminId"] . ";";
                     $rs = mysqli_query($serverConnect, $query);
 
                     if ($rs) {
@@ -390,7 +390,7 @@
                 }
                 
                 if ($passChecking) {
-                    $query = "DELETE FROM Admins WHERE id=$adminId;";
+                    $query = "DELETE FROM admins WHERE id=$adminId;";
                     $rs = mysqli_query($serverConnect, $query);
 
                     if (!($rs)) {
@@ -696,7 +696,7 @@
                     <div class='chart-container'>
                         <?php
                             // Try to fetch data from Admins table.
-                            $query = "SELECT lastLogin FROM Admins ORDER BY lastLogin DESC;";
+                            $query = "SELECT lastLogin FROM admins ORDER BY lastLogin DESC;";
 
                             $rs = mysqli_query($serverConnect, $query);
                             $currentDate = strtotime(date("Y-m-d H:i:s"));
@@ -805,10 +805,10 @@
                         </thead>
                         <tbody>
                             <?php
-                                $query = "SELECT id, adminName, lastLogin FROM Admins ORDER BY lastLogin DESC LIMIT 25;";
+                                $query = "SELECT id, adminName, lastLogin FROM admins ORDER BY lastLogin DESC LIMIT 25;";
                                 
                                 if (isset($mainAdmin) && $mainAdmin) {
-                                    $query = "SELECT * FROM Admins ORDER BY lastLogin DESC LIMIT 25;";
+                                    $query = "SELECT * FROM admins ORDER BY lastLogin DESC LIMIT 25;";
                                 }
 
                                 $rs = mysqli_query($serverConnect, $query);

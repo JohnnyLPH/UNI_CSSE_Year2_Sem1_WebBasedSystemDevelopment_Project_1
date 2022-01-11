@@ -1,5 +1,5 @@
-<!-- Admin Dashboard: Home for LINGsCARS -->
 <?php
+    // Admin Dashboard: Home for LINGsCARS
     require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
     require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     if (!checkAdminLogin()) {
@@ -9,7 +9,7 @@
     // Check if admin is deleted.
     else {
         $foundAdmin = false;
-        $query = "SELECT id, adminName FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+        $query = "SELECT id, adminName FROM admins WHERE id=" . $_SESSION["adminId"] . ";";
 
         $rs = mysqli_query($serverConnect, $query);
         if ($rs) {
@@ -91,7 +91,7 @@
                 <div class='chart-container'>
                     <?php
                         // Try to fetch data from Admins table.
-                        $query = "SELECT lastLogin FROM Admins ORDER BY lastLogin DESC;";
+                        $query = "SELECT lastLogin FROM admins ORDER BY lastLogin DESC;";
 
                         $rs = mysqli_query($serverConnect, $query);
                         $currentDate = strtotime(date("Y-m-d H:i:s"));
@@ -165,15 +165,6 @@
                             </script>
                         </div>
                     <?php endif; ?>
-
-                    <?php
-                        // Try to fetch data from Admins table.
-                        $query = "SELECT lastLogin FROM Admins ORDER BY lastLogin DESC;";
-
-                        $rs = mysqli_query($serverConnect, $query);
-                        $currentDate = strtotime(date("Y-m-d H:i:s"));
-                        $addToYValues = array(0, 0, 0, 0);
-                    ?>
                 </div>
             </div>
             

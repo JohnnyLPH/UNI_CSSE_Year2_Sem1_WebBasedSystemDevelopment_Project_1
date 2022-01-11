@@ -1,5 +1,5 @@
-<!-- Admin Dashboard: Manage Member for LINGsCARS -->
 <?php
+    // Admin Dashboard: Manage Member for LINGsCARS
     require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
     require_once($_SERVER['DOCUMENT_ROOT'] . "/admin/adminAuthenticate.php");
     if (!checkAdminLogin()) {
@@ -9,7 +9,7 @@
     // Check if admin is deleted.
     else {
         $foundAdmin = false;
-        $query = "SELECT id, adminName FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+        $query = "SELECT id, adminName FROM admins WHERE id=" . $_SESSION["adminId"] . ";";
 
         $rs = mysqli_query($serverConnect, $query);
         if ($rs) {
@@ -62,7 +62,7 @@
             
             // Check if the member is allowed to be viewed.
             if (!empty($memberId)) {
-                $query = "SELECT id FROM Members WHERE id=$memberId;";
+                $query = "SELECT id FROM members WHERE id=$memberId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -84,7 +84,7 @@
 
             // Check if the member is allowed to be deleted.
             if (!empty($memberId)) {
-                $query = "SELECT id FROM Members WHERE id=$memberId;";
+                $query = "SELECT id FROM members WHERE id=$memberId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -118,7 +118,7 @@
                 if ($passChecking) {
                     $passChecking = false;
 
-                    $query = "SELECT adminPassword FROM Admins WHERE id=" . $_SESSION["adminId"] . ";";
+                    $query = "SELECT adminPassword FROM admins WHERE id=" . $_SESSION["adminId"] . ";";
                     $rs = mysqli_query($serverConnect, $query);
 
                     if ($rs) {
@@ -135,7 +135,7 @@
                 }
                 
                 if ($passChecking) {
-                    $query = "DELETE FROM Members WHERE id=$memberId;";
+                    $query = "DELETE FROM members WHERE id=$memberId;";
                     $rs = mysqli_query($serverConnect, $query);
 
                     if (!($rs)) {
@@ -225,7 +225,7 @@
                         <?php if ($allowViewMember): ?>
                             <?php
                                 // Select everything from Members table except password to display, select from MemberLog table too.
-                                $query = "SELECT Members.id, Members.firstName, Members.lastName, Members.email, Members.countryCode, Members.phoneNo, Members.gender, Members.state, Members.registerDate, MemberLog.loginDate FROM Members LEFT JOIN MemberLog ON Members.id = MemberLog.memberId WHERE Members.id=$memberId;";
+                                $query = "SELECT members.id, members.firstName, members.lastName, members.email, members.countryCode, members.phoneNo, members.gender, members.state, members.registerDate, memberlog.loginDate FROM members LEFT JOIN memberlog ON members.id = memberlog.memberId WHERE members.id=$memberId;";
                                 $rs = mysqli_query($serverConnect, $query);
                             ?>
 
@@ -415,12 +415,12 @@
                         </thead>
                         <tbody>
                             <?php
-                                $query = "SELECT Members.id, Members.email, Members.phoneNo, Members.state, Members.registerDate, MemberLog.loginDate FROM Members LEFT JOIN MemberLog ON Members.id = MemberLog.memberId" .
+                                $query = "SELECT members.id, members.email, members.phoneNo, members.state, members.registerDate, memberlog.loginDate FROM members LEFT JOIN memberlog ON members.id = memberlog.memberId" .
                                 (
                                     (isset($wordToSearch) && !empty($wordToSearch)) ?
-                                    " WHERE Members.id LIKE '%" .
+                                    " WHERE members.id LIKE '%" .
                                     testInput($wordToSearch) .
-                                    "%' OR Members.email LIKE '%" .
+                                    "%' OR members.email LIKE '%" .
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
