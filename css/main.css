@@ -602,3 +602,61 @@ nav #car-list-menu section article a {
     padding: 0 20px;
     margin-top: 20px;
 }
+
+.multiline-text {
+    white-space: pre-wrap;
+}
+
+.button-section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.button-section button, .button-section input {
+    width: 30%;
+    margin: 5px;
+    padding: 10px 0;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: white;
+}
+
+.button-section input {
+    width: 320px;
+    color: black;
+    font-weight: normal;
+    border-color: rgba(128, 128, 128, 0.5);
+}
+
+.button-section .small-button {
+    /* width: 10%; */
+    width: 80px;
+    min-width: fit-content;
+}
+
+.positive-button {
+    background-color: green;
+}
+
+.negative-button {
+    background-color: red;
+}
+
+.button-section button:hover {
+    color: black;
+    border-color: black;
+}
+
+.positive-button:hover {
+    background-color:rgba(0, 128, 0, 0.651) ;
+}
+
+.negative-button:hover {
+    background-color: rgba(255, 0, 0, 0.651);
+}

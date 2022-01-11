@@ -241,7 +241,7 @@
                         }
                         else {
                             $passChecking = false;
-                            $addCarMsg = "* ERROR: Failed to add new Car!";
+                            $addCarMsg = "* ERROR: Failed to add new Car! Is there any quotes?";
                         }
                     }
 
@@ -438,7 +438,7 @@
                         }
                         else {
                             $passChecking = false;
-                            $editCarMsg = "* ERROR: Failed to save changes!";
+                            $editCarMsg = "* ERROR: Failed to save changes! Is there any quotes?";
                         }
                     }
                 }

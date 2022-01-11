@@ -724,7 +724,7 @@
                                                     $addToYValues[1]++;
                                                     $addToYValues[2]++;
                                                 }
-                                                else if ($currentDate - strtotime($record['lastLogin']) < 86400 * 7) {
+                                                else if ($currentDate - strtotime($record['lastLogin']) < 86400 * 30) {
                                                     $addToYValues[2]++;
                                                 }
                                                 else {
