@@ -229,9 +229,12 @@
 
                     // Try to insert new record.
                     if ($passChecking && !empty($brandId)) {
+                        $carDescEscaped = mysqli_real_escape_string($serverConnect, $carDesc);
+                        $carImageNameEscaped = mysqli_real_escape_string($serverConnect, $carImageName);
+
                         $query = "INSERT INTO cars(brandId, carModel, monthPrice, leaseTime, initialPay, carDesc, carImage, imagePath, dateAdded)
                         VALUES
-                        ('$brandId', '$carModel', '$monthPrice', '$leaseTime', '$initialPay', '$carDesc', '$carImageName', '$targetImagePath', '$currentDate')
+                        ('$brandId', '$carModel', '$monthPrice', '$leaseTime', '$initialPay', '$carDescEscaped', '$carImageNameEscaped', '$targetImagePath', '$currentDate')
                         ;";
 
                         $rs = mysqli_query($serverConnect, $query);
@@ -394,7 +397,9 @@
 
                 // Try to update record (upload new image first if provided).
                 if ($passChecking) {
-                    $query = "UPDATE cars SET cars.monthPrice='$monthPrice', cars.leaseTime='$leaseTime', cars.initialPay='$initialPay', cars.carDesc='$carDesc', cars.dateEdited='$currentDate' WHERE cars.id=$carId;";
+                    $carDescEscaped = mysqli_real_escape_string($serverConnect, $carDesc);
+
+                    $query = "UPDATE cars SET cars.monthPrice='$monthPrice', cars.leaseTime='$leaseTime', cars.initialPay='$initialPay', cars.carDesc='$carDescEscaped', cars.dateEdited='$currentDate' WHERE cars.id=$carId;";
                     
                     $changeDetected = true;
 
@@ -412,7 +417,9 @@
                             $editCarMsg = "* ERROR: Failed to upload new Car Image!";
                         }
                         else {
-                            $query = "UPDATE cars SET cars.monthPrice='$monthPrice', cars.leaseTime='$leaseTime', cars.initialPay='$initialPay', cars.carDesc='$carDesc', cars.dateEdited='$currentDate', cars.carImage='$carImageName' WHERE cars.id=$carId;";
+                            $carImageNameEscaped = mysqli_real_escape_string($serverConnect, $carImageName);
+
+                            $query = "UPDATE cars SET cars.monthPrice='$monthPrice', cars.leaseTime='$leaseTime', cars.initialPay='$initialPay', cars.carDesc='$carDescEscaped', cars.dateEdited='$currentDate', cars.carImage='$carImageNameEscaped' WHERE cars.id=$carId;";
 
                             $passChecking = true;
                         }
@@ -796,9 +803,9 @@
                                             <tr>
                                                 <td>Car Image</td>
                                                 <td>
-                                                    <img src='<?php
+                                                    <img src="<?php
                                                         echo((isset($car["imagePath"]) && !empty($car["imagePath"]) && isset($car["carImage"]) && !empty($car["carImage"])) ? $car["imagePath"] . $car["carImage"]: "");
-                                                    ?>' alt='<?php
+                                                    ?>" alt='<?php
                                                         echo((isset($car["carModel"])) ? $car["carModel"] . "_image": "_none");
                                                     ?>'>
                                                 </td>

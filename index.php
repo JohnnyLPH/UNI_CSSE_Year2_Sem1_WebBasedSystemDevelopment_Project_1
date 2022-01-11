@@ -221,9 +221,9 @@
                             <a class="car-details-link" href="/index.php?manage-mode=view-car&car-id=<?php
                                     echo((isset($car["id"])) ? $car["id"]: '');
                                 ?>">
-                                <img class="car-details-image" src='<?php
+                                <img class="car-details-image" src="<?php
                                     echo((isset($car["imagePath"]) && !empty($car["imagePath"]) && isset($car["carImage"]) && !empty($car["carImage"])) ? $car["imagePath"] . $car["carImage"]: "");
-                                ?>' alt='<?php
+                                ?>" alt='<?php
                                     echo((isset($car["carModel"])) ? $car["carModel"] . "_image": "_none");
                                 ?>'>
 
