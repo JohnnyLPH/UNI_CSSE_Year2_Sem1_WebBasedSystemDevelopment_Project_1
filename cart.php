@@ -62,7 +62,7 @@
                 }
                 else {
                     // Max is 10.
-                    if ($carQuant > 9) {
+                    if ($carQuant > 10) {
                         $_SESSION['cart-item'][$carId] = 10;
                         $editQuantMsg = "* Car ID " . $carId . " has reached Maximum Quantity (10)!";
                         $allowEditQuant = false;
