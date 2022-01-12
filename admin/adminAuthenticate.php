@@ -1,7 +1,9 @@
 <?php
     // Authenticate Admin Login
     // require_once("./dbConnection.php");
-    session_start();
+    if (session_id() == "") {
+        session_start();
+    }
     date_default_timezone_set("Asia/Kuala_Lumpur");
 
     // Return true if admin has logged in.
