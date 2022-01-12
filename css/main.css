@@ -660,3 +660,104 @@ nav #car-list-menu section article a {
 .negative-button:hover {
     background-color: rgba(255, 0, 0, 0.651);
 }
+
+.error-message {
+    display: block;
+    margin: auto;
+    color: red;
+    text-align: center;
+    font-size: medium;
+    font-style: italic;
+}
+
+.success-message {
+    display: block;
+    margin: auto;
+    color: green;
+    text-align: center;
+    font-size: medium;
+    font-style: italic;
+}
+
+table, table th, table td {
+    border: 2px solid black;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+table th, table td {
+    padding: 0 5px;
+    height: 30px;
+    /* font-size: small; */
+}
+
+table td.left-text {
+    text-align: left;
+}
+
+table td.right-text {
+    text-align: right;
+}
+
+table td.center-text {
+    text-align: center;
+}
+
+div.view-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+div.view-content table {
+    width: fit-content;
+    background-color: white;
+}
+
+div.view-content table tr td {
+    max-width: 300px;
+    text-align: justify;
+}
+
+div.view-content table tr td:first-child {
+    font-weight: bold;
+    text-align: right;
+}
+
+div.view-content table tr td img {
+    display: block;
+    margin: auto;
+    max-width: 100%;
+    max-height: 200px;
+}
+
+button {
+    background-color: rgb(76, 192, 157);
+    max-width: 250px;
+}
+
+form button {
+    display: block;
+    margin: auto;
+    margin-bottom: 10px;
+    padding: 10px 0;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: white;
+    width: 100%;
+    min-width: 80px;
+    max-width: 500px;
+    /* min-height: 35px; */
+}
+
+form button:hover {
+    color: black;
+    border-color: black;
+}

@@ -1,5 +1,8 @@
 <?php
     // Member Dashboard: Home for LINGsCARS
+    if (session_id() == "") {
+        session_start();
+    }
     require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
 
     function testInput($data) {
@@ -22,6 +25,9 @@
 
     $viewCarMsg = "";
     $allowViewCar = false;
+
+    $addCartMsg = "";
+    $allowAddCart = false;
     
     if (!empty($manageMode)) {
         // Search Car
@@ -47,6 +53,32 @@
 
             if (!$allowViewCar) {
                 $viewCarMsg = "* You are not allowed to view the selected Car!";
+            }
+        }
+        // Add to Cart
+        else if ($manageMode == "add-to-cart") {
+            $carId = (isset($queryString['car-id'])) ? testInput($queryString['car-id']): "";
+            
+            // Check if the Car is allowed to be added.
+            if (!empty($carId) && is_numeric($carId)) {
+                $query = "SELECT id FROM cars WHERE id=$carId;";
+                $rs = mysqli_query($serverConnect, $query);
+
+                if ($rs) {
+                    if ($record = mysqli_fetch_assoc($rs)) {
+                        // Allow to add to cart.
+                        $allowAddCart = true;
+                    }
+                }
+            }
+
+            if (!$allowAddCart) {
+                $addCartMsg = "* You are not allowed to add the selected Car!";
+            }
+            else if (isset($_POST['allow-add-cart']) && $_POST['allow-add-cart'] == 'yes') {
+                // Store into session, if car quantity is greater than 0 then add one, else set to 1.
+                $_SESSION['cart-item'][$carId] = (isset($_SESSION['cart-item'][$carId]) && $_SESSION['cart-item'][$carId] > 0) ? $_SESSION['cart-item'][$carId] + 1: 1;
+                $addCartMsg = "* Car is added to your cart! Car ID " . $carId . ": Current Quantity = " . $_SESSION['cart-item'][$carId] . "!";
             }
         }
         // Invalid Mode
@@ -177,110 +209,252 @@
 
             <h1 style="text-align: center;">&#128293;&#128293; <span style="display: inline-block;">MAIN DEALS</span>&#10069;&#10069;&#10069; &#128293;&#128293;</h1>
 
-            <form id='cancel-search-form' method='get' action='/index.php'></form>
+            <?php if ($manageMode == "view-car"): ?>
+                <h3 style="text-align: center;">View <i>Car ID <?php
+                    echo((isset($carId)) ? $carId: "");
+                ?></i>:</h3>
 
-            <form id='manage-search-form' method='get' action='/index.php'>
-                <input type='hidden' name='manage-mode' value='search-car'>
-            </form>
-        
-            <div class='button-section'>
-                <input form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Car Brand or Model' value='<?php
-                    echo((isset($wordToSearch) && !empty($wordToSearch)) ? testInput($wordToSearch): "");
-                ?>' minlength="1" maxlength="100" required>
-                
-                <button form='manage-search-form' class='small-button positive-button'>Search</button>
-
-                <button form='cancel-search-form' class='small-button negative-button'<?php
-                    echo((isset($wordToSearch) && !empty($wordToSearch)) ? "": " disabled");
-                ?>>Reset</button>
-            </div>
-
-            <section class="flex-container" style="text-align: center;">
-                <?php
-                    $query = "SELECT cars.id, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, cars.carDesc, cars.carImage, cars.imagePath, cars.dateAdded, cars.dateEdited, brands.brandName FROM cars INNER JOIN brands ON cars.brandId = brands.id" .
-                    (
-                        (isset($wordToSearch) && !empty($wordToSearch)) ?
-                        " WHERE brands.brandName LIKE '%" .
-                        testInput($wordToSearch) .
-                        "%' OR cars.carModel LIKE '%" .
-                        testInput($wordToSearch) .
-                        "%'" : ""
-                    ) .
-                    " ORDER BY cars.dateEdited DESC;";
-                    $rs = mysqli_query($serverConnect, $query);
-                ?>
-
-                <?php if ($rs): ?>
-                    <?php $totalCarFound = mysqli_num_rows($rs); ?>
-
-                    <?php while ($car = mysqli_fetch_assoc($rs)): ?>
-                        <div class="flex-item car-details car-colors-purple">
-                            <p class="car-details-headline">
-                                <b>&#128226;GREAT DEAL&#10071;</b>
-                            </p>
-                            <a class="car-details-link" href="/index.php?manage-mode=view-car&car-id=<?php
-                                    echo((isset($car["id"])) ? $car["id"]: '');
-                                ?>">
-                                <img class="car-details-image" src="<?php
-                                    echo((isset($car["imagePath"]) && !empty($car["imagePath"]) && isset($car["carImage"]) && !empty($car["carImage"])) ? $car["imagePath"] . $car["carImage"]: "");
-                                ?>" alt='<?php
-                                    echo((isset($car["carModel"])) ? $car["carModel"] . "_image": "_none");
-                                ?>'>
-
-                                <h2><?php
-                                    echo((isset($car["brandName"])) ? "" . $car["brandName"]: '');
-                                    echo((isset($car["carModel"])) ? ": " . $car["carModel"]: '');
-                                ?></h2>
-
-                                <span class="car-details-trim multiline-text"><?php
-                                    echo((isset($car["carDesc"])) ? testInput($car["carDesc"]): "-"); 
-                                ?></span>
-                            </a>
-                            <div class="car-details-content">
-                                <div class="car-details-price">
-                                    <p>&#128176; <b>£<?php
-                                        echo((isset($car["monthPrice"])) ? $car["monthPrice"]: "-");
-                                    ?>/mth</b> (VAT) &#128176;</p>
-                                </div>
-
-                                <div class="car-details-ling car-details-ling-8"></div>
-
-                                <div class="car-details-term payments-3-47"></div>
-
-                                <p class="car-details-term-description">
-                                    <b><?php
-                                        if (isset($car['leaseTime']) && is_numeric($car['leaseTime'])) {
-                                            if ((int)($car['leaseTime'] / 12) > 0) {
-                                                echo((int)($car['leaseTime'] / 12) . ' year ');
-                                            }
-                                            if ($car['leaseTime'] % 12 > 0) {
-                                                echo(($car['leaseTime'] % 12) . ' month');
-                                            }
-                                        }
-                                    ?></b> cheap<br> car leasing
-                                </p>
-
-                                <div class="car-features">
-                                    <span class="car-details-petrol">&#9989;<b>Powerful engine</b></span><br>
-                                    <span class="car-details-manual">&#9989;<b>Good condition</b></span><br>
-                                    <span class="car-details-metallic">&#9989;<b>Attractive Design</b></span>
-                                </div>
-                                <div class="car-details-mileage">
-                                    <p>(Other mileages available)</p>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endwhile; ?>
-
-                    <?php if ($totalCarFound < 1): ?>
-                        <div class="flex-item car-details car-colors-purple">
-                            <p style='color: red;' class="car-details-headline">
-                                <b>&#10071; NO CAR FOUND &#10071;</b>
-                            </p>
-                        </div>
+                <?php if (isset($viewCarMsg) && !empty($viewCarMsg)): ?>
+                    <?php if (!$allowViewCar): ?>
+                        <span class='error-message'>
+                            <?php echo($viewCarMsg); ?>
+                        </span>
                     <?php endif; ?>
                 <?php endif; ?>
-            </section>
+
+                <?php if ($allowViewCar): ?>
+                    <?php
+                        $query = "SELECT cars.id, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, cars.carDesc, cars.carImage, cars.imagePath, cars.dateAdded, cars.dateEdited, brands.brandName FROM cars INNER JOIN brands ON cars.brandId = brands.id WHERE cars.id=$carId;";
+                        $rs = mysqli_query($serverConnect, $query);
+                    ?>
+
+                    <?php if ($rs): ?>
+                        <?php if ($car = mysqli_fetch_assoc($rs)): ?>
+                            <div class='view-content'>
+                                <table>
+                                    <tr>
+                                        <td>Car ID</td>
+                                        <td>
+                                            <?php echo((isset($car["id"])) ? $car["id"]: "-"); ?>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Brand</td>
+                                        <td>
+                                            <?php echo((isset($car["brandName"])) ? $car["brandName"]: "-"); ?>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>Model</td>
+                                        <td>
+                                            <?php echo((isset($car["carModel"])) ? $car["carModel"]: "-"); ?>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>Price (£/mth)</td>
+                                        <td>
+                                            <?php echo((isset($car["monthPrice"])) ? $car["monthPrice"]: "-"); ?>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>Lease Time (Month)</td>
+                                        <td>
+                                            <?php echo((isset($car["leaseTime"])) ? $car["leaseTime"]: "-"); ?>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>Initial Pay (* £/mth)</td>
+                                        <td>
+                                            <?php echo((isset($car["initialPay"])) ? $car["initialPay"]: "-"); ?>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>Description</td>
+                                        <td class='multiline-text'><?php
+                                            echo((isset($car["carDesc"])) ? testInput($car["carDesc"]): "-"); 
+                                        ?></td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>Car Image</td>
+                                        <td>
+                                            <img src="<?php
+                                                echo((isset($car["imagePath"]) && !empty($car["imagePath"]) && isset($car["carImage"]) && !empty($car["carImage"])) ? $car["imagePath"] . $car["carImage"]: "");
+                                            ?>" alt='<?php
+                                                echo((isset($car["carModel"])) ? $car["carModel"] . "_image": "_none");
+                                            ?>'>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr>
+                                        <td>Added On</td>
+                                        <td>
+                                            <?php echo((isset($car["dateAdded"])) ? $car["dateAdded"]: "-"); ?>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Last Edit</td>
+                                        <td>
+                                            <?php echo((isset($car["dateEdited"])) ? $car["dateEdited"]: "-"); ?>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <?php
+                                $newQueryString = array();
+                                $newQueryString['manage-mode'] = 'add-to-cart';
+                                $newQueryString['car-id'] = (isset($car["id"])) ? $car["id"]: '';
+                            ?>
+
+                            <form method='post' action='/index.php?<?php
+                                echo(http_build_query($newQueryString));
+                            ?>'>
+                                <input type='hidden' name='allow-add-cart' value='yes'>
+                                <button>Add to Cart</button>
+                            </form>
+
+                            <form method='get' action='/index.php'>
+                                <button>Return to Home Page</button>
+                            </form>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <?php if ($manageMode != "view-car" || !$allowViewCar): ?>
+                <?php if (!empty($addCartMsg)): ?>
+                    <h2 class='<?php
+                        echo(($allowAddCart) ? "success-message": "error-message")
+                    ?>'><?php
+                        echo($addCartMsg);
+                    ?></h2>
+                <?php endif; ?>
+
+                <form id='cancel-search-form' method='get' action='/index.php'></form>
+
+                <form id='manage-search-form' method='get' action='/index.php'>
+                    <input type='hidden' name='manage-mode' value='search-car'>
+                </form>
+            
+                <div class='button-section'>
+                    <input form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Car Brand or Model' value='<?php
+                        echo((isset($wordToSearch) && !empty($wordToSearch)) ? testInput($wordToSearch): "");
+                    ?>' minlength="1" maxlength="100" required>
+                    
+                    <button form='manage-search-form' class='small-button positive-button'>Search</button>
+
+                    <button form='cancel-search-form' class='small-button negative-button'<?php
+                        echo((isset($wordToSearch) && !empty($wordToSearch)) ? "": " disabled");
+                    ?>>Reset</button>
+                </div>
+
+                <section class="flex-container" style="text-align: center;">
+                    <?php
+                        $query = "SELECT cars.id, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, cars.carDesc, cars.carImage, cars.imagePath, cars.dateAdded, cars.dateEdited, brands.brandName FROM cars INNER JOIN brands ON cars.brandId = brands.id" .
+                        (
+                            (isset($wordToSearch) && !empty($wordToSearch)) ?
+                            " WHERE brands.brandName LIKE '%" .
+                            testInput($wordToSearch) .
+                            "%' OR cars.carModel LIKE '%" .
+                            testInput($wordToSearch) .
+                            "%'" : ""
+                        ) .
+                        " ORDER BY cars.dateEdited DESC;";
+                        $rs = mysqli_query($serverConnect, $query);
+                    ?>
+
+                    <?php if ($rs): ?>
+                        <?php $totalCarFound = mysqli_num_rows($rs); ?>
+
+                        <?php while ($car = mysqli_fetch_assoc($rs)): ?>
+                            <div class="flex-item car-details car-colors-purple">
+                                <p class="car-details-headline">
+                                    <b>&#128226;GREAT DEAL&#10071;</b>
+                                </p>
+                                <a class="car-details-link" href="/index.php?manage-mode=view-car&car-id=<?php
+                                        echo((isset($car["id"])) ? $car["id"]: '');
+                                    ?>">
+                                    <img class="car-details-image" src="<?php
+                                        echo((isset($car["imagePath"]) && !empty($car["imagePath"]) && isset($car["carImage"]) && !empty($car["carImage"])) ? $car["imagePath"] . $car["carImage"]: "");
+                                    ?>" alt='<?php
+                                        echo((isset($car["carModel"])) ? $car["carModel"] . "_image": "_none");
+                                    ?>'>
+
+                                    <h2><?php
+                                        echo((isset($car["brandName"])) ? "" . $car["brandName"]: '');
+                                        echo((isset($car["carModel"])) ? ": " . $car["carModel"]: '');
+                                    ?></h2>
+
+                                    <span class="car-details-trim multiline-text"><?php
+                                        echo((isset($car["carDesc"])) ? testInput($car["carDesc"]): "-"); 
+                                    ?></span>
+                                </a>
+                                <div class="car-details-content">
+                                    <div class="car-details-price">
+                                        <p>&#128176; <b>£<?php
+                                            echo((isset($car["monthPrice"])) ? $car["monthPrice"]: "-");
+                                        ?>/mth</b> (VAT) &#128176;</p>
+                                    </div>
+
+                                    <div class="car-details-ling car-details-ling-8"></div>
+
+                                    <div class="car-details-term payments-3-47"></div>
+
+                                    <p class="car-details-term-description">
+                                        <b><?php
+                                            if (isset($car['leaseTime']) && is_numeric($car['leaseTime'])) {
+                                                if ((int)($car['leaseTime'] / 12) > 0) {
+                                                    echo((int)($car['leaseTime'] / 12) . ' year ');
+                                                }
+                                                if ($car['leaseTime'] % 12 > 0) {
+                                                    echo(($car['leaseTime'] % 12) . ' month');
+                                                }
+                                            }
+                                        ?></b> cheap<br> car leasing
+                                    </p>
+
+                                    <div class="car-features">
+                                        <span class="car-details-petrol">&#9989;<b>Powerful engine</b></span><br>
+                                        <span class="car-details-manual">&#9989;<b>Good condition</b></span><br>
+                                        <span class="car-details-metallic">&#9989;<b>Attractive Design</b></span>
+                                    </div>
+                                    <div class="car-details-mileage">
+                                        <p>(Other mileages available)</p>
+                                    </div>
+                                </div>
+                                <?php
+                                    $newQueryString = array();
+                                    $newQueryString['manage-mode'] = 'add-to-cart';
+                                    $newQueryString['car-id'] = (isset($car["id"])) ? $car["id"]: '';
+                                ?>
+
+                                <form method='post' action='/index.php?<?php
+                                    echo(http_build_query($newQueryString));
+                                ?>'>
+                                    <input type='hidden' name='allow-add-cart' value='yes'>
+                                    <button>Add to Cart</button>
+                                </form>
+                            </div>
+                        <?php endwhile; ?>
+
+                        <?php if ($totalCarFound < 1): ?>
+                            <div class="flex-item car-details car-colors-purple">
+                                <p style='color: red;' class="car-details-headline">
+                                    <b>&#10071; NO CAR FOUND &#10071;</b>
+                                </p>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </section>
+            <?php endif; ?>
 
             <div class="social-border">
                 <h4 style="text-align: center; color: d#264861">&#10024; Click here to visit our Facebook and Twitter &#10024;</h4>
