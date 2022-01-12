@@ -679,6 +679,14 @@ nav #car-list-menu section article a {
     font-style: italic;
 }
 
+table.db-table {
+    background-color: white;
+    width: 100%;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
 table, table th, table td {
     border: 2px solid black;
     border-collapse: collapse;
@@ -700,6 +708,11 @@ table td.right-text {
 }
 
 table td.center-text {
+    text-align: center;
+}
+
+table.db-table tr .data-not-found {
+    color: red;
     text-align: center;
 }
 
@@ -760,4 +773,23 @@ form button {
 form button:hover {
     color: black;
     border-color: black;
+}
+
+div.manage-section {
+    display: block;
+    margin: auto;
+    width: fit-content;
+    min-width: 70%;
+    margin-bottom: 10px;
+    /* max-width: 1200px; */
+}
+
+.cart-quantity {
+    display: block;
+    margin: auto;
+    width: 75%;
+    /* text-align: center; */
+    font-size: smaller;
+    min-height: 20px;
+    border: 2px solid black;
 }

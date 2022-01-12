@@ -75,10 +75,33 @@
             if (!$allowAddCart) {
                 $addCartMsg = "* You are not allowed to add the selected Car!";
             }
-            else if (isset($_POST['allow-add-cart']) && $_POST['allow-add-cart'] == 'yes') {
+            else if (
+                $_SERVER["REQUEST_METHOD"] == "POST" &&
+                isset($_POST['allow-add-cart']) && $_POST['allow-add-cart'] == 'yes'
+            ) {
+                if (!isset($_SESSION['cart-item'])) {
+                    $_SESSION['cart-item'] = array();
+                }
+
                 // Store into session, if car quantity is greater than 0 then add one, else set to 1.
-                $_SESSION['cart-item'][$carId] = (isset($_SESSION['cart-item'][$carId]) && $_SESSION['cart-item'][$carId] > 0) ? $_SESSION['cart-item'][$carId] + 1: 1;
-                $addCartMsg = "* Car is added to your cart! Car ID " . $carId . ": Current Quantity = " . $_SESSION['cart-item'][$carId] . "!";
+                if (isset($_SESSION['cart-item'][$carId]) && $_SESSION['cart-item'][$carId] > 0) {
+                    // Max = 10.
+                    if ($_SESSION['cart-item'][$carId] > 9) {
+                        $_SESSION['cart-item'][$carId] = 10;
+                        $addCartMsg = "* Car ID " . $carId . " has reached Maximum Quantity (10)!";
+                        $allowAddCart = false;
+                    }
+                    else {
+                        $_SESSION['cart-item'][$carId]++;
+                    }
+                }
+                else {
+                    $_SESSION['cart-item'][$carId] = 1;
+                }
+                
+                if ($allowAddCart) {
+                    $addCartMsg = "* Car is added to your cart! Car ID " . $carId . ": Current Quantity = " . $_SESSION['cart-item'][$carId] . "!";
+                }
             }
         }
         // Invalid Mode
@@ -343,6 +366,8 @@
                 <form id='manage-search-form' method='get' action='/index.php'>
                     <input type='hidden' name='manage-mode' value='search-car'>
                 </form>
+
+                <form id='view-cart-form' method='get' action='/cart.php'></form>
             
                 <div class='button-section'>
                     <input form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Car Brand or Model' value='<?php
@@ -354,6 +379,8 @@
                     <button form='cancel-search-form' class='small-button negative-button'<?php
                         echo((isset($wordToSearch) && !empty($wordToSearch)) ? "": " disabled");
                     ?>>Reset</button>
+
+                    <button form='view-cart-form' class='small-button'>View Cart</button>
                 </div>
 
                 <section class="flex-container" style="text-align: center;">
