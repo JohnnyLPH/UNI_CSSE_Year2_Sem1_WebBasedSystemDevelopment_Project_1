@@ -1,19 +1,3 @@
-//want to load another js file into this js file, but cannot the work:(
-
-/* function include(file) {
-  
-    var script  = document.createElement('script');
-    script.src  = file;
-    script.type = 'text/javascript';
-    script.defer = true;
-    
-    /* document.getElementsByTagName('head').item(0).appendChild(script); */
-    /* document.head.(script);
-} */
-/* 
-include("formElementClass.js");
-$.getScript("formElementClass.js"); 
- */ 
 
 function resetForm() {
     if(window.confirm("Clear the Registration Form?")) {
@@ -65,7 +49,7 @@ class FormElement {
         let inputType = this.inputElement.getAttribute('type');
         if(inputType) {
             inputType = inputType.toLowerCase();
-            const boxInputTypes = ['text', 'email', 'tel', 'password'];
+            const boxInputTypes = ['text', 'email', 'tel', 'password', 'date'];
             if(boxInputTypes.indexOf(inputType) >= 0) {
                 setRedBorder(this.inputElement);
             }
@@ -145,9 +129,9 @@ const phone = new FormElement(form.phone, function() {
         this.showWarning('Invalid format. Malaysia mobile phone number must begin with 1');
     }*/ else if(this.inputElement.value.search(/[^0-9]/) >= 0) {
         this.showWarning("Phone number can only contain numbers without any special character such as '-'");
-    }/* else if(this.inputElement.value.length < 9 || this.inputElement.value.length > 10) {
+    } else if(this.inputElement.value.length < 9 || this.inputElement.value.length > 10) {
         this.showWarning('Malaysia mobile phone number must have 9 - 10 digits (excluding +60)');
-    } */else {
+    }   else {
         this.hideWarning();
         return true;
     }
@@ -207,6 +191,21 @@ const terms = new FormElement(form.terms, function() {
     }
     return false;
 });
+const dob = new FormElement(form.dob, function() {
+    var currentDate = new Date();
+    var dobTime = new Date(this.inputElement.value);
+    
+    //user cannot select the date exceed of today
+    if(this.inputElement.value === ''){
+        this.showWarning('Select correct date of birth');
+    }else if((currentDate.getTime() - dobTime.getTime()) <= 0) {
+        this.showWarning('Select correct date of birth');
+    } else {
+        this.hideWarning();
+        return true;
+    }
+    return false;
+});
 
 function validateForm() {
     // first invalid form element, of which will be focused upon submission of form (when user clicks REGISTER)
@@ -238,6 +237,9 @@ function validateForm() {
     }
     if(!terms.validate() && !invalidFormElementToFocus) {
         invalidFormElementToFocus = terms;
+    }
+    if(!dob.validate() && !invalidFormElementToFocus) {
+        invalidFormElementToFocus = dob;
     }
 
     if(invalidFormElementToFocus) {
@@ -272,6 +274,9 @@ window.addEventListener('load', function() {
     });
     form.terms.addEventListener('change', () => {
         terms.validate();      
+    });
+    form.dob.addEventListener('change', ()=>{
+        dob.validate();
     });
 });
  

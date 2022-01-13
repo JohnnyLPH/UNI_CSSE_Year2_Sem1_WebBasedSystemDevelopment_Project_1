@@ -1,0 +1,339 @@
+:root {
+    --primary-color: #009cde; 
+    --warning-background-color: #fff0f0;
+    --medium-dark-shade-of-cyan-: #264861;
+    --main-body-color: #EDF6F9;
+    --light-shade-of-red-orange: #FFDDD2;
+}
+
+html {
+    scroll-padding-top: 4rem; /* max-height of sticky nav bar */
+}
+
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: var(--main-body-color);
+}
+
+header {
+    color: white;
+    width: 100%;
+    height: 100px;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    z-index: 1;
+    top: 0;
+
+}
+
+#header_p1{
+    text-align: center; 
+    font-size: xxx-large; 
+    margin: 0px 0px 0px 0px;
+}
+
+#header_p1 b {    
+    font-style: italic;
+    text-shadow: 2px 2px black;
+}
+
+#header_p2{
+    text-align: center; 
+    font-size: medium; 
+    margin: 15px 0px 5px 0px;
+}
+
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: var(--main-body-color);
+}
+body::before {
+    content: "";
+    bottom: 0;
+    display: block;
+    position: fixed;
+    background-size: cover;
+    filter: blur(3px);
+    -webkit-filter: blur(3px);
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+}
+
+
+
+
+main {
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 0 3px 3px black;
+    padding: 0.67rem;
+    margin: 1.33rem auto;
+    max-width: 35rem;
+} 
+@media screen and (max-width: 601px) {
+    body {
+        background-color: white;
+    }
+    body::before {
+        background: none;
+    }
+    main {
+        border-radius: 0;
+        box-shadow: none;
+    }
+    form .button-flex {
+        width: 100%;
+    }
+}
+
+fieldset#member-details legend {
+    font-size: x-large;
+    font-weight: bold;
+}
+fieldset#member-details div {
+    display: flex;    
+    align-items: center;
+    flex-wrap: wrap;
+}
+fieldset#member-details h3, fieldset#member-details p {
+    flex-grow: 1;
+}
+fieldset#member-details h3 {
+    flex-basis: 7rem;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+fieldset#member-details p {
+    flex-basis: 15rem;
+    margin-left: 0.67rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+main .warning-banner {
+    background-color: var(--warning-background-color);
+    color: red;
+    margin: 0 -0.67rem;
+    padding: 0.83rem 0;
+    text-align: center;
+}
+main .warning-banner svg {
+    fill: red;
+    vertical-align: middle;
+}
+main .warning-banner h1 {
+    display: inline-block;
+    margin-top: 0;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+main .warning-banner h2 {
+    margin-bottom: 0;
+}
+form fieldset {
+    border-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 1.33rem;
+    padding: 0;
+}
+form fieldset label, div.input {         
+    flex-grow: 1;
+}
+form fieldset label {
+    align-self: start;        
+    flex-basis: 8rem;
+    font-weight: bold;
+    margin-top: 0.66rem;
+}
+form fieldset div.input {
+    display: flex;
+    flex-basis: 15rem;
+    max-width: 100%;
+}
+form fieldset div.input > div {            
+    flex-grow: 1;
+}
+form fieldset div.input .form-icon {            
+    display: inline-block;
+    flex-shrink: 0;
+    height: 36px;
+    width: 36px;
+    margin-right: 0.33rem;
+}
+form fieldset div.input .form-icon.badge {            
+    background-image: url('../source/images/registrationPage/form-icon/outline_badge_black_18dp.png');
+}
+form fieldset div.input .form-icon.email {            
+    background-image: url('../source/images/registrationPage/form-icon/outline_email_black_18dp.png');
+}
+form fieldset div.input .form-icon.smartphone {            
+    background-image: url('../source/images/registrationPage/form-icon/outline_smartphone_black_18dp.png');
+}
+form fieldset div.input .form-icon.vpn_key {            
+    background-image: url('../source/images/registrationPage/form-icon/outline_vpn_key_black_18dp.png');
+}
+form fieldset div.input .form-icon.wc {            
+    background-image: url('../source/images/registrationPage/form-icon/outline_wc_black_18dp.png');
+}
+form fieldset div.input .form-icon.flag {            
+    background-image: url('../source/images/registrationPage/form-icon/outline_flag_black_18dp.png');
+}
+form fieldset div.input .form-icon.calender {            
+    background-image: url('../source/images/registrationPage/form-icon/calendar.png');
+    background-repeat: no-repeat;
+    
+}
+form select, form input[type=text], form input[type=email], form input[type=tel], form input[type=password], form input[type=date] {
+    font-size: medium;
+    padding: 0.67rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+form input[type=checkbox] {
+    height: 1.33rem;
+    width: 1.33rem;
+    vertical-align: middle;
+}
+form input.warning, form select.warning {
+    border-color: red;
+    border-style: solid;
+}
+form .button-flex {
+    border: none;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    flex-grow: 1;
+    font-size: large;
+    font-weight: bold;
+    margin: 0.33rem;
+    padding: 0.67rem;
+    text-align: center;
+    text-decoration: none;
+}
+form .button-flex:hover {
+    text-decoration: underline;
+    background-color: #0071a1;
+}
+form .button-flex#reset {
+    background-color: darkred;
+}
+form .button-flex#reset:hover {
+    background-color: rgb(92, 0, 0);
+}
+form p.warning-text {
+    color: red;
+    font-weight: bold;
+    margin: 0;
+}
+form p.warning-text.hidden {
+    display: none;
+}
+form p.warning-text::before {
+    content: "⚠ ";
+}
+
+#terms-statement {
+    display: none;
+}
+
+/* formValidation.php */
+
+fieldset#member-details legend {
+    font-size: x-large;
+    font-weight: bold;
+}
+fieldset#member-details div {
+    display: flex;    
+    align-items: center;
+    flex-wrap: wrap;
+}
+fieldset#member-details h3, fieldset#member-details p {
+    flex-grow: 1;
+}
+fieldset#member-details h3 {
+    flex-basis: 7rem;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+fieldset#member-details p {
+    flex-basis: 15rem;
+    margin-left: 0.67rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+main .warning-banner {
+    background-color: var(--warning-background-color);
+    color: red;
+    margin: 0 -0.67rem;
+    padding: 0.83rem 0;
+    text-align: center;
+}
+main .warning-banner svg {
+    fill: red;
+    vertical-align: middle;
+}
+main .warning-banner h1 {
+    display: inline-block;
+    margin-top: 0;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+main .warning-banner h2 {
+    margin-bottom: 0;
+}
+div.go-back-container{
+    max-width: 35rem;
+    margin: 1.33rem auto;
+    display: flex;
+  justify-content: space-between;
+}
+
+a#return-to-login{
+    margin: 0.66rem;
+    width:fit-content;
+    box-sizing:border-box;
+    text-decoration: none;
+    text-align:center;
+    border-radius:5px;
+    padding:14px 16px;
+    outline:14px 16px;
+    display:inline-block;
+    background-color: #e76f51;
+    color: white;
+    margin-right: 0;
+    left: 20rem;
+}
+
+
+a#return-to-login:hover{
+    background-color: #e49a87;
+}
+
+a#return-to-mp{
+    margin: 0.66rem;
+    margin-left: 0;
+    width:fit-content;
+    box-sizing:border-box;
+    text-decoration: none;
+    /* text-align:center; */
+    border-radius:5px;
+    padding:14px 16px;
+    outline:14px 16px;
+    display:inline-block;
+    background-color: #e76f51;
+    color: white;
+    
+}
+
+a#return-to-mp:hover{
+    background-color: #e49a87;
+}

@@ -62,7 +62,7 @@
                                 $mail->Username = 'gorilajaker456@gmail.com'; // email
                                 $mail->Password = 'piicqkofqhuyzrad'; // password
                                 $mail->setFrom('LingsCar@siswa.unimas.my', 'LingsCar.com'); // From email and name  //set sender name   *
-                                $mail->addAddress($verifiedEmail, 'Mr. '.$array_user['f_name']); // to email and name  //set receiver's email and name   *
+                                $mail->addAddress($verifiedEmail, 'Mr. '.$array_user['fname']); // to email and name  //set receiver's email and name   *
                                 $mail->Subject =     'LingsCar\'s OTP for forgotten account password';   //set subject   *
                                 $mail->msgHTML("Verified OTP: ".$otp); //*$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,*
                                 $mail->AltBody = 'HTML messaging not supported'; // If html emails is not supported by the receiver, show this body
@@ -78,8 +78,8 @@
                                      //email is send 
                                 echo '<script>var msg = "OTP is sent to the email inputted. Please check back to your email and enter the OTP to the column privoded.\n\n";
                                 msg += "Note: If you do not received the email from us, please check back you email inputted\n";
-                                msg += "&ensp;1. Guarantee that you have enter a correct valid email in the column provided.\n";
-                                msg += "&ensp;2. Guarantee that you have enter a correct valid email during the registration.";
+                                msg += "1. Guarantee that you have enter a correct valid email in the column provided.\n";
+                                msg += "2. Guarantee that you have enter a correct valid email during the registration.";
                                 alert(msg);</script>';
                                 
                                 
@@ -103,6 +103,9 @@
                             exit;
                         }
                     }
+                    //if no click the 'Get Verified OTP' button and directly click 'Submit' button
+                    
+                    $verifiedEmail = $_POST['verifiedPasswordEmail']?? '';
                 }
                     
                 
@@ -118,6 +121,13 @@
             include('templateHeaderFooter.php'); 
             echo header_template; 
         ?>
+        <section class="guidance-container">
+            <h3>Guidance</h3>
+            <p> 1.  Enter valid email and click Get Verified Email.<br/>
+                2.  Go copying the OTP from your email and paste the OTP to the OTP column<br/>
+                3.  Click Submit button</p>
+        </section>
+
         <main>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post" name="forgotPasswordForm" onsubmit="return(validateForm());" novalidate>
                 <legend>
@@ -142,8 +152,11 @@
                 </fieldset>
             </form>
         </main>
-        <a id="return-to-login" href="loginPage.php" >Back to Login</a>
-        <a id="return-to-login" href="index.php" >Back to Main Page</a>
+        <div class="go-back-container">
+            <a id="return-to-login" href="index.php" >Back to Main Page</a>
+            <a id="return-to-login" href="loginPage.php" >Back to Login</a>
+        </div>
+        
         <?php 
             echo footer_template; 
         ?>

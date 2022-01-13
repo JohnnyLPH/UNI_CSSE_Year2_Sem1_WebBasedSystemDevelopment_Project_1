@@ -163,7 +163,19 @@
             $termsError = 'The Terms and Conditions must be accepted';
         }
 
-        if(isset($firstNameError) || isset($lastNameError) || isset($emailError) || isset($phoneError) || isset($passwordError) || isset($confirmPasswordError) || isset($genderError) || isset($stateError) || isset($termsError)) {
+        $currentDate = date('Y-m-d H:i:s');
+        $dob = $_POST['dob'] ?? '';
+        $dobTime = ($dob != '')?date($dob): '';
+        if($dobTime !== ''){
+            if((strtotime($currentDate) - strtotime($dobTime)) <= 0){
+                $termsError = 'Select correct date of birth';
+            }
+        }else{
+            $termsError = 'Select correct date of birth';
+        }
+        
+
+        if(isset($firstNameError) || isset($lastNameError) || isset($emailError) || isset($phoneError) || isset($passwordError) || isset($confirmPasswordError) || isset($genderError) || isset($stateError) || isset($termsError) || isset($dobError)) {
             // at least one input value is invalid, prompt user to correct input
 
             define('HIDDEN_WARNING_HTML', ' hidden">');
@@ -285,6 +297,16 @@
                             </div>
                         </div>
                     </fieldset>
+                    <fieldset>
+                    <label for="dob">Date of Birth: </label>
+                    <div class="input">
+                        <span class="form-icon calender"></span>
+                        <div>
+                            <input type="date" id="dob" name="dob">
+                            <p class="warning-text'.(isset($dobError) ? (NO_HIDDEN_WARNING_HTML.$dobError) : (HIDDEN_WARNING_HTML.'Error')).'</p>
+                        </div>
+                    </div>
+                </fieldset>
                     <fieldset style="display: block; text-align: center;">
                         <input type="checkbox" name="terms" id="terms"'.(($terms === 'on') ? ' checked' : '').'>
                         <label for="terms">I accept the <a href="#" onclick="showTerms()">Terms and Conditions</a></label>
@@ -315,7 +337,10 @@
             
             //write in database through MYSQL
             $userRegister = new NormalUser();
-            if($userRegister->insertNewRecord($firstName, $lastName, $email, $phone, $password, $gender, $state)){
+            //In mysql -> gender VARCHAR(1), SO WE NEED TO CONVERT IT INTO 
+            //F == FEMALE OR M == MALE
+            $genderSymbol = ($gender == 'Female')?2:1;
+            if($userRegister->insertNewRecord($firstName, $lastName, $email, $phone, $password, $genderSymbol, $state, $dob)){
                 //if insert the user register record success
                 //print welcome and registration complete message
 
@@ -364,8 +389,9 @@
                 ';
             }else{
                 echo HEAD_HTML;
-                echo 'Sorry, this email have been registered. Pls try another one. 
-                Or you can go login page there, then clicking \'forgot password\'!';
+                echo '<p style="display: block;height: 14.67rem;text-align: center;">Sorry, this email have been registered. 
+                <br/>Please use another valid email to register. 
+                <br/>Otherwise you can go back to login page there, then clicking \'forgot password\'!<p>';
             }
             
         }
@@ -373,10 +399,11 @@
     ?>
     
     </main>
-    <a id="return-to-login" href="loginPage.php" >Back to Login</a>
-    <a id="return-to-login" href="index.php" >Back to Main Page</a>
+        <div class="go-back-container">
+            <a id="return-to-login" href="index.php" >Back to Main Page</a>
+            <a id="return-to-login" href="loginPage.php" >Back to Login</a>
+        </div>
         <?php 
-            include('templateHeaderFooter.php'); 
             echo footer_template; 
         ?>
   </body>

@@ -104,7 +104,7 @@
                         <fieldset>
                             <!-- password -->
                             <label for="newConfirmPassword">Confirm Password</label>
-                            <input type="text" name="newConfirmPassword" id="newConfirmPassword" >
+                            <input type="password" name="newConfirmPassword" id="newConfirmPassword" >
                             <p class="warning-text hidden">Error</p>
                         </fieldset>
                         <fieldset>
@@ -123,8 +123,10 @@
                 
             ?>
         </main>
-        <a id="return-to-login" href="loginPage.php" >Back to Login</a>
-        <a id="return-to-login" href="index.php" >Back to Main Page</a>
+        <div class="go-back-container">
+            <a id="return-to-login" href="index.php" >Back to Main Page</a>
+            <a id="return-to-login" href="loginPage.php" >Back to Login</a>
+        </div>
         <?php 
             echo footer_template; 
         ?>    

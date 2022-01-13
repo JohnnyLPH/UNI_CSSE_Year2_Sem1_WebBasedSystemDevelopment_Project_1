@@ -127,6 +127,16 @@
                         </div>
                     </div>
                 </fieldset>
+                <fieldset>
+                    <label for="dob">Date of Birth: </label>
+                    <div class="input">
+                        <span class="form-icon calender"></span>
+                        <div>
+                            <input type="date" id="dob" name="dob">
+                            <p class="warning-text hidden">Error</p>
+                        </div>
+                    </div>
+                </fieldset>
                 <fieldset style="display: block; text-align: center;">
                     <input type="checkbox" name="terms" id="terms">
                     <label for="terms">I accept the <a href="#" onclick="showTerms()">Terms and Conditions</a></label>
@@ -153,8 +163,10 @@
             </article>
         </main>
         
-        <a id="return-to-login" href="loginPage.php" >Back to Login</a>
-        <a id="return-to-login" href="index.php" >Back to Main Page</a>
+        <div class="go-back-container">
+            <a id="return-to-login" href="index.php" >Back to Main Page</a>
+            <a id="return-to-login" href="loginPage.php" >Back to Login</a>
+        </div>
 
         <footer>
             <input type="checkbox" id="leaseInfo">
