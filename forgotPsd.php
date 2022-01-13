@@ -74,7 +74,16 @@
                                                         'allow_self_signed' => true
                                                     )
                                                 );
-                                $mail->send(); //send email
+                                $mail->send();
+                                     //email is send 
+                                echo '<script>var msg = "OTP is sent to the email inputted. Please check back to your email and enter the OTP to the column privoded.\n\n";
+                                msg += "Note: If you do not received the email from us, please check back you email inputted\n";
+                                msg += "&ensp;1. Guarantee that you have enter a correct valid email in the column provided.\n";
+                                msg += "&ensp;2. Guarantee that you have enter a correct valid email during the registration.";
+                                alert(msg);</script>';
+                                
+                                
+                                
                                 
                             }
 
@@ -84,13 +93,11 @@
                     
 
                 }else if(isset($_POST['submit']) && $_POST['submit'] === "Submit"){
-                    echo '<br/>done 1';
+                    
                     if(isset($_SESSION['session_otp_forgot_password']) && isset($_POST['OTPInput'])){
-                        echo '<br/>done 2';
-                        echo '<br/>'.$_SESSION['session_otp_forgot_password'];
-                        echo '<br/>'.$_POST['OTPInput'];
+                        
                         if($_SESSION['session_otp_forgot_password'] == $_POST['OTPInput']){
-                            echo '<br/>done 3';
+                            
                             unset($_SESSION['session_otp_forgot_password']);
                             header('Location: '.getURIDirname().'/changePsd.php'); //getURIDirname() from assistanceTool.php
                             exit;
@@ -107,8 +114,9 @@
     </head>
     <body>
         <!-- https://www.djtechblog.com/php/email-verification-in-php-using-otp/ -->
-        <?php /* include('templateHeaderFooter.php'); 
-            echo header_template; */
+        <?php  
+            include('templateHeaderFooter.php'); 
+            echo header_template; 
         ?>
         <main>
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post" name="forgotPasswordForm" onsubmit="return(validateForm());" novalidate>
@@ -134,6 +142,11 @@
                 </fieldset>
             </form>
         </main>
+        <a id="return-to-login" href="loginPage.php" >Back to Login</a>
+        <a id="return-to-login" href="index.php" >Back to Main Page</a>
+        <?php 
+            echo footer_template; 
+        ?>
     </body>
 </html>
 

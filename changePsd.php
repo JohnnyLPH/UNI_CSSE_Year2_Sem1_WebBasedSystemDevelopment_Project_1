@@ -61,14 +61,12 @@
                 if(!isset($passwordError) || !isset($confirmPasswordError)){
                     $normalUser = new NormalUser();
                     if($normalUser->isExistInDb("normalUser", "email", $_SESSION['CHANGE_PASSWORD_EMAIL'])){
-                        echo '<br/>AGC';
-                        echo '<br/>'.$_SESSION['CHANGE_PASSWORD_EMAIL'];
                         //get user personal information
                         if($normalUser->readUserRecordByEmail($_SESSION['CHANGE_PASSWORD_EMAIL'], $array_user)){
-                            echo '<br/>ABC';
+                            
                             //set OTP
                             if($normalUser->updateUserPasswordByEmail("normalUser",  $_SESSION['CHANGE_PASSWORD_EMAIL'], $newPassword)){
-                                echo '<br/>AVC';
+                                
                                 unset($_SESSION['CHANGE_PASSWORD_EMAIL']);
                                 $password_change_success = true;
                             }
@@ -87,8 +85,8 @@
     <body>
         <!-- https://www.djtechblog.com/php/email-verification-in-php-using-otp/ -->
         <?php 
-            /* include('templateHeaderFooter.php'); 
-            echo header_template; */
+             include('templateHeaderFooter.php'); 
+            echo header_template; 
         ?>
         <main>
             <?php 
@@ -126,6 +124,10 @@
             ?>
         </main>
         <a id="return-to-login" href="loginPage.php" >Back to Login</a>
+        <a id="return-to-login" href="index.php" >Back to Main Page</a>
+        <?php 
+            echo footer_template; 
+        ?>    
     </body>
 </html>
 

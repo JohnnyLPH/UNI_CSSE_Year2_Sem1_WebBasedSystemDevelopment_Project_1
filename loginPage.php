@@ -14,12 +14,11 @@
             //https://stackoverflow.com/questions/35040566/php-session-why-is-session-start-required-multiple-times
             session_start();
             include_once './account/dbConnection.php';
-            /* include('templateHeaderFooter.php'); */
             date_default_timezone_set('Europe/London');
             //get server address
-            //echo '<script>alert();</script>';
+            
             if($_SERVER["REQUEST_METHOD"] === "POST"){
-                //echo '<script>alert("kakaha");</script>';
+                
                 if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
                     $uri = 'https://';
                 } else {
@@ -38,18 +37,17 @@
                 //set AuthenticateIdentity object for login purpose    
                 $userLogin = new NormalUser();
                 
-                echo '<script>alert("'.$uri.'");</script>';
-                echo '<script>alert("'.$dirname.'");</script>';
+                
                 if($userLogin->login($loginEmail, $loginPassword)){
                     //if login success
-                    $previous_page = (isset($_SESSION['redirect_url']))?$_SESSION['redirect_url']: $uri.$dirname.'/index.html';
+                    $previous_page = (isset($_SESSION['redirect_url']))?$_SESSION['redirect_url']: $uri.$dirname.'/index.php';
                     unset($_SESSION['redirect_url']);
                     header('Location: '.$previous_page); 
                     echo '<script>alert("login success");</script>'; 
                     exit;
                 }else{
                     //if login failure, back to login page
-                    echo '<script>alert("login failure");</script>';
+                   
                     header('Location: '.$uri.$dirname.'/loginPage.php');  
                     exit;
                 }
@@ -61,7 +59,10 @@
         ?>
     </head>
     <body>
-        <?php /* echo header_template; */ ?>
+        <?php 
+            include('templateHeaderFooter.php'); 
+            echo header_template; 
+        ?>
         <main>
             <noscript>
                 <div class="warning-banner">
@@ -95,7 +96,10 @@
             <h3> Don’t have an account? <a href="registrationPage.html">Sign up</a></h3>
         </main>
 
-        <?php /* echo footer_template; */?>
-        
+        <a id="return-to-login" href="index.php" >Back to Main Page</a>
+        <?php 
+           
+            echo footer_template; 
+        ?>
     </body>
 </html>

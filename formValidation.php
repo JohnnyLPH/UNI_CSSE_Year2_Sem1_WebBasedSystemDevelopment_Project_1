@@ -25,9 +25,10 @@
     <link rel="shortcut icon" href="./favicon.ico">
     <title>User Account Registration | LINGsCARS</title>
     <link rel="stylesheet" type="text/css" href="./css/registrationPage.css" />
+    <link rel="stylesheet" type="text/css" href="./css/LINGsCARStemplate.css" />
     <?php
     include_once './account/dbConnection.php';
-        //include('templateHeaderFooter.php');          
+                
         define('SCRIPT_HTML', '
             <script type="text/javascript">
                 function resetForm() {
@@ -50,18 +51,11 @@
             </script>
             <script src="./formValidation.js" defer></script>
             ');
-        
-        /* if you had define header_template, u can uncomment it
+            
+            include('templateHeaderFooter.php'); 
             define('HEAD_HTML', '        
             </head>
-            <body>'.
-            header_template.'
-            <main>
-            '); */
-
-            define('HEAD_HTML', '        
-            </head>
-            <body>
+            <body>'.header_template.'
             <main>
             ');
         
@@ -380,6 +374,10 @@
     
     </main>
     <a id="return-to-login" href="loginPage.php" >Back to Login</a>
-    <?php /* echo footer_template; */?>
+    <a id="return-to-login" href="index.php" >Back to Main Page</a>
+        <?php 
+            include('templateHeaderFooter.php'); 
+            echo footer_template; 
+        ?>
   </body>
   </html>
