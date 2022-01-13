@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 13, 2022 at 06:25 AM
+-- Generation Time: Jan 13, 2022 at 06:49 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -41,7 +41,7 @@ CREATE TABLE `admins` (
 INSERT INTO `admins` (`id`, `adminName`, `adminPassword`, `lastLogin`) VALUES
 (1, 'admin', '$2y$10$YVeg46P7ezx1SQB8TcrFBexLFiQ6P7pxxTejduyk0d9jxRl6.7VPK', '2022-01-13 13:10:14'),
 (2, 'LPH', '$2y$10$eREyR0w.G453niOeJP9d0O1BPjsK6GRWtmaswKi.kzoN4BNroD7c.', '2022-01-13 13:15:06'),
-(9, 'Yuki', '$2y$10$imUkUkgDE2Tw7/LvblSa6eh7NimHKQJPXqsuMBZyfBoQeQP0EjLDi', '2022-01-13 12:58:56'),
+(9, 'Yuki', '$2y$10$imUkUkgDE2Tw7/LvblSa6eh7NimHKQJPXqsuMBZyfBoQeQP0EjLDi', '2022-01-13 13:47:45'),
 (10, 'James', '$2y$10$L83B22yVT0qUuHojH7yc0.nQ1EpoUnSChAPXo/6qL40eeaEirLEOe', '2022-01-13 12:59:15'),
 (16, 'anotherAdmin', '$2y$10$EFo/GGgKKW9nugzBLQbUVuBdK0Br5diKBBSGBIj8TgfYIBUt7E81K', NULL),
 (21, 'WBSD', '$2y$10$EFo/GGgKKW9nugzBLQbUVuBdK0Br5diKBBSGBIj8TgfYIBUt7E81K', NULL),
@@ -160,10 +160,10 @@ CREATE TABLE `members` (
   `firstName` varchar(100) NOT NULL,
   `lastName` varchar(100) NOT NULL,
   `email` varchar(256) NOT NULL,
-  `countryCode` varchar(4) NOT NULL,
+  `countryCode` varchar(4) NOT NULL DEFAULT '+44',
   `phone` varchar(10) NOT NULL,
   `password` varchar(6) NOT NULL,
-  `gender` varchar(6) NOT NULL,
+  `gender` varchar(1) NOT NULL,
   `state` varchar(30) NOT NULL,
   `registerDate` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -173,13 +173,14 @@ CREATE TABLE `members` (
 --
 
 INSERT INTO `members` (`id`, `firstName`, `lastName`, `email`, `countryCode`, `phone`, `password`, `gender`, `state`, `registerDate`) VALUES
-(1, 'Pikk Heang', 'Lau', '75359@siswa.unimas.my', '+60', '168966984', 'aB#123', 'male', 'Sarawak', '2021-09-04 11:35:52'),
-(2, 'Pei Ying', 'Chung', '77237@siswa.unimas.my', '+60', '109628509', '#Ba123', 'female', 'Sarawak', '2022-01-04 11:35:52'),
-(3, 'James', 'Pill', 'ja@email.com', '+60', '192659162', '123aB#', 'male', 'Selangor', '2022-01-04 11:35:52'),
-(4, 'Assa', 'Lisa', 'asalid@email.com', '+60', '119281621', 'aS#123', 'female', 'Negeri Sembilan', '2022-01-04 11:35:52'),
-(5, 'Nice', 'Ara', 'asnice@email.com', '+60', '147397412', 'aB#123', 'male', 'Selangor', '2022-01-04 11:35:52'),
-(6, 'Dwayne', 'Johnson', 'dj@email.com', '+60', '166668866', 'aB#123', 'male', 'Kuala Lumpur', '2022-01-04 11:35:52'),
-(9, 'Dave', 'Jobs', 'daveJ@email.com', '+60', '169283926', 'aB#123', 'male', 'Sarawak', '2022-01-10 15:36:38');
+(1, 'Pikk Heang', 'Lau', '75359@siswa.unimas.my', '+44', '168966984', 'aB#123', '1', 'Some UK State', '2021-09-04 11:35:52'),
+(2, 'Pei Ying', 'Chung', '77237@siswa.unimas.my', '+44', '109628509', '#Ba123', '2', 'Some State in UK', '2022-01-04 11:35:52'),
+(3, 'James', 'Pill', 'ja@email.com', '+44', '192659162', '123aB#', '1', 'UK state', '2022-01-04 11:35:52'),
+(4, 'Assa', 'Lisa', 'asalid@email.com', '+44', '119281621', 'aS#123', '2', 'UK State or County', '2022-01-04 11:35:52'),
+(5, 'Nice', 'Ara', 'asnice@email.com', '+44', '147397412', 'aB#123', '1', 'County', '2022-01-04 11:35:52'),
+(6, 'Dwayne', 'Johnson', 'dj@email.com', '+44', '166668866', 'aB#123', '1', 'County', '2022-01-04 11:35:52'),
+(9, 'Dave', 'Jobs', 'daveJ@email.com', '+44', '169283926', 'aB#123', '1', 'Some UK State', '2022-01-10 15:36:38'),
+(10, 'First', 'Last', 'firstAndLast@email.com', '+44', '1298371923', '', '1', '', '2022-01-13 13:35:08');
 
 -- --------------------------------------------------------
 
@@ -307,7 +308,7 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `cars`
 --
 ALTER TABLE `cars`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `memberlog`
@@ -319,7 +320,7 @@ ALTER TABLE `memberlog`
 -- AUTO_INCREMENT for table `members`
 --
 ALTER TABLE `members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `orders`

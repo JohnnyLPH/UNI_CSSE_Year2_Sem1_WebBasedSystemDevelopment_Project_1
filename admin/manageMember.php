@@ -279,7 +279,15 @@
                                             <tr>
                                                 <td>Gender</td>
                                                 <td>
-                                                    <?php echo((isset($user["gender"])) ? $user["gender"]: "-"); ?>
+                                                    <?php
+                                                        $allGender = array(
+                                                            'Prefer Not to Say',
+                                                            'Male',
+                                                            'Female'
+                                                        );
+
+                                                        echo((isset($user["gender"]) && isset($allGender[$user["gender"]])) ? $allGender[$user["gender"]]: "-");
+                                                    ?>
                                                 </td>
                                             </tr>
                                             
