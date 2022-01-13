@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 13, 2022 at 03:04 PM
+-- Generation Time: Jan 13, 2022 at 06:31 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -40,7 +40,7 @@ CREATE TABLE `admins` (
 
 INSERT INTO `admins` (`id`, `adminName`, `adminPassword`, `lastLogin`) VALUES
 (1, 'admin', '$2y$10$YVeg46P7ezx1SQB8TcrFBexLFiQ6P7pxxTejduyk0d9jxRl6.7VPK', '2022-01-13 15:39:45'),
-(2, 'LPH', '$2y$10$yct3q9I2MQtR0d6PcGuo3uqXcclzX.rWufQoPyPNAqMp/N559fWli', '2022-01-13 19:08:25'),
+(2, 'LPH', '$2y$10$yct3q9I2MQtR0d6PcGuo3uqXcclzX.rWufQoPyPNAqMp/N559fWli', '2022-01-13 23:53:13'),
 (9, 'Yuki', '$2y$10$imUkUkgDE2Tw7/LvblSa6eh7NimHKQJPXqsuMBZyfBoQeQP0EjLDi', '2022-01-13 13:47:45'),
 (10, 'James', '$2y$10$L83B22yVT0qUuHojH7yc0.nQ1EpoUnSChAPXo/6qL40eeaEirLEOe', '2022-01-13 12:59:15'),
 (16, 'anotherAdmin', '$2y$10$EFo/GGgKKW9nugzBLQbUVuBdK0Br5diKBBSGBIj8TgfYIBUt7E81K', NULL),
@@ -161,26 +161,27 @@ CREATE TABLE `members` (
   `lastName` varchar(100) NOT NULL,
   `email` varchar(256) NOT NULL,
   `countryCode` varchar(4) NOT NULL DEFAULT '+44',
-  `phone` varchar(10) NOT NULL,
-  `password` varchar(6) NOT NULL,
+  `phone` varchar(11) NOT NULL,
+  `password` varchar(256) NOT NULL,
   `gender` varchar(1) NOT NULL,
-  `state` varchar(30) NOT NULL,
-  `registerDate` datetime NOT NULL DEFAULT current_timestamp()
+  `state` varchar(30) DEFAULT NULL,
+  `registerDate` datetime NOT NULL DEFAULT current_timestamp(),
+  `dob` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `members`
 --
 
-INSERT INTO `members` (`id`, `firstName`, `lastName`, `email`, `countryCode`, `phone`, `password`, `gender`, `state`, `registerDate`) VALUES
-(1, 'Pikk Heang', 'Lau', '75359@siswa.unimas.my', '+44', '168966984', 'aB#123', '1', 'Some UK State', '2021-09-04 11:35:52'),
-(2, 'Pei Ying', 'Chung', '77237@siswa.unimas.my', '+44', '109628509', '#Ba123', '2', 'Some State in UK', '2022-01-04 11:35:52'),
-(3, 'James', 'Pill', 'ja@email.com', '+44', '192659162', '123aB#', '1', 'UK state', '2022-01-04 11:35:52'),
-(4, 'Assa', 'Lisa', 'asalid@email.com', '+44', '119281621', 'aS#123', '2', 'UK State or County', '2022-01-04 11:35:52'),
-(5, 'Nice', 'Ara', 'asnice@email.com', '+44', '147397412', 'aB#123', '1', 'County', '2022-01-04 11:35:52'),
-(6, 'Dwayne', 'Johnson', 'dj@email.com', '+44', '166668866', 'aB#123', '1', 'County', '2022-01-04 11:35:52'),
-(9, 'Dave', 'Jobs', 'daveJ@email.com', '+44', '169283926', 'aB#123', '1', 'Some UK State', '2022-01-10 15:36:38'),
-(10, 'First', 'Last', 'firstAndLast@email.com', '+44', '1298371923', '', '1', '', '2022-01-13 13:35:08');
+INSERT INTO `members` (`id`, `firstName`, `lastName`, `email`, `countryCode`, `phone`, `password`, `gender`, `state`, `registerDate`, `dob`) VALUES
+(1, 'Pikk Heang', 'Lau', '75359@siswa.unimas.my', '+44', '168966984', 'aB#123', '1', 'Some UK State', '2021-09-04 11:35:52', NULL),
+(2, 'Pei Ying', 'Chung', '77237@siswa.unimas.my', '+44', '109628509', '#Ba123', '2', 'Some State in UK', '2022-01-04 11:35:52', NULL),
+(3, 'James', 'Pill', 'ja@email.com', '+44', '192659162', '123aB#', '1', 'UK state', '2022-01-04 11:35:52', NULL),
+(4, 'Assa', 'Lisa', 'asalid@email.com', '+44', '119281621', 'aS#123', '2', 'UK State or County', '2022-01-04 11:35:52', NULL),
+(5, 'Nice', 'Ara', 'asnice@email.com', '+44', '147397412', 'aB#123', '1', 'County', '2022-01-04 11:35:52', NULL),
+(6, 'Dwayne', 'Johnson', 'dj@email.com', '+44', '166668866', 'aB#123', '1', 'County', '2022-01-04 11:35:52', NULL),
+(9, 'Dave', 'Jobs', 'daveJ@email.com', '+44', '169283926', 'aB#123', '1', 'Some UK State', '2022-01-10 15:36:38', NULL),
+(10, 'First', 'Last', 'firstAndLast@email.com', '+44', '1298371923', '', '1', NULL, '2022-01-13 13:35:08', NULL);
 
 -- --------------------------------------------------------
 
@@ -194,11 +195,11 @@ CREATE TABLE `orders` (
   `stages` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`stages`)),
   `editable` tinyint(1) NOT NULL DEFAULT 1,
   `type` tinyint(4) NOT NULL,
-  `business` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`business`)),
   `fullName` varchar(30) DEFAULT NULL,
   `personal` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`personal`)),
   `residentialAddress` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`residentialAddress`)),
   `job` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`job`)),
+  `company` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`company`)),
   `bank` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`bank`)),
   `preferredDelivery` date DEFAULT NULL,
   `orderStatus` tinyint(4) NOT NULL,
@@ -212,8 +213,8 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `memberId`, `stages`, `editable`, `type`, `business`, `fullName`, `personal`, `residentialAddress`, `job`, `bank`, `preferredDelivery`, `orderStatus`, `orderStatusMessage`, `proposalDate`, `reviewDate`, `confirmDate`) VALUES
-(1, 1, '{\"2\": 1, \"3\": 1, \"4\": 1, \"5\": 1, \"6\": 1}', 1, 1, '{}', 'John Doe', '{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john@doe.com\",\"phone\":\"1234567890\",\"gender\":1,\"dob\":\"1999-01-15\"}', '{\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"status\":1,\"livedYrs\":1,\"livedMths\":3}', '{\"title\":\"Software Engineer\",\"company\":\"Computer Solutions\",\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"telephone\":\"1234567890\",\"companyDescription\":\"Create Software\",\"salary\":10000,\"incomeDescription\":\"No additional bonus\",\"workedYrs\":3,\"workedMths\":6}', '{\"bankName\":\"HSBC in Covent Garden\",\"add1\":\"16 King Street\",\"add2\":\"Covent Garden\",\"city\":\"London\",\"postcode\":\"WC2E8JF\",\"sortCode\":\"400409\",\"accountName\":\"John Doe\",\"accountNum\":\"31926819\",\"accountYr\":2020}', '2022-11-01', 5, NULL, '2022-01-13 00:00:00', '2022-01-13 22:02:40', NULL);
+INSERT INTO `orders` (`id`, `memberId`, `stages`, `editable`, `type`, `fullName`, `personal`, `residentialAddress`, `job`, `company`, `bank`, `preferredDelivery`, `orderStatus`, `orderStatusMessage`, `proposalDate`, `reviewDate`, `confirmDate`) VALUES
+(1, 1, '{\"2\": 1, \"3\": 1, \"4\": 1, \"5\": 1, \"6\": 1}', 1, 1, 'John Doe', '{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john@doe.com\",\"phone\":\"1234567890\",\"gender\":1,\"dob\":\"1999-01-15\"}', '{\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"status\":1,\"livedYrs\":1,\"livedMths\":3}', '{\"title\":\"Software Engineer\",\"salary\":10000,\"incomeDescription\":\"No additional bonus\",\"workedYrs\":3,\"workedMths\":6}', '{\"name\":\"Computer Solutions\",\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"email\":\"director@cs.com\",\"telephone\":\"123456789\",\"description\":\"Create Software\",\"type\":3,\"regNum\":\"SC123456\",\"estYr\":2001}', '{\"bankName\":\"HSBC in Covent Garden\",\"add1\":\"16 King Street\",\"add2\":\"Covent Garden\",\"city\":\"London\",\"postcode\":\"WC2E8JF\",\"sortCode\":\"400409\",\"accountName\":\"John Doe\",\"accountNum\":\"31926819\",\"accountYr\":2020}', '2022-11-01', 0, NULL, '2022-01-13 00:00:00', '2022-01-14 01:13:21', NULL);
 
 -- --------------------------------------------------------
 
@@ -354,7 +355,7 @@ ALTER TABLE `memberlog`
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`memberId`) REFERENCES `members` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`memberId`) REFERENCES `members` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
