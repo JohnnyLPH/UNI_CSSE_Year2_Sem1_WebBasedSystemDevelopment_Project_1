@@ -53,6 +53,10 @@
         if ($manageMode == "search-transaction") {
             $wordToSearch = (isset($queryString['word-to-search'])) ? testInput($queryString['word-to-search']): "";
         }
+        // View Summary
+        else if ($manageMode == "view-summary") {
+            // Nothing :)
+        }
         // View Transaction
         else if ($manageMode == "view-transaction") {
             $transacId = (isset($queryString['transaction-id'])) ? testInput($queryString['transaction-id']): "";
