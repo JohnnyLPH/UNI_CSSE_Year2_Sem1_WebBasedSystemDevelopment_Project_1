@@ -139,7 +139,7 @@
             <input type="checkbox" id="car-list">
             <ul>
                 <li>
-                    <a href="./index.php" class="active">Home</a>
+                    <a href="./index.php" class="active">&#127984; <b>Home</b> &#127984;</a>
                 </li>
 
                 <li class="dropdown_list">
@@ -163,7 +163,7 @@
                 </li>
 
                 <li>
-                    <a href="#">Sign in</a>
+                    <a href="/loginPage.php" style="margin-top:3px;">Sign In</a>
                 </li>
             </ul>
         </nav>

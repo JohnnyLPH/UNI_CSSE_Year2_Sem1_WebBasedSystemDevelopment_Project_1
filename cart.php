@@ -129,7 +129,7 @@
                 </li>
 
                 <li>
-                    <a href="/cart.php" class="active">Cart</a>
+                    <a href="/cart.php" class="active"><b>Cart</b></a>
                 </li>
 
                 <li>
@@ -137,7 +137,7 @@
                 </li>
 
                 <li>
-                    <a href="#">Sign in</a>
+                    <a href="/loginPage.php">Sign In</a>
                 </li>
             </ul>
         </nav>
