@@ -92,8 +92,8 @@
 
                 if ($rs) {
                     if ($record = mysqli_fetch_assoc($rs)) {
-                        // 9 status [0 - 8].
-                        // Admin can update from 6th [5] status to 7th [6] or 8th [7].
+                        // 8 status [0 - 7].
+                        // Admin can update from 6th [5] status to 7th [6] or 1st [0].
                         // Order status 5 for those waiting for review.
                         if (isset($record['orderStatus']) && $record['orderStatus'] == 5) {
                             // Allow to edit.
@@ -114,9 +114,9 @@
             ) {
                 $passChecking = true;
 
-                // Check if new order status is valid, only accept 6 (Not approved) and 7 (Approved).
-                if (empty($orderStatus) || !is_numeric($orderStatus) || $orderStatus < 6 || $orderStatus > 7) {
-                    $editOrderMsg = "* Invalid Order Status to update!";
+                // Check if new order status is valid, only accept 0 (Not approved) and 6 (Approved).
+                if ((empty($orderStatus) && $orderStatus != 0) || !is_numeric($orderStatus) || ($orderStatus != 0 && $orderStatus != 6)) {
+                    $editOrderMsg = "* Invalid Order Status ($orderStatus) to update!";
                     $passChecking = false;
                 }
 
@@ -235,7 +235,7 @@
 
                         <?php if ($allowViewOrder): ?>
                             <?php
-                                $query = "SELECT orders.id, orders.memberId, orders.stages, orders.editable, orders.type, orders.business, orders.fullName, orders.personal, orders.residentialAddress, orders.job, orders.bank, orders.preferredDelivery, orders.orderStatus, orders.orderStatusMessage, orders.proposalDate, orders.reviewDate, orders.confirmDate
+                                $query = "SELECT orders.id, orders.memberId, orders.stages, orders.editable, orders.type, orders.fullName, orders.personal, orders.residentialAddress, orders.job, orders.company, orders.bank, orders.preferredDelivery, orders.orderStatus, orders.orderStatusMessage, orders.proposalDate, orders.reviewDate, orders.confirmDate
                                 FROM orders
                                 INNER JOIN members ON orders.memberId = members.id
                                 WHERE orders.id=$orderId;";
@@ -351,24 +351,6 @@
                                             </tr>
                                             
                                             <tr>
-                                                <td>Business Details</td>
-                                                <td>
-                                                    <?php
-                                                        if (isset($record["business"])) {
-                                                            $arrJson = json_decode($record["business"], true);
-
-                                                            foreach ($arrJson as $key=>$value) {
-                                                                echo("\"". $key . "\" = " . $value . "<br>");
-                                                            }
-                                                        }
-                                                        else {
-                                                            echo("-");
-                                                        }
-                                                    ?>
-                                                </td>
-                                            </tr>
-                                            
-                                            <tr>
                                                 <td>Personal Details</td>
                                                 <td>
                                                     <?php
@@ -414,7 +396,7 @@
                                                             );
 
                                                             foreach ($arrJson as $key=>$value) {
-                                                                if ($key == 'status') {
+                                                                if ($key == 'status' && $key > 1) {
                                                                     echo("\"". $key . "\" = " . $allResidentialStatus[$value - 1] . "<br>");
                                                                 }
                                                                 else {
@@ -438,6 +420,38 @@
 
                                                             foreach ($arrJson as $key=>$value) {
                                                                 echo("\"". $key . "\" = " . $value . "<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Company Details</td>
+                                                <td>
+                                                    <?php
+                                                        if (isset($record["company"])) {
+                                                            $arrJson = json_decode($record["company"], true);
+
+                                                            $allCompanyType = array(
+                                                                'Sole Proprietorship',
+                                                                'Partnership',
+                                                                'Private Limited',
+                                                                'Public Limited',
+                                                                'Government Agency',
+                                                                'Other'
+                                                            );
+
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                if ($key == 'type' && $key > 1) {
+                                                                    echo("\"". $key . "\" = " . $allCompanyType[$value - 1] . "<br>");
+                                                                }
+                                                                else {
+                                                                    echo("\"". $key . "\" = " . $value . "<br>");
+                                                                }
                                                             }
                                                         }
                                                         else {
@@ -479,30 +493,29 @@
                                                 <td <?php
                                                     if (isset($record["orderStatus"])) {
                                                         // Not approved.
-                                                        if ($record["orderStatus"] == 6) {
+                                                        if ($record["orderStatus"] == 0) {
                                                             echo("style='color: red; font-weight: bold;'");
                                                         }
                                                         // Approved.
-                                                        else if ($record["orderStatus"] > 6) {
+                                                        else if ($record["orderStatus"] > 5) {
                                                             echo("style='color: green; font-weight: bold;'");
                                                         }
-                                                        // Waiting for approval.
+                                                        // Waiting for review.
                                                         else if ($record["orderStatus"] == 5) {
                                                             echo("style='font-style: italic; font-weight: bold;'");
                                                         }
                                                     }
                                                 ?>>
                                                     <?php
-                                                        // 9 status [0 - 8].
-                                                        // Admin can update from 6th [5] status to 7th [6] or 8th [7].
+                                                        // 8 status [0 - 7].
+                                                        // Admin can update from 6th [5] status to 7th [6] or 1st [0].
                                                         $allOrderStatus = array(
                                                             'Ineligible.',
                                                             'Changes required.',
                                                             'Incomplete Payment.',
                                                             'Proposal cancelled.',
                                                             'Draft Proposal pending submission. Please complete and submit your proposal.',
-                                                            'Awaiting for approval.',
-                                                            'Your proposal is not approved.',
+                                                            'Proposal under review.',
                                                             'Proposal approved. Awaiting for your confirmation.',
                                                             'Order Confirmed.'
                                                         );
@@ -543,14 +556,14 @@
                                     </div>
                                     
                                     <?php if (isset($record["orderStatus"]) && $record["orderStatus"] == 5): ?>
-                                        <!-- Waiting for approval -->
+                                        <!-- Waiting for review -->
                                         <form method='get' action='/admin/manageOrder.php'>
                                             <input type='hidden' name='manage-mode' value='edit-order'>
                                             <input type='hidden' name='order-id' value='<?php
                                                 echo((isset($record["id"])) ? $record["id"]: "");
                                             ?>'>
 
-                                            <button class='positive-button'>Give Approval</button>
+                                            <button class='positive-button'>Give Review</button>
                                         </form>
                                     <?php endif; ?>
 
@@ -605,10 +618,10 @@
 
                                     <div class="radio-section">
                                         <label for="approve-order">Approve</label>
-                                        <input id="approve-order" type="radio" name="order-status" value="7" checked>
+                                        <input id="approve-order" type="radio" name="order-status" value="6" checked>
 
                                         <label for="not-approve-order">Not Approve</label>
-                                        <input id="not-approve-order" type="radio" name="order-status" value="6">
+                                        <input id="not-approve-order" type="radio" name="order-status" value="0">
                                     </div>
                                 </div>
 
@@ -682,8 +695,8 @@
                         </thead>
                         <tbody>
                             <?php
-                                // 9 order status [0 - 8].
-                                // Admin can update from 6th [5] status to 7th [6] or 8th [7].
+                                // 8 status [0 - 7].
+                                // Admin can update from 6th [5] status to 7th [6] or 1st [0].
                                 // Select from Orders table.
                                 $query = "SELECT orders.id, orders.memberId, orders.orderStatus, orders.proposalDate, orders.reviewDate, orders.confirmDate FROM orders" .
                                 (
@@ -696,7 +709,7 @@
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 6 THEN 2 ELSE 3 END LIMIT 25;";
+                                " ORDER BY CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 5 THEN 2 ELSE 3 END LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;
@@ -718,14 +731,14 @@
                                         <td class='center-text' <?php
                                             if (isset($record["orderStatus"])) {
                                                 // Not approved.
-                                                if ($record["orderStatus"] == 6) {
+                                                if ($record["orderStatus"] == 0) {
                                                     echo("style='color: red; font-weight: bold;'");
                                                 }
                                                 // Approved.
-                                                else if ($record["orderStatus"] > 6) {
+                                                else if ($record["orderStatus"] > 5) {
                                                     echo("style='color: green; font-weight: bold;'");
                                                 }
-                                                // Waiting for approval.
+                                                // Waiting for review.
                                                 else if ($record["orderStatus"] == 5) {
                                                     echo("style='font-style: italic; font-weight: bold;'");
                                                 }
@@ -734,9 +747,9 @@
                                             <?php
                                                 echo((isset($record["orderStatus"])) ? $record["orderStatus"]: "-");
                                                 
-                                                // Waiting for approval.
+                                                // Waiting for review.
                                                 if (isset($record["orderStatus"]) && $record["orderStatus"] == 5) {
-                                                    echo("<br>Need Approval");
+                                                    echo("<br>Need Review");
                                                 }
                                             ?>
                                         </td>

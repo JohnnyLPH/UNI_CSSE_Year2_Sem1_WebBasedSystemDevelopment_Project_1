@@ -447,3 +447,8 @@ div.view-content table tr td button:hover {
 .multiline-text {
     white-space: pre-wrap;
 }
+
+input#word-to-search {
+    padding-left: 5px;
+    padding-right: 5px;
+}
