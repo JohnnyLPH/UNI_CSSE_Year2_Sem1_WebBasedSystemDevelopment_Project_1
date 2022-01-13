@@ -283,7 +283,8 @@
                                         </td>
                                         
                                         <td>
-                                            <form method='get' action='/index.php'>
+                                            <!-- To proposal page -->
+                                            <form method='post' action='/index.php'>
                                                 <input type='hidden' name='manage-mode' value='order-car'>
                                                 <input type='hidden' name='car-id' value='<?php
                                                     echo((isset($car["id"])) ? $car["id"]: "");
