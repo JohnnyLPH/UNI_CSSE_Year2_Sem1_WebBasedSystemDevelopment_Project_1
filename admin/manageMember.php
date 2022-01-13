@@ -226,7 +226,7 @@
                         <?php if ($allowViewMember): ?>
                             <?php
                                 // Select everything from Members table except password to display, select from MemberLog table too.
-                                $query = "SELECT members.id, members.firstName, members.lastName, members.email, members.countryCode, members.phone, members.gender, members.state, members.registerDate, memberlog.loginDate FROM members LEFT JOIN memberlog ON members.id = memberlog.memberId WHERE members.id=$memberId;";
+                                $query = "SELECT members.id, members.firstName, members.lastName, members.email, members.countryCode, members.phone, members.gender, members.state, members.registerDate, members.dob, memberlog.loginDate, memberlog.logoutDate, memberlog.duration FROM members LEFT JOIN memberlog ON members.id = memberlog.memberId WHERE members.id=$memberId;";
                                 $rs = mysqli_query($serverConnect, $query);
                             ?>
 
@@ -292,6 +292,13 @@
                                             </tr>
                                             
                                             <tr>
+                                                <td>Birthday</td>
+                                                <td>
+                                                    <?php echo((isset($user["dob"])) ? $user["dob"]: "-"); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
                                                 <td>State</td>
                                                 <td>
                                                     <?php echo((isset($user["state"])) ? $user["state"]: "-"); ?>
@@ -309,6 +316,20 @@
                                                 <td>Last Login</td>
                                                 <td>
                                                     <?php echo((isset($user["loginDate"])) ? $user["loginDate"]: "-"); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Last Logout</td>
+                                                <td>
+                                                    <?php echo((isset($user["logoutDate"])) ? $user["logoutDate"]: "-"); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Duration (sec)</td>
+                                                <td>
+                                                    <?php echo((isset($user["duration"])) ? $user["duration"]: "-"); ?>
                                                 </td>
                                             </tr>
                                         </table>
