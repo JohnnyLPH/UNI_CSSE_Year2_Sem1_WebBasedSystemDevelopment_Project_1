@@ -7,7 +7,7 @@
         <title>Forgot Password | LINGsCARS</title>
         <link rel="stylesheet" type="text/css" href="./css/LINGsCARStemplate.css" />
         <link rel="stylesheet" type="text/css" href="./css/loginPage.css" />
-        <script src="./changePsd.js" defer></script>
+        <script src="./js/changePsd.js" defer></script>
 
         <?php
             session_start();

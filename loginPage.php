@@ -8,7 +8,7 @@
         <link rel="stylesheet" type="text/css" href="./css/LINGsCARStemplate.css" />
         <link rel="stylesheet" type="text/css" href="./css/loginPage.css" />
         <link rel="shortcut icon" href="./source/favicon.ico">
-        <script src="./loginPage.js" defer></script>
+        <script src="./js/loginPage.js" defer></script>
 
         <?php
             //https://stackoverflow.com/questions/35040566/php-session-why-is-session-start-required-multiple-times

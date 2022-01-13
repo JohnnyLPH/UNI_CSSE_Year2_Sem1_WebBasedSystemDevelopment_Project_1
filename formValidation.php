@@ -49,7 +49,7 @@
                     document.getElementById("terms-statement").style.removeProperty("display");
                 }
             </script>
-            <script src="./formValidation.js" defer></script>
+            <script src="./js/formValidation.js" defer></script>
             ');
             
             include('templateHeaderFooter.php'); 
