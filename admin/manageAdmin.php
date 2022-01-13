@@ -429,6 +429,7 @@
         <link rel="shortcut icon" href="/favicon.ico">
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        <script type="text/javascript" src="/admin/adminFormValidation.js" defer></script>
     </head>
 
     <body>
@@ -496,7 +497,7 @@
 
                             <form id='manage-add-form' method='post' action='/admin/manageAdmin.php?<?php
                                 echo(http_build_query($newQueryString));
-                            ?>'>
+                            ?>' onsubmit="return addAdminValidation();">
                                 <div>
                                     <label for='admin-name'>
                                         Admin Name:
@@ -564,7 +565,7 @@
 
                             <form id='manage-edit-form' method='post' action='/admin/manageAdmin.php?<?php
                                 echo(http_build_query($newQueryString));
-                            ?>'>
+                            ?>' onsubmit="return editAdminValidation();">
                                 <div>
                                     <label for='new-admin-name'>
                                         Admin Name:
@@ -652,7 +653,7 @@
 
                             <form id='manage-delete-form' method='post' action='/admin/manageAdmin.php?<?php
                                 echo(http_build_query($newQueryString));
-                            ?>'>
+                            ?>' onsubmit="return adminDeleteValidation();">
                                 <!-- If logged in admin's id is 1, can delete other admins without their password. -->
                                 <?php if ($_SESSION["adminId"] != 1): ?>
                                     <div>

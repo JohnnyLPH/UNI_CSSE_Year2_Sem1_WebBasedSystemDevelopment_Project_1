@@ -127,8 +127,9 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="/css/admin.css">
         <link rel="shortcut icon" href="/favicon.ico">
-
+        
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        <script type="text/javascript" src="/admin/adminFormValidation.js" defer></script>
     </head>
 
     <body>
@@ -498,12 +499,12 @@
                 ): ?>
                     <form id='cancel-search-form' method='get' action='/admin/manageOrder.php'></form>
 
-                    <form id='manage-search-form' method='get' action='/admin/manageOrder.php'>
+                    <form id='manage-search-form' method='get' action='/admin/manageOrder.php' onsubmit="return searchWordValidation();">
                         <input type='hidden' name='manage-mode' value='search-order'>
                     </form>
                 
                     <div class='button-section'>
-                        <input form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Order/Member ID or Order Status' value='<?php
+                        <input id='word-to-search' form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Order/Member ID or Order Status' value='<?php
                             echo((isset($wordToSearch) && !empty($wordToSearch)) ? testInput($wordToSearch): "");
                         ?>' minlength="1" maxlength="100" required>
                         

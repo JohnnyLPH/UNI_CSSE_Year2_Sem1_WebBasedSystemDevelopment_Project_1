@@ -78,6 +78,8 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="/css/admin.css">
         <link rel="shortcut icon" href="/favicon.ico">
+
+        <script type="text/javascript" src="/admin/adminFormValidation.js" defer></script>
     </head>
 
     <body>
@@ -96,21 +98,21 @@
                     echo $adminLoginErr;
                 ?>
             </span>
-            <form id="admin-login-form" method="post" action="/admin/adminLogin.php">
+            <form id="admin-login-form" method="post" action="/admin/adminLogin.php" onsubmit="return adminLoginValidation();">
                 <div>
                     <label for="admin-name">
                         Admin Name:
                     </label><br>
                     <input id="admin-name" type="text" name="admin-name" placeholder="Admin Name" value="<?php
                         echo $adminName;
-                    ?>">
+                    ?>" required>
                 </div>
 
                 <div>
                     <label for="admin-password">
                         Password:
                     </label><br>
-                    <input id="admin-password" type="password" name="admin-password" placeholder="Password">
+                    <input id="admin-password" type="password" name="admin-password" placeholder="Password" required>
                 </div>
 
                 <div>

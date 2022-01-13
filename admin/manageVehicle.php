@@ -559,8 +559,9 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="/css/admin.css">
         <link rel="shortcut icon" href="/favicon.ico">
-
+        
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+        <script type="text/javascript" src="/admin/adminFormValidation.js" defer></script>
     </head>
 
     <body>
@@ -628,7 +629,7 @@
 
                             <form id='manage-add-form' method='post' action='/admin/manageVehicle.php?<?php
                                 echo(http_build_query($newQueryString));
-                            ?>' enctype='multipart/form-data'>
+                            ?>' enctype='multipart/form-data' onsubmit="return addCarValidation();">
                                 <div>
                                     <label for='car-brand'>
                                         Brand (No Edit if Saved):
@@ -879,7 +880,7 @@
 
                             <form id='manage-edit-form' method='post' action='/admin/manageVehicle.php?<?php
                                 echo(http_build_query($newQueryString));
-                            ?>' enctype='multipart/form-data'>
+                            ?>' enctype='multipart/form-data' onsubmit="return editCarValidation();">
                                 <div>
                                     <label for='car-name'>
                                         Brand & Model:
@@ -980,7 +981,7 @@
 
                             <form id='manage-delete-form' method='post' action='/admin/manageVehicle.php?<?php
                                 echo(http_build_query($newQueryString));
-                            ?>'>
+                            ?>' onsubmit="return adminDeleteValidation();">
                                 <div>
                                     <label for='current-admin-password'>
                                         Your Password:
@@ -1015,7 +1016,7 @@
                 ): ?>
                     <form id='cancel-search-form' method='get' action='/admin/manageVehicle.php'></form>
 
-                    <form id='manage-search-form' method='get' action='/admin/manageVehicle.php'>
+                    <form id='manage-search-form' method='get' action='/admin/manageVehicle.php' onsubmit="return searchWordValidation();">
                         <input type='hidden' name='manage-mode' value='search-car'>
                     </form>
 
@@ -1024,7 +1025,7 @@
                     </form>
                 
                     <div class='button-section'>
-                        <input form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Car ID or Brand or Model' value='<?php
+                        <input id='word-to-search' form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Car ID or Brand or Model' value='<?php
                             echo((isset($wordToSearch) && !empty($wordToSearch)) ? testInput($wordToSearch): "");
                         ?>' minlength="1" maxlength="100" required>
                         
