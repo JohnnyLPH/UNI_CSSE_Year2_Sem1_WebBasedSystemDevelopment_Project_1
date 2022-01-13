@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 12, 2022 at 03:33 PM
+-- Generation Time: Jan 13, 2022 at 03:46 PM
 -- Server version: 10.4.22-MariaDB
 -- PHP Version: 8.1.1
 
@@ -29,21 +29,22 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `normaluser` (
   `userID` int(11) NOT NULL,
-  `f_name` varchar(50) DEFAULT NULL,
-  `l_name` varchar(50) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `mobile` varchar(20) DEFAULT NULL,
+  `fname` varchar(100) DEFAULT NULL,
+  `lname` varchar(100) DEFAULT NULL,
+  `email` varchar(256) DEFAULT NULL,
+  `phone` varchar(10) DEFAULT NULL,
   `password` varchar(256) DEFAULT NULL,
-  `gender` varchar(6) DEFAULT NULL,
-  `state` varchar(30) DEFAULT NULL
+  `gender` varchar(1) DEFAULT NULL,
+  `state` varchar(30) DEFAULT NULL,
+  `dob` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `normaluser`
 --
 
-INSERT INTO `normaluser` (`userID`, `f_name`, `l_name`, `email`, `mobile`, `password`, `gender`, `state`) VALUES
-(20, 'Leong', 'Weehong', 'lweehong99@gmail.com', '123456789', '$2y$10$i7bm/MbQFDtmWY78pNMAYebmM/DPR9bKlwuw2RXwnQKnkMBpP50JG', 'Male', 'UK-04');
+INSERT INTO `normaluser` (`userID`, `fname`, `lname`, `email`, `phone`, `password`, `gender`, `state`, `dob`) VALUES
+(1, 'Leong', 'Weehong', 'lweehong99@gmail.com', '123456789', '$2y$10$e5cPlwPBoXgqgsSNH5.gOePhIa0EugAK/mOLpenst5Z11HCU5lWta', '1', 'UK-01', '2021-12-27');
 
 --
 -- Indexes for dumped tables
@@ -63,7 +64,7 @@ ALTER TABLE `normaluser`
 -- AUTO_INCREMENT for table `normaluser`
 --
 ALTER TABLE `normaluser`
-  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
