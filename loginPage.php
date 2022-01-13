@@ -96,10 +96,10 @@
             <h3> Don’t have an account? <a href="registrationPage.html">Sign up</a></h3>
         </main>
 
-        <div class="go-back-container">
-            <a id="return-to-login" href="index.php" >Back to Main Page</a>
+        
+        <a id="return-to-main" href="index.php" >Back to Main Page</a>
             
-        </div>
+        
         <?php 
            
             echo footer_template; 
