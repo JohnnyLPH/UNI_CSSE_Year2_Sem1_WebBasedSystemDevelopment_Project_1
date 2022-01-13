@@ -145,9 +145,13 @@
                 <li class="dropdown_list">
                     Profile
                     <div class="dropdown_menu">
-                        <a href="#">Edit Profile</a>
+                        <a href="#">Manage Profile</a>
                         <a href="#">Log Out</a>
                     </div>
+                </li>
+
+                <li>
+                    <a href="/about.html">About Ling</a>
                 </li>
 
                 <li>
@@ -322,7 +326,7 @@
                 <form id='view-cart-form' method='get' action='/cart.php'></form>
             
                 <div class='button-section'>
-                    <input form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Car Brand or Model' value='<?php
+                    <input id='word-to-search' form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Car Brand or Model' value='<?php
                         echo((isset($wordToSearch) && !empty($wordToSearch)) ? testInput($wordToSearch): "");
                     ?>' minlength="1" maxlength="100" required>
                     

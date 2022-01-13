@@ -119,9 +119,13 @@
                 <li class="dropdown_list">
                     Profile
                     <div class="dropdown_menu">
-                        <a href="#">Edit Profile</a>
+                        <a href="#">Manage Profile</a>
                         <a href="#">Log Out</a>
                     </div>
+                </li>
+
+                <li>
+                    <a href="/about.html">About Ling</a>
                 </li>
 
                 <li>
@@ -133,7 +137,7 @@
                 </li>
 
                 <li>
-                    <a href="/loginPage.php">Sign in</a>
+                    <a href="#">Sign in</a>
                 </li>
             </ul>
         </nav>

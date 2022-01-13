@@ -147,7 +147,8 @@ nav.fixed_nav_bar li {
 
 nav.fixed_nav_bar li:last-child {
     float: right;
-    padding: 0 30px;
+    margin-right: 20px;
+    padding: 0px;
 }
 
 nav.fixed_nav_bar li a {
@@ -797,4 +798,9 @@ div.manage-section {
     font-size: smaller;
     min-height: 20px;
     border: 2px solid black;
+}
+
+input#word-to-search {
+    padding-left: 5px;
+    padding-right: 5px;
 }
