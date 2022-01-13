@@ -497,7 +497,7 @@
 
                     if ($rs) {
                         if ($user = mysqli_fetch_assoc($rs)) {
-                            if ($user["adminPassword"] == $currentAdminPass) {
+                            if (password_verify($currentAdminPass, $user["adminPassword"])) {
                                 $passChecking = true;
                             }
                         }

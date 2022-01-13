@@ -99,7 +99,7 @@
     </head>
 
     <body>
-    <header>
+        <header>
             <p id="header_p1">
                 &#128678;<b>LINGsCARS.com</b>&#128678;
             </p>

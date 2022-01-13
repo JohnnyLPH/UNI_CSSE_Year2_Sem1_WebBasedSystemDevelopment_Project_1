@@ -187,7 +187,7 @@
 
                         <?php if ($allowViewOrder): ?>
                             <?php
-                                $query = "SELECT orders.id, orders.memberId, orders.stage, orders.editable, orders.personal, orders.currentAddress, orders.job, orders.bank, orders.orderStatus, orders.proposalDate, orders.reviewDate, orders.confirmDate, orders.receipt
+                                $query = "SELECT orders.id, orders.memberId, orders.stages, orders.editable, orders.type, orders.business, orders.fullName, orders.personal, orders.residentialAddress, orders.job, orders.bank, orders.preferredDelivery, orders.orderStatus, orders.orderStatusMessage, orders.proposalDate, orders.reviewDate, orders.confirmDate
                                 FROM orders
                                 INNER JOIN members ON orders.memberId = members.id
                                 WHERE orders.id=$orderId;";
@@ -225,7 +225,18 @@
                                             <tr>
                                                 <td>Stage</td>
                                                 <td>
-                                                    <?php echo((isset($record["stage"])) ? $record["stage"]: "-"); ?>
+                                                    <?php
+                                                        if (isset($record["stages"])) {
+                                                            $arrJson = json_decode($record["stages"], true);
+
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                echo("\"". $key . "\" = " . $value . "<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    ?>
                                                 </td>
                                             </tr>
                                             
@@ -237,37 +248,139 @@
                                             </tr>
                                             
                                             <tr>
+                                                <td>Type</td>
+                                                <td>
+                                                    <?php echo((isset($record["type"])) ? $record["type"]: "-"); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Full Name</td>
+                                                <td>
+                                                    <?php echo((isset($record["fullName"])) ? $record["fullName"]: "-"); ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Business Details</td>
+                                                <td>
+                                                    <?php
+                                                        if (isset($record["business"])) {
+                                                            $arrJson = json_decode($record["business"], true);
+
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                echo("\"". $key . "\" = " . $value . "<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
                                                 <td>Personal Details</td>
                                                 <td>
-                                                    <?php var_dump((isset($record["personal"])) ? json_decode($record["personal"], true): ""); ?>
+                                                    <?php
+                                                        if (isset($record["personal"])) {
+                                                            $arrJson = json_decode($record["personal"], true);
+
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                echo("\"". $key . "\" = " . $value . "<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Current Address</td>
                                                 <td>
-                                                    <?php var_dump((isset($record["currentAddress"])) ? json_decode($record["currentAddress"], true): ""); ?>
+                                                    <?php
+                                                        if (isset($record["residentialAddress"])) {
+                                                            $arrJson = json_decode($record["residentialAddress"], true);
+
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                echo("\"". $key . "\" = " . $value . "<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Job Details</td>
                                                 <td>
-                                                    <?php var_dump((isset($record["job"])) ? json_decode($record["job"], true): ""); ?>
+                                                    <?php
+                                                        if (isset($record["job"])) {
+                                                            $arrJson = json_decode($record["job"], true);
+
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                echo("\"". $key . "\" = " . $value . "<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    ?>
                                                 </td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Bank Details</td>
                                                 <td>
-                                                    <?php var_dump((isset($record["bank"])) ? json_decode($record["bank"], true): ""); ?>
+                                                    <?php
+                                                        if (isset($record["bank"])) {
+                                                            $arrJson = json_decode($record["bank"], true);
+
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                echo("\"". $key . "\" = " . $value . "<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    ?>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Preferred Delivery Date</td>
+                                                <td>
+                                                    <?php echo((isset($record["preferredDelivery"])) ? $record["preferredDelivery"]: "-"); ?>
                                                 </td>
                                             </tr>
 
                                             <tr>
                                                 <td>Order Status</td>
                                                 <td>
-                                                    <?php echo((isset($record["orderStatus"])) ? $record["orderStatus"]: "-"); ?>
+                                                    <?php
+                                                        $allOrderStatus = array(
+                                                            'Ineligible.',
+                                                            'Changes required.',
+                                                            'Incomplete Payment.',
+                                                            'Proposal cancelled.',
+                                                            'Draft Proposal pending submission. Please complete and submit your proposal.',
+                                                            'Proposal approved. Awaiting for your confirmation.',
+                                                            'Order Confirmed.'
+                                                        );
+
+                                                        echo((isset($record["orderStatus"]) && isset($allOrderStatus[$record["orderStatus"]])) ? $allOrderStatus[$record["orderStatus"]]: "-");
+                                                    ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Order Status Message</td>
+                                                <td>
+                                                    <?php echo((isset($record["orderStatusMessage"])) ? $record["orderStatusMessage"]: "-"); ?>
                                                 </td>
                                             </tr>
 
@@ -289,13 +402,6 @@
                                                 <td>Confirm Date</td>
                                                 <td>
                                                     <?php echo((isset($record["confirmDate"])) ? $record["confirmDate"]: "-"); ?>
-                                                </td>
-                                            </tr>
-                                            
-                                            <tr>
-                                                <td>Receipt</td>
-                                                <td>
-                                                    <?php echo((isset($record["receipt"])) ? $record["receipt"]: "-"); ?>
                                                 </td>
                                             </tr>
                                         </table>

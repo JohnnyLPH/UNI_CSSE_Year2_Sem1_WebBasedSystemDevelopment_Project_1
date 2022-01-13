@@ -123,7 +123,7 @@
 
                     if ($rs) {
                         if ($user = mysqli_fetch_assoc($rs)) {
-                            if ($user["adminPassword"] == $currentAdminPass) {
+                            if (password_verify($currentAdminPass, $user["adminPassword"])) {
                                 $passChecking = true;
                             }
                         }
@@ -226,7 +226,7 @@
                         <?php if ($allowViewMember): ?>
                             <?php
                                 // Select everything from Members table except password to display, select from MemberLog table too.
-                                $query = "SELECT members.id, members.firstName, members.lastName, members.email, members.countryCode, members.phoneNo, members.gender, members.state, members.registerDate, memberlog.loginDate FROM members LEFT JOIN memberlog ON members.id = memberlog.memberId WHERE members.id=$memberId;";
+                                $query = "SELECT members.id, members.firstName, members.lastName, members.email, members.countryCode, members.phone, members.gender, members.state, members.registerDate, memberlog.loginDate FROM members LEFT JOIN memberlog ON members.id = memberlog.memberId WHERE members.id=$memberId;";
                                 $rs = mysqli_query($serverConnect, $query);
                             ?>
 
@@ -272,7 +272,7 @@
                                             <tr>
                                                 <td>Phone No.</td>
                                                 <td>
-                                                    <?php echo((isset($user["phoneNo"])) ? $user["phoneNo"]: "-"); ?>
+                                                    <?php echo((isset($user["phone"])) ? $user["phone"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
@@ -493,7 +493,7 @@
                         </thead>
                         <tbody>
                             <?php
-                                $query = "SELECT members.id, members.email, members.phoneNo, members.state, members.registerDate, memberlog.loginDate FROM members LEFT JOIN memberlog ON members.id = memberlog.memberId" .
+                                $query = "SELECT members.id, members.email, members.phone, members.state, members.registerDate, memberlog.loginDate FROM members LEFT JOIN memberlog ON members.id = memberlog.memberId" .
                                 (
                                     (isset($wordToSearch) && !empty($wordToSearch)) ?
                                     " WHERE members.id LIKE '%" .
@@ -522,7 +522,7 @@
                                         </td>
 
                                         <td>
-                                            <?php echo((isset($user["phoneNo"])) ? $user["phoneNo"]: "-"); ?>
+                                            <?php echo((isset($user["phone"])) ? $user["phone"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>

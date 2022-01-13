@@ -115,9 +115,10 @@
 
                 // Try to insert new record.
                 if ($passChecking) {
+                    $hash = password_hash($adminPass, PASSWORD_DEFAULT);
                     $query = "INSERT INTO admins(adminName, adminPassword)
                     VALUES
-                    ('$adminName', '$adminPass')
+                    ('$adminName', '$hash')
                     ;";
 
                     $rs = mysqli_query($serverConnect, $query);
@@ -222,7 +223,7 @@
 
                         if ($rs) {
                             if ($user = mysqli_fetch_assoc($rs)) {
-                                if ($user["adminPassword"] == $oldAdminPass) {
+                                if (password_verify($oldAdminPass, $user["adminPassword"])) {
                                     $passChecking = true;
                                 }
                             }
@@ -275,11 +276,13 @@
                         // Password is okay.
                         else {
                             $passChecking = true;
-                            $query = "UPDATE admins SET adminPassword='$newAdminPass' WHERE id=$adminId;";
+                            
+                            $hash = password_hash($newAdminPass, PASSWORD_DEFAULT);
+                            $query = "UPDATE admins SET adminPassword='$hash' WHERE id=$adminId;";
 
                             // Admin name has changed.
                             if ($newAdminName != $adminName) {
-                                $query = "UPDATE admins SET adminPassword='$newAdminPass', adminName='$newAdminName' WHERE id=$adminId;";
+                                $query = "UPDATE admins SET adminPassword='$hash', adminName='$newAdminName' WHERE id=$adminId;";
                             }
 
                             $rs = mysqli_query($serverConnect, $query);
@@ -357,7 +360,7 @@
 
                         if ($rs) {
                             if ($user = mysqli_fetch_assoc($rs)) {
-                                if ($user["adminPassword"] == $oldAdminPass) {
+                                if (password_verify($oldAdminPass, $user["adminPassword"])) {
                                     $passChecking = true;
                                 }
                             }
@@ -378,7 +381,7 @@
 
                     if ($rs) {
                         if ($user = mysqli_fetch_assoc($rs)) {
-                            if ($user["adminPassword"] == $currentAdminPass) {
+                            if (password_verify($currentAdminPass, $user["adminPassword"])) {
                                 $passChecking = true;
                             }
                         }
@@ -794,9 +797,9 @@
                                 <th>Name</th>
                                 <?php
                                     // 6 Columns if currently logged in admin is main admin (Admin Id = 1).
-                                    if (isset($mainAdmin) && $mainAdmin) {
-                                        echo("<th>Password</th>");
-                                    }
+                                    // if (isset($mainAdmin) && $mainAdmin) {
+                                    //     echo("<th>Password</th>");
+                                    // }
                                 ?>
                                 <th>Last Login</th>
                                 <th>Edit</th>
@@ -807,9 +810,9 @@
                             <?php
                                 $query = "SELECT id, adminName, lastLogin FROM admins ORDER BY lastLogin DESC LIMIT 25;";
                                 
-                                if (isset($mainAdmin) && $mainAdmin) {
-                                    $query = "SELECT * FROM admins ORDER BY lastLogin DESC LIMIT 25;";
-                                }
+                                // if (isset($mainAdmin) && $mainAdmin) {
+                                //     $query = "SELECT * FROM admins ORDER BY lastLogin DESC LIMIT 25;";
+                                // }
 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;
@@ -827,18 +830,6 @@
                                         <td>
                                             <?php echo((isset($user["adminName"])) ? $user["adminName"]: "-"); ?>
                                         </td>
-                                    
-                                        <?php if (isset($mainAdmin) && $mainAdmin): ?>
-                                            <?php if (isset($user["id"]) && $user["id"] == $_SESSION['adminId']): ?>
-                                                <td>
-                                                    <i>*Hidden*</i>
-                                                </td>
-                                            <?php else: ?>
-                                                <td>
-                                                    <?php echo((isset($user["adminPassword"])) ? $user["adminPassword"]: "-"); ?>
-                                                </td>
-                                            <?php endif; ?>
-                                        <?php endif; ?>
 
                                         <td class='center-text'>
                                             <?php echo((isset($user["lastLogin"])) ? $user["lastLogin"]: "-"); ?>
@@ -870,25 +861,13 @@
                             
                             <tr>
                                 <?php if (!$recordCount): ?>
-                                    <?php if (isset($mainAdmin) && $mainAdmin): ?>
-                                        <td class='data-not-found' colspan='6'>
-                                            * None to show
-                                        </td>
-                                    <?php else: ?>
-                                        <td class='data-not-found' colspan='5'>
-                                            * None to show
-                                        </td>
-                                    <?php endif; ?>
+                                    <td class='data-not-found' colspan='5'>
+                                        * None to show
+                                    </td>
                                 <?php else: ?>
-                                    <?php if (isset($mainAdmin) && $mainAdmin): ?>
-                                        <td colspan='6'>
-                                            Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Login Date]
-                                        </td>
-                                    <?php else: ?>
-                                        <td colspan='5'>
-                                            Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Login Date]
-                                        </td>
-                                    <?php endif; ?>
+                                    <td colspan='5'>
+                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Login Date]
+                                    </td>
                                 <?php endif; ?>
                             </tr>
                         </tbody>

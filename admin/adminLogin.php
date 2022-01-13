@@ -36,7 +36,7 @@
             $rs = mysqli_query($serverConnect, $query);
             if ($rs) {
                 if ($user = mysqli_fetch_assoc($rs)) {
-                    if ($user["adminName"] == $adminName && $user["adminPassword"] == $adminPassword) {
+                    if ($user["adminName"] == $adminName && password_verify($adminPassword, $user["adminPassword"])) {
                         $found = true;
                         $adminId = $user["id"];
                     }
