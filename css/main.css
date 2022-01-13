@@ -145,6 +145,11 @@ nav.fixed_nav_bar li {
     width: 11%;
 }
 
+nav.fixed_nav_bar li:last-child {
+    float: right;
+    padding: 0 30px;
+}
+
 nav.fixed_nav_bar li a {
     color: white;
     display: block;
