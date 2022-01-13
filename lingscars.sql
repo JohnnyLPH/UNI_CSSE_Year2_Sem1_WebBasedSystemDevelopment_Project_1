@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 13, 2022 at 06:49 AM
+-- Generation Time: Jan 13, 2022 at 03:04 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -39,8 +39,8 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `adminName`, `adminPassword`, `lastLogin`) VALUES
-(1, 'admin', '$2y$10$YVeg46P7ezx1SQB8TcrFBexLFiQ6P7pxxTejduyk0d9jxRl6.7VPK', '2022-01-13 13:10:14'),
-(2, 'LPH', '$2y$10$eREyR0w.G453niOeJP9d0O1BPjsK6GRWtmaswKi.kzoN4BNroD7c.', '2022-01-13 13:15:06'),
+(1, 'admin', '$2y$10$YVeg46P7ezx1SQB8TcrFBexLFiQ6P7pxxTejduyk0d9jxRl6.7VPK', '2022-01-13 15:39:45'),
+(2, 'LPH', '$2y$10$yct3q9I2MQtR0d6PcGuo3uqXcclzX.rWufQoPyPNAqMp/N559fWli', '2022-01-13 19:08:25'),
 (9, 'Yuki', '$2y$10$imUkUkgDE2Tw7/LvblSa6eh7NimHKQJPXqsuMBZyfBoQeQP0EjLDi', '2022-01-13 13:47:45'),
 (10, 'James', '$2y$10$L83B22yVT0qUuHojH7yc0.nQ1EpoUnSChAPXo/6qL40eeaEirLEOe', '2022-01-13 12:59:15'),
 (16, 'anotherAdmin', '$2y$10$EFo/GGgKKW9nugzBLQbUVuBdK0Br5diKBBSGBIj8TgfYIBUt7E81K', NULL),
@@ -213,7 +213,7 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `memberId`, `stages`, `editable`, `type`, `business`, `fullName`, `personal`, `residentialAddress`, `job`, `bank`, `preferredDelivery`, `orderStatus`, `orderStatusMessage`, `proposalDate`, `reviewDate`, `confirmDate`) VALUES
-(1, 1, '{\"2\": 1, \"3\": 1, \"4\": 1, \"5\": 1, \"6\": 1}', 1, 0, '{}', NULL, '{\"fName\":\"John\",\"lName\":\"Doe\",\"email\":\"john@doe.com\",\"phone\":\"1234567890\",\"gender\":1,\"dob\":\"1999-01-15\"}', '{\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"status\":1,\"livedYrs\":1,\"livedMths\":3}', '{\"title\":\"Software Engineer\",\"company\":\"Computer Solutions\",\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"telephone\":\"1234567890\",\"companyDescription\":\"Create Software\",\"salary\":10000,\"incomeDescription\":\"No additional bonus\",\"workedYrs\":3,\"workedMths\":6}', '{\"bankName\":\"HSBC in Covent Garden\",\"add1\":\"16 King Street\",\"add2\":\"Covent Garden\",\"city\":\"London\",\"postcode\":\"WC2E8JF\",\"sortCode\":\"400409\",\"accountName\":\"John Doe\",\"accountNum\":\"31926819\",\"accountYr\":2020}', '2023-11-01', 0, NULL, '2022-01-13 00:00:00', NULL, NULL);
+(1, 1, '{\"2\": 1, \"3\": 1, \"4\": 1, \"5\": 1, \"6\": 1}', 1, 1, '{}', 'John Doe', '{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john@doe.com\",\"phone\":\"1234567890\",\"gender\":1,\"dob\":\"1999-01-15\"}', '{\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"status\":1,\"livedYrs\":1,\"livedMths\":3}', '{\"title\":\"Software Engineer\",\"company\":\"Computer Solutions\",\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"telephone\":\"1234567890\",\"companyDescription\":\"Create Software\",\"salary\":10000,\"incomeDescription\":\"No additional bonus\",\"workedYrs\":3,\"workedMths\":6}', '{\"bankName\":\"HSBC in Covent Garden\",\"add1\":\"16 King Street\",\"add2\":\"Covent Garden\",\"city\":\"London\",\"postcode\":\"WC2E8JF\",\"sortCode\":\"400409\",\"accountName\":\"John Doe\",\"accountNum\":\"31926819\",\"accountYr\":2020}', '2022-11-01', 5, NULL, '2022-01-13 00:00:00', '2022-01-13 22:02:40', NULL);
 
 -- --------------------------------------------------------
 
@@ -296,7 +296,7 @@ ALTER TABLE `transactions`
 -- AUTO_INCREMENT for table `admins`
 --
 ALTER TABLE `admins`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `brands`
@@ -308,7 +308,7 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `cars`
 --
 ALTER TABLE `cars`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `memberlog`

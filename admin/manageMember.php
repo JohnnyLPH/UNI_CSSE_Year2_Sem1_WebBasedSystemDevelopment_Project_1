@@ -166,7 +166,7 @@
         <link rel="shortcut icon" href="/favicon.ico">
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-        <script type="text/javascript" src="/admin/adminFormValidation.js" defer></script>
+        <script type="text/javascript" src="/js/adminFormValidation.js" defer></script>
     </head>
 
     <body>

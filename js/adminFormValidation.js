@@ -416,3 +416,25 @@ function editCarValidation(emptyMsg = true, showAlert = true) {
 
     return passValidate;
 }
+
+// For Manage Order: Edit Order.
+function approveOrderValidation(emptyMsg = true, showAlert = true) {
+    if (emptyMsg) {
+        warningMsg = "";
+    }
+    passValidate = true;
+
+    res = /^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/;
+
+    // Check current admin password if provided.
+    if (!checkStringInput(document.getElementById("current-admin-password"), 6, 256, null, res, true)) {
+        warningMsg += "* Enter Your Password (Must be Valid) to Confirm New Status!\n";
+        passValidate = false;
+    }
+    
+    if (!passValidate && showAlert) {
+        alert(warningMsg);
+    }
+
+    return passValidate;
+}

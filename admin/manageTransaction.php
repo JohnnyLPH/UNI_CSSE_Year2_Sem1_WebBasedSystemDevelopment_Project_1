@@ -53,10 +53,6 @@
         if ($manageMode == "search-transaction") {
             $wordToSearch = (isset($queryString['word-to-search'])) ? testInput($queryString['word-to-search']): "";
         }
-        // View Summary
-        else if ($manageMode == "view-summary") {
-
-        }
         // View Transaction
         else if ($manageMode == "view-transaction") {
             $transacId = (isset($queryString['transaction-id'])) ? testInput($queryString['transaction-id']): "";
@@ -95,7 +91,7 @@
         <link rel="shortcut icon" href="/favicon.ico">
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-        <script type="text/javascript" src="/admin/adminFormValidation.js" defer></script>
+        <script type="text/javascript" src="/js/adminFormValidation.js" defer></script>
     </head>
 
     <body>

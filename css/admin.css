@@ -367,6 +367,35 @@ table.db-table td button:hover, form button:hover, .button-section button:hover 
     min-height: 30px;
 }
 
+#manage-edit-form div div.radio-section {
+    padding: 0;
+    min-height: 30px;
+}
+
+#manage-edit-form div div.radio-section label {
+    font-weight: bold;
+}
+
+#manage-edit-form div div.radio-section input[type='radio'] {
+    width: fit-content;
+    height: fit-content;
+    padding: 0;
+    margin: 0 15px 0 5px;
+    vertical-align: middle;
+}
+
+#manage-edit-form div div.radio-section input[type='radio']:last-child {
+    margin-right: 0;
+}
+
+label[for="approve-order"] {
+    color: green;
+}
+
+label[for="not-approve-order"] {
+    color: red;
+}
+
 #manage-add-form div textarea, #manage-edit-form div textarea {
     resize: none;
 }

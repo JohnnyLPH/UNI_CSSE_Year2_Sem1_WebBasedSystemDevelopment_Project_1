@@ -79,7 +79,7 @@
         <link rel="stylesheet" href="/css/admin.css">
         <link rel="shortcut icon" href="/favicon.ico">
 
-        <script type="text/javascript" src="/admin/adminFormValidation.js" defer></script>
+        <script type="text/javascript" src="/js/adminFormValidation.js" defer></script>
     </head>
 
     <body>

@@ -82,6 +82,8 @@
             $orderId = (isset($queryString['order-id'])) ? testInput($queryString['order-id']): "";
             $orderStatus = (isset($_POST['order-status'])) ? testInput($_POST['order-status']): "";
             $oldOlderStatus = "";
+
+            $currentAdminPass = (isset($_POST['current-admin-password'])) ? testInput($_POST['current-admin-password']): "";
             
             // Check if the order is allowed to be edited.
             if (!empty($orderId) && is_numeric($orderId)) {
@@ -90,8 +92,10 @@
 
                 if ($rs) {
                     if ($record = mysqli_fetch_assoc($rs)) {
-                        // Order status 2 for those waiting for review.
-                        if (isset($record['orderStatus']) && $record['orderStatus'] == 2) {
+                        // 9 status [0 - 8].
+                        // Admin can update from 6th [5] status to 7th [6] or 8th [7].
+                        // Order status 5 for those waiting for review.
+                        if (isset($record['orderStatus']) && $record['orderStatus'] == 5) {
                             // Allow to edit.
                             $allowEditOrder = true;
 
@@ -108,7 +112,50 @@
                 $_SERVER["REQUEST_METHOD"] == "POST" &&
                 isset($queryString["check-form"]) && $queryString["check-form"] == "yes"
             ) {
+                $passChecking = true;
 
+                // Check if new order status is valid, only accept 6 (Not approved) and 7 (Approved).
+                if (empty($orderStatus) || !is_numeric($orderStatus) || $orderStatus < 6 || $orderStatus > 7) {
+                    $editOrderMsg = "* Invalid Order Status to update!";
+                    $passChecking = false;
+                }
+
+                // Check password of logged in admin.
+                if ($passChecking) {
+                    $passChecking = false;
+
+                    $query = "SELECT adminPassword FROM admins WHERE id=" . $_SESSION["adminId"] . ";";
+                    $rs = mysqli_query($serverConnect, $query);
+
+                    if ($rs) {
+                        if ($user = mysqli_fetch_assoc($rs)) {
+                            if (password_verify($currentAdminPass, $user["adminPassword"])) {
+                                $passChecking = true;
+                            }
+                        }
+                    }
+
+                    if (!$passChecking) {
+                        $editOrderMsg = "* Invalid Password Entered!";
+                    }
+                }
+                
+                $currentDate = date("Y-m-d H:i:s");
+
+                if ($passChecking) {
+                    $query = "UPDATE orders SET orders.orderStatus='$orderStatus', orders.reviewDate='$currentDate' WHERE orders.id=$orderId;";
+
+                    $rs = mysqli_query($serverConnect, $query);
+
+                    if (!($rs)) {
+                        $passChecking = false;
+                        $editOrderMsg = "* ERROR: Failed to save new order status!";
+                    }
+                    
+                    if ($passChecking) {
+                        $editOrderMsg = "* Order ID $orderId has been changed successfully!";
+                    }
+                }
             }
 
         }
@@ -129,7 +176,7 @@
         <link rel="shortcut icon" href="/favicon.ico">
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-        <script type="text/javascript" src="/admin/adminFormValidation.js" defer></script>
+        <script type="text/javascript" src="/js/adminFormValidation.js" defer></script>
     </head>
 
     <body>
@@ -231,7 +278,20 @@
                                                             $arrJson = json_decode($record["stages"], true);
 
                                                             foreach ($arrJson as $key=>$value) {
-                                                                echo("\"". $key . "\" = " . $value . "<br>");
+                                                                echo("\"". $key . "\" = ");
+
+                                                                if ($value == 0) {
+                                                                    echo("Not Started<br>");
+                                                                }
+                                                                else if ($value == 1) {
+                                                                    echo("Completed<br>");
+                                                                }
+                                                                else if ($value == -1) {
+                                                                    echo("Invalid Input<br>");
+                                                                }
+                                                                else {
+                                                                    echo("-<br>");
+                                                                }
                                                             }
                                                         }
                                                         else {
@@ -243,16 +303,44 @@
                                             
                                             <tr>
                                                 <td>Editable</td>
-                                                <td>
-                                                    <?php echo((isset($record["editable"])) ? $record["editable"]: "-"); ?>
-                                                </td>
+                                                <td><?php
+                                                    if (isset($record["editable"])) {
+                                                        if ($record["editable"] == 1) {
+                                                            echo("Yes");
+                                                        }
+                                                        else if ($record["editable"] == 0) {
+                                                            echo("No");
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    }
+                                                    else {
+                                                        echo("-");
+                                                    }
+                                                ?></td>
                                             </tr>
                                             
                                             <tr>
                                                 <td>Type</td>
-                                                <td>
-                                                    <?php echo((isset($record["type"])) ? $record["type"]: "-"); ?>
-                                                </td>
+                                                <td><?php
+
+                                                    // Type is 1 for personal, 2 for business.
+                                                    $allType = array(
+                                                        'Personal',
+                                                        'Business'
+                                                    );
+
+                                                    if (
+                                                        isset($record["type"]) &&
+                                                        ($record["type"] == 1 || $record["type"] == 2)
+                                                    ) {
+                                                        echo($allType[$record["type"] - 1]);
+                                                    }
+                                                    else {
+                                                        echo("-");
+                                                    }
+                                                ?></td>
                                             </tr>
                                             
                                             <tr>
@@ -287,8 +375,19 @@
                                                         if (isset($record["personal"])) {
                                                             $arrJson = json_decode($record["personal"], true);
 
+                                                            $allGender = array(
+                                                                'Prefer Not to Say',
+                                                                'Male',
+                                                                'Female'
+                                                            );
+
                                                             foreach ($arrJson as $key=>$value) {
-                                                                echo("\"". $key . "\" = " . $value . "<br>");
+                                                                if ($key == 'gender') {
+                                                                    echo("\"". $key . "\" = " . $allGender[$value] . "<br>");
+                                                                }
+                                                                else {
+                                                                    echo("\"". $key . "\" = " . $value . "<br>");
+                                                                }
                                                             }
                                                         }
                                                         else {
@@ -305,8 +404,22 @@
                                                         if (isset($record["residentialAddress"])) {
                                                             $arrJson = json_decode($record["residentialAddress"], true);
 
+                                                            // Status is 1 for Property Owner, 2 for Property Tenant, 3 for Property Occupant (Live with Parents), 4 for Property Occupant (Live with Friends/Partner).
+
+                                                            $allResidentialStatus = array(
+                                                                'Property Owner',
+                                                                'Property Tenant',
+                                                                'Property Occupant (Live with Parents)',
+                                                                'Property Occupant (Live with Friends/Partner)'
+                                                            );
+
                                                             foreach ($arrJson as $key=>$value) {
-                                                                echo("\"". $key . "\" = " . $value . "<br>");
+                                                                if ($key == 'status') {
+                                                                    echo("\"". $key . "\" = " . $allResidentialStatus[$value - 1] . "<br>");
+                                                                }
+                                                                else {
+                                                                    echo("\"". $key . "\" = " . $value . "<br>");
+                                                                }
                                                             }
                                                         }
                                                         else {
@@ -355,20 +468,41 @@
                                             <tr>
                                                 <td>Preferred Delivery Date</td>
                                                 <td>
-                                                    <?php echo((isset($record["preferredDelivery"])) ? $record["preferredDelivery"]: "-"); ?>
+                                                    <?php
+                                                        echo((isset($record["preferredDelivery"])) ? date('M Y', strtotime($record["preferredDelivery"])): "-");
+                                                    ?>
                                                 </td>
                                             </tr>
 
                                             <tr>
                                                 <td>Order Status</td>
-                                                <td>
+                                                <td <?php
+                                                    if (isset($record["orderStatus"])) {
+                                                        // Not approved.
+                                                        if ($record["orderStatus"] == 6) {
+                                                            echo("style='color: red; font-weight: bold;'");
+                                                        }
+                                                        // Approved.
+                                                        else if ($record["orderStatus"] > 6) {
+                                                            echo("style='color: green; font-weight: bold;'");
+                                                        }
+                                                        // Waiting for approval.
+                                                        else if ($record["orderStatus"] == 5) {
+                                                            echo("style='font-style: italic; font-weight: bold;'");
+                                                        }
+                                                    }
+                                                ?>>
                                                     <?php
+                                                        // 9 status [0 - 8].
+                                                        // Admin can update from 6th [5] status to 7th [6] or 8th [7].
                                                         $allOrderStatus = array(
                                                             'Ineligible.',
                                                             'Changes required.',
                                                             'Incomplete Payment.',
                                                             'Proposal cancelled.',
                                                             'Draft Proposal pending submission. Please complete and submit your proposal.',
+                                                            'Awaiting for approval.',
+                                                            'Your proposal is not approved.',
                                                             'Proposal approved. Awaiting for your confirmation.',
                                                             'Order Confirmed.'
                                                         );
@@ -408,15 +542,15 @@
                                         </table>
                                     </div>
                                     
-                                    <?php if (isset($record["orderStatus"]) && $record["orderStatus"] == 2): ?>
-                                        <!-- Waiting for review -->
+                                    <?php if (isset($record["orderStatus"]) && $record["orderStatus"] == 5): ?>
+                                        <!-- Waiting for approval -->
                                         <form method='get' action='/admin/manageOrder.php'>
                                             <input type='hidden' name='manage-mode' value='edit-order'>
                                             <input type='hidden' name='order-id' value='<?php
                                                 echo((isset($record["id"])) ? $record["id"]: "");
                                             ?>'>
 
-                                            <button class='positive-button'>Review Order</button>
+                                            <button class='positive-button'>Give Approval</button>
                                         </form>
                                     <?php endif; ?>
 
@@ -463,19 +597,36 @@
 
                             <form id='manage-edit-form' method='post' action='/admin/manageOrder.php?<?php
                                 echo(http_build_query($newQueryString));
-                            ?>'>
+                            ?>' onsubmit="return approveOrderValidation();">
                                 <div>
                                     <label for='order-status'>
                                         Order Status:
                                     </label><br>
 
-                                    <input id='order-status' type='number' min="1" max="4" name='order-status' placeholder='I dont know:)' value='<?php
-                                        echo((!empty($orderStatus)) ? $orderStatus: $oldOlderStatus);
-                                    ?>' required>
+                                    <div class="radio-section">
+                                        <label for="approve-order">Approve</label>
+                                        <input id="approve-order" type="radio" name="order-status" value="7" checked>
+
+                                        <label for="not-approve-order">Not Approve</label>
+                                        <input id="not-approve-order" type="radio" name="order-status" value="6">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for='current-admin-password'>
+                                        Your Password:
+                                    </label><br>
+
+                                    <input id='current-admin-password' type='password' name='current-admin-password' placeholder='Required to confirm new status' minlength="6" maxlength="256" required>
                                 </div>
                             </form>
 
-                            <form id='cancel-edit-form' method='get' action='/admin/manageOrder.php'></form>
+                            <form id='cancel-edit-form' method='get' action='/admin/manageOrder.php'>
+                                <input type='hidden' name='manage-mode' value='view-order'>
+                                <input type='hidden' name='order-id' value='<?php
+                                    echo($orderId);
+                                ?>'>
+                            </form>
 
                             <div class='button-section'>
                                 <button form='manage-edit-form' class='positive-button' type='submit'>
@@ -531,6 +682,8 @@
                         </thead>
                         <tbody>
                             <?php
+                                // 9 order status [0 - 8].
+                                // Admin can update from 6th [5] status to 7th [6] or 8th [7].
                                 // Select from Orders table.
                                 $query = "SELECT orders.id, orders.memberId, orders.orderStatus, orders.proposalDate, orders.reviewDate, orders.confirmDate FROM orders" .
                                 (
@@ -543,7 +696,7 @@
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY CASE WHEN orders.orderStatus=2 THEN 1 WHEN orders.orderStatus > 2 THEN 2 ELSE 3 END LIMIT 25;";
+                                " ORDER BY CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 6 THEN 2 ELSE 3 END LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;
@@ -562,8 +715,30 @@
                                             <?php echo((isset($record["memberId"])) ? $record["memberId"]: "-"); ?>
                                         </td>
 
-                                        <td class='center-text'>
-                                            <?php echo((isset($record["orderStatus"])) ? $record["orderStatus"]: "-"); ?>
+                                        <td class='center-text' <?php
+                                            if (isset($record["orderStatus"])) {
+                                                // Not approved.
+                                                if ($record["orderStatus"] == 6) {
+                                                    echo("style='color: red; font-weight: bold;'");
+                                                }
+                                                // Approved.
+                                                else if ($record["orderStatus"] > 6) {
+                                                    echo("style='color: green; font-weight: bold;'");
+                                                }
+                                                // Waiting for approval.
+                                                else if ($record["orderStatus"] == 5) {
+                                                    echo("style='font-style: italic; font-weight: bold;'");
+                                                }
+                                            }
+                                        ?>>
+                                            <?php
+                                                echo((isset($record["orderStatus"])) ? $record["orderStatus"]: "-");
+                                                
+                                                // Waiting for approval.
+                                                if (isset($record["orderStatus"]) && $record["orderStatus"] == 5) {
+                                                    echo("<br>Need Approval");
+                                                }
+                                            ?>
                                         </td>
 
                                         <td class='center-text'>
