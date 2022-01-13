@@ -396,7 +396,7 @@
                                                             );
 
                                                             foreach ($arrJson as $key=>$value) {
-                                                                if ($key == 'status' && $key > 1) {
+                                                                if ($key == 'status' && $value > 0) {
                                                                     echo("\"". $key . "\" = " . $allResidentialStatus[$value - 1] . "<br>");
                                                                 }
                                                                 else {
@@ -446,7 +446,7 @@
                                                             );
 
                                                             foreach ($arrJson as $key=>$value) {
-                                                                if ($key == 'type' && $key > 1) {
+                                                                if ($key == 'type' && $value > 0) {
                                                                     echo("\"". $key . "\" = " . $allCompanyType[$value - 1] . "<br>");
                                                                 }
                                                                 else {

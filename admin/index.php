@@ -376,6 +376,81 @@
                             );
                         </script>
                     </div>
+
+                    <?php
+                        // Store total no. of registration from current month to (current - 11) month.
+                        $monthXLabels = array();
+                        $monthYTotalRegister = array();
+
+                        // Prepare for storing data.
+                        $currentDate = strtotime(date("Y-m-d H:i:s"));
+
+                        for ($i = 0; $i < 12; $i++) {
+                            // Month stored in format (e.g., Jan 2022).
+                            $monthXLabels[$i] = date('M Y', strtotime((-11 + $i) . " month", strtotime(date("Y-m-15"))));
+                            $monthYTotalRegister[$i] = 0;
+                        }
+
+                        // Try to fetch data from Members table.
+                        $query = "SELECT members.registerDate FROM members ORDER BY registerDate";
+
+                        $rs = mysqli_query($serverConnect, $query);
+                        $totalRecord = 0;
+
+                        if ($rs) {
+                            $totalRecord = mysqli_num_rows($rs);
+                            while ($record = mysqli_fetch_assoc($rs)) {
+                                if (isset($record['registerDate'])) {
+                                    // Check month.
+                                    for ($i = 0; $i < 12; $i++) {
+                                        // Same month.
+                                        if (
+                                            $monthXLabels[$i] == date('M Y', strtotime($record['registerDate']))
+                                        ) {
+                                            $monthYTotalRegister[$i]++;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Change label for month.
+                        for ($i = 0; $i < 12; $i++) {
+                            $monthXLabels[$i] = date('M', strtotime((-11 + $i) . " month", strtotime(date("Y-m-15"))));
+                        }
+                    ?>
+
+                    <div class='chart'>
+                        <canvas id="monthRegisterChart"></canvas>
+
+                        <script>
+                            var xValues = <?php echo(json_encode($monthXLabels)) ?>;
+                            var yValues = <?php echo(json_encode($monthYTotalRegister)) ?>;
+
+                            new Chart(
+                                "monthRegisterChart", {
+                                    type: "line",
+                                    data: {
+                                        labels: xValues,
+                                        datasets: [{
+                                            label: "no. of registration",
+                                            fill: true,
+                                            pointRadius: 1,
+                                            borderColor: "rgba(255,0,0,0.75)",
+                                            data: yValues
+                                        }]
+                                    },
+                                    options: {
+                                        title: {
+                                            display: true,
+                                            text: "New Member (Monthly; till current month)"
+                                        }
+                                    }
+                                }
+                            );
+                        </script>
+                    </div>
                 
                     <?php
                         // Try to fetch data from Admins table.
