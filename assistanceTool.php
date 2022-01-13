@@ -53,4 +53,43 @@
         return $uri.$dirname;
     }
     
-?>
+    function updateActiveTime(){
+        $_SESSION["loggedInTime"] = date('Y-m-d H:i:s');
+    }
+
+    function checkIdleDuration(){
+        //return true == the account is log in and still be active within 30 minutes
+        //return false == the account is not log in or 
+        //                        the account is log in but it not active greater than 30 minutes 
+        if(isset($_SESSION["loggedIn"])){
+            if($_SESSION["loggedIn"] = true){
+                
+                //pre-set logout datetime, if user directly close the window,
+                //php perform operation to myql would not be handled
+                $temp_login_time = $_SESSION["loggedInTime"];
+                $minutes_to_add = 5;
+
+                $time = new DateTime();
+                $time->add(new DateInterval('PT' . $minutes_to_add . 'M'));
+
+                $temp_logout_time = $time->format('Y-m-d H:i:s');
+
+                $temp_duration = $time->format('U') - strtotime( $_SESSION["loggedInTime"]);
+                if($temp_duration > 1800){
+                    //1800 second == 30 minutes
+                    //if the idle duration is greater than 30 minutes, user are required to login again
+                    return false;
+                }else{
+                    
+                    updateActiveTime();
+                    //if the idle duration is within 30 minutes, return true
+                    //means that no need to prompt user to login again
+                    return true;
+                }
+            }
+        }
+       
+        return false;
+    }
+
+?>  
