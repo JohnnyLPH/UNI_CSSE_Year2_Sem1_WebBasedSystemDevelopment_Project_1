@@ -794,22 +794,105 @@
                         <thead>
                             <!-- 5 Columns -->
                             <tr>
-                                <th>Admin ID</th>
-                                <th>Name</th>
+                                <th><form method='get' action='/admin/manageAdmin.php'>
+                                    <input type='hidden' name='order-by' value='admin-id-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'admin-id-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <button class='sort-button'>Admin ID<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'admin-id-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'admin-id-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageAdmin.php'>
+                                    <input type='hidden' name='order-by' value='name-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'name-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <button class='sort-button'>Name<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'name-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'name-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
                                 <?php
                                     // 6 Columns if currently logged in admin is main admin (Admin Id = 1).
                                     // if (isset($mainAdmin) && $mainAdmin) {
                                     //     echo("<th>Password</th>");
                                     // }
                                 ?>
-                                <th>Last Login</th>
+
+                                <th><form method='get' action='/admin/manageAdmin.php'>
+                                    <input type='hidden' name='order-by' value='last-login-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'last-login-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <button class='sort-button'>Last Login<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'last-login-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'last-login-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
                                 <th>Edit</th>
                                 <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                                $query = "SELECT id, adminName, lastLogin FROM admins ORDER BY lastLogin DESC LIMIT 25;";
+                                $query = "SELECT admins.id, admins.adminName, admins.lastLogin FROM admins ORDER BY";
+
+                                if (isset($queryString['order-by'])) {
+                                    if ($queryString['order-by'] == 'admin-id-asc') {
+                                        $query .= " admins.id ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'admin-id-desc') {
+                                        $query .= " admins.id DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'name-asc') {
+                                        $query .= " admins.adminName ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'name-desc') {
+                                        $query .= " admins.adminName DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'last-login-asc') {
+                                        $query .= " admins.lastLogin ASC";
+                                    }
+                                    else {
+                                        $query .= " admins.lastLogin DESC";
+                                    }
+                                }
+                                else {
+                                    $query .= " admins.lastLogin DESC";
+                                }
+                                $query .= " LIMIT 25;";
                                 
                                 // if (isset($mainAdmin) && $mainAdmin) {
                                 //     $query = "SELECT * FROM admins ORDER BY lastLogin DESC LIMIT 25;";
@@ -867,7 +950,31 @@
                                     </td>
                                 <?php else: ?>
                                     <td colspan='5'>
-                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Login Date]
+                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By <?php
+                                            if (isset($queryString['order-by'])) {
+                                                if ($queryString['order-by'] == 'admin-id-asc') {
+                                                    echo("Admin ID; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'admin-id-desc') {
+                                                    echo("Admin ID; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'name-asc') {
+                                                    echo("Name; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'name-desc') {
+                                                    echo("Name; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'last-login-asc') {
+                                                    echo("Last Login; Ascending");
+                                                }
+                                                else {
+                                                    echo("Last Login; Descending");
+                                                }
+                                            }
+                                            else {
+                                                echo("Last Login; Descending");
+                                            }
+                                        ?>]
                                     </td>
                                 <?php endif; ?>
                             </tr>

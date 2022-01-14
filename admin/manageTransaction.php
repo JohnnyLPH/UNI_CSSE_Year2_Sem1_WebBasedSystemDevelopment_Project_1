@@ -656,11 +656,140 @@
                         <thead>
                             <!-- 7 Columns -->
                             <tr>
-                                <th>Transaction ID</th>
-                                <th>Member ID</th>
-                                <th>Car ID</th>
-                                <th>Order ID</th>
-                                <th>Transaction Date</th>
+                                <th><form method='get' action='/admin/manageTransaction.php'>
+                                    <input type='hidden' name='order-by' value='transaction-id-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'transaction-id-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-transaction'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-transaction'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Transaction ID<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'transaction-id-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'transaction-id-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageTransaction.php'>
+                                    <input type='hidden' name='order-by' value='member-id-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'member-id-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-transaction'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-transaction'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Member ID<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'member-id-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'member-id-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageTransaction.php'>
+                                    <input type='hidden' name='order-by' value='car-id-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'car-id-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-transaction'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-transaction'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Car ID<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'car-id-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'car-id-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageTransaction.php'>
+                                    <input type='hidden' name='order-by' value='order-id-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-id-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-transaction'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-transaction'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Order ID<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-id-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-id-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageTransaction.php'>
+                                    <input type='hidden' name='order-by' value='transaction-date-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'transaction-date-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-transaction'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-transaction'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Transaction Date<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'transaction-date-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'transaction-date-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
                                 <th>Amount (£)</th>
                                 <th>View</th>
                             </tr>
@@ -681,7 +810,44 @@
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY transactions.transactionDate DESC LIMIT 25;";
+                                " ORDER BY";
+
+                                if (isset($queryString['order-by'])) {
+                                    if ($queryString['order-by'] == 'transaction-id-asc') {
+                                        $query .= " transactions.id ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'transaction-id-desc') {
+                                        $query .= " transactions.id DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'member-id-asc') {
+                                        $query .= " transactions.memberId ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'member-id-desc') {
+                                        $query .= " transactions.memberId DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'car-id-asc') {
+                                        $query .= " transactions.carId ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'car-id-desc') {
+                                        $query .= " transactions.carId DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'order-id-asc') {
+                                        $query .= " transactions.orderId ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'order-id-desc') {
+                                        $query .= " transactions.orderId DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'transaction-date-asc') {
+                                        $query .= " transactions.transactionDate ASC";
+                                    }
+                                    else {
+                                        $query .= " transactions.transactionDate DESC";
+                                    }
+                                }
+                                else {
+                                    $query .= " transactions.transactionDate DESC";
+                                }
+                                $query .= " LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;
@@ -743,7 +909,43 @@
                                     </td>
                                 <?php else: ?>
                                     <td colspan='7'>
-                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Transaction Date]
+                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By <?php
+                                            if (isset($queryString['order-by'])) {
+                                                if ($queryString['order-by'] == 'transaction-id-asc') {
+                                                    echo("Transaction ID; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'transaction-id-desc') {
+                                                    echo("Transaction ID; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'member-id-asc') {
+                                                    echo("Member ID; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'member-id-desc') {
+                                                    echo("Member ID; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'car-id-asc') {
+                                                    echo("Car ID; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'car-id-desc') {
+                                                    echo("Car ID; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'order-id-asc') {
+                                                    echo("Order ID; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'order-id-desc') {
+                                                    echo("Order ID; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'transaction-date-asc') {
+                                                    echo("Transaction Date; Ascending");
+                                                }
+                                                else {
+                                                    echo("Transaction Date; Descending");
+                                                }
+                                            }
+                                            else {
+                                                echo("Transaction Date; Descending");
+                                            }
+                                        ?>]
                                     </td>
                                 <?php endif; ?>
                             </tr>

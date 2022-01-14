@@ -727,12 +727,167 @@
                         <thead>
                             <!-- 7 Columns -->
                             <tr>
-                                <th>Order ID</th>
-                                <th>Member ID</th>
-                                <th>Order Status</th>
-                                <th>Proposal Date</th>
-                                <th>Review Date</th>
-                                <th>Confirm Date</th>
+                                <th><form method='get' action='/admin/manageOrder.php'>
+                                    <input type='hidden' name='order-by' value='order-id-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-id-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-order'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-order'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Order ID<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-id-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-id-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageOrder.php'>
+                                    <input type='hidden' name='order-by' value='member-id-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'member-id-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-order'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-order'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Member ID<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'member-id-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'member-id-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageOrder.php'>
+                                    <input type='hidden' name='order-by' value='order-status-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-status-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-order'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-order'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Order Status<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-status-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-status-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageOrder.php'>
+                                    <input type='hidden' name='order-by' value='proposal-date-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'proposal-date-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-order'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-order'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Proposal Date<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'proposal-date-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'proposal-date-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageOrder.php'>
+                                    <input type='hidden' name='order-by' value='review-date-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'review-date-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-order'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-order'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Review Date<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'review-date-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'review-date-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageOrder.php'>
+                                    <input type='hidden' name='order-by' value='confirm-date-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'confirm-date-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-order'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-order'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Confirm Date<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'confirm-date-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'confirm-date-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
                                 <th>View</th>
                             </tr>
                         </thead>
@@ -752,7 +907,53 @@
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 5 THEN 2 ELSE 3 END LIMIT 25;";
+                                " ORDER BY";
+
+                                if (isset($queryString['order-by'])) {
+                                    if ($queryString['order-by'] == 'order-id-asc') {
+                                        $query .= " orders.id ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'order-id-desc') {
+                                        $query .= " orders.id DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'member-id-asc') {
+                                        $query .= " orders.memberId ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'member-id-desc') {
+                                        $query .= " orders.memberId DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'order-status-asc') {
+                                        $query .= " orders.orderStatus ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'order-status-desc') {
+                                        $query .= " orders.orderStatus DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'proposal-date-asc') {
+                                        $query .= " orders.proposalDate ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'proposal-date-desc') {
+                                        $query .= " orders.proposalDate DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'review-date-asc') {
+                                        $query .= " orders.reviewDate ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'review-date-desc') {
+                                        $query .= " orders.reviewDate DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'confirm-date-asc') {
+                                        $query .= " orders.confirmDate ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'confirm-date-desc') {
+                                        $query .= " orders.confirmDate DESC";
+                                    }
+                                    else {
+                                        $query .= " CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 5 THEN 2 ELSE 3 END";
+                                    }
+                                }
+                                else {
+                                    $query .= " CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 5 THEN 2 ELSE 3 END";
+                                }
+                                $query .= " LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;
@@ -830,7 +1031,52 @@
                                     </td>
                                 <?php else: ?>
                                     <td colspan='7'>
-                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Order Status]
+                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By <?php
+                                            if (isset($queryString['order-by'])) {
+                                                if ($queryString['order-by'] == 'order-id-asc') {
+                                                    echo("Order ID; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'order-id-desc') {
+                                                    echo("Order ID; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'member-id-asc') {
+                                                    echo("Member ID; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'member-id-desc') {
+                                                    echo("Member ID; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'order-status-asc') {
+                                                    echo("Order Status; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'order-status-desc') {
+                                                    echo("Order Status; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'proposal-date-asc') {
+                                                    echo("Proposal Date; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'proposal-date-desc') {
+                                                    echo("Proposal Date; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'review-date-asc') {
+                                                    echo("Review Date; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'review-date-desc') {
+                                                    echo("Review Date; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'confirm-date-asc') {
+                                                    echo("Confirm Date; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'confirm-date-desc') {
+                                                    echo("Confirm Date; Descending");
+                                                }
+                                                else {
+                                                    echo("Order Status; Special Case");
+                                                }
+                                            }
+                                            else {
+                                                echo("Order Status; Special Case");
+                                            }
+                                        ?>]
                                     </td>
                                 <?php endif; ?>
                             </tr>

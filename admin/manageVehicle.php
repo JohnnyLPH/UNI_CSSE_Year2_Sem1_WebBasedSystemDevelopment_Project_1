@@ -1043,12 +1043,167 @@
                         <thead>
                             <!-- 8 Columns -->
                             <tr>
-                                <th>Car ID</th>
-                                <th>Brand</th>
-                                <th>Model</th>
-                                <th>Price (£/mth)</th>
-                                <th>Lease Time (Month)</th>
-                                <th>Initial Pay (* £/mth)</th>
+                                <th><form method='get' action='/admin/manageVehicle.php'>
+                                    <input type='hidden' name='order-by' value='car-id-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'car-id-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-car'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-car'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Car ID<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'car-id-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'car-id-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageVehicle.php'>
+                                    <input type='hidden' name='order-by' value='brand-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'brand-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-car'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-car'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Brand<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'brand-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'brand-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageVehicle.php'>
+                                    <input type='hidden' name='order-by' value='model-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'model-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-car'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-car'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Model<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'model-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'model-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageVehicle.php'>
+                                    <input type='hidden' name='order-by' value='price-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'price-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-car'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-car'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Price (£/mth)<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'price-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'price-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageVehicle.php'>
+                                    <input type='hidden' name='order-by' value='lease-time-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'lease-time-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-car'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-car'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Lease Time (Month)<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'lease-time-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'lease-time-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageVehicle.php'>
+                                    <input type='hidden' name='order-by' value='initial-pay-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'initial-pay-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-car'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-car'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Initial Pay (* £/mth)<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'initial-pay-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'initial-pay-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
                                 <th>View</th>
                                 <th>Delete</th>
                             </tr>
@@ -1067,7 +1222,53 @@
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY cars.dateEdited DESC LIMIT 25;";
+                                " ORDER BY";
+
+                                if (isset($queryString['order-by'])) {
+                                    if ($queryString['order-by'] == 'car-id-asc') {
+                                        $query .= " cars.id ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'car-id-desc') {
+                                        $query .= " cars.id DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'brand-asc') {
+                                        $query .= " brands.brandName ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'brand-desc') {
+                                        $query .= " brands.brandName DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'model-asc') {
+                                        $query .= " cars.carModel ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'model-desc') {
+                                        $query .= " cars.carModel DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'price-asc') {
+                                        $query .= " cars.monthPrice ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'price-desc') {
+                                        $query .= " cars.monthPrice DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'lease-time-asc') {
+                                        $query .= " cars.leaseTime ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'lease-time-desc') {
+                                        $query .= " cars.leaseTime DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'initial-pay-asc') {
+                                        $query .= " cars.initialPay ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'initial-pay-desc') {
+                                        $query .= " cars.initialPay DESC";
+                                    }
+                                    else {
+                                        $query .= " cars.dateEdited DESC";
+                                    }
+                                }
+                                else {
+                                    $query .= " cars.dateEdited DESC";
+                                }
+                                $query .= " LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;
@@ -1134,7 +1335,52 @@
                                     </td>
                                 <?php else: ?>
                                     <td colspan='8'>
-                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Edit Date]
+                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By <?php
+                                            if (isset($queryString['order-by'])) {
+                                                if ($queryString['order-by'] == 'car-id-asc') {
+                                                    echo("Car ID; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'car-id-desc') {
+                                                    echo("Car ID; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'brand-asc') {
+                                                    echo("Brand; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'brand-desc') {
+                                                    echo("Brand; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'model-asc') {
+                                                    echo("Model; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'model-desc') {
+                                                    echo("Model; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'price-asc') {
+                                                    echo("Price; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'price-desc') {
+                                                    echo("Price; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'lease-time-asc') {
+                                                    echo("Lease Time; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'lease-time-desc') {
+                                                    echo("Lease Time; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'initial-pay-asc') {
+                                                    echo("Initial Pay; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'initial-pay-desc') {
+                                                    echo("Initial Pay; Descending");
+                                                }
+                                                else {
+                                                    echo("Edit Date; Descending");
+                                                }
+                                            }
+                                            else {
+                                                echo("Edit Date; Descending");
+                                            }
+                                        ?>]
                                     </td>
                                 <?php endif; ?>
                             </tr>
