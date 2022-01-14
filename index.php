@@ -163,7 +163,7 @@
                 </li>
 
                 <li>
-                    <a href="/loginPage.php" style="margin-top:3px;">Sign In</a>
+                    <a href="/loginPage.php" style="margin-top:3px;">Log In</a>
                 </li>
             </ul>
         </nav>
