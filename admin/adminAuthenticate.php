@@ -4,7 +4,7 @@
     if (session_id() == "") {
         session_start();
     }
-    date_default_timezone_set("Asia/Kuala_Lumpur");
+    date_default_timezone_set("Europe/London");
 
     // Return true if admin has logged in.
     function checkAdminLogin() {
