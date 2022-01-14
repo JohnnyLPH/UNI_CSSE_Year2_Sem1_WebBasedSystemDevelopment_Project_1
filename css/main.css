@@ -145,6 +145,12 @@ nav.fixed_nav_bar li {
     width: 11%;
 }
 
+nav.fixed_nav_bar li:last-child {
+    float: right;
+    margin-right: 20px;
+    padding: 0px;
+}
+
 nav.fixed_nav_bar li a {
     color: white;
     display: block;
@@ -601,4 +607,220 @@ nav #car-list-menu section article a {
     margin: auto;
     padding: 0 20px;
     margin-top: 20px;
+}
+
+.multiline-text {
+    white-space: pre-wrap;
+}
+
+.button-section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.button-section button, .button-section input {
+    width: 30%;
+    margin: 5px;
+    padding: 10px 0;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: white;
+}
+
+.button-section input {
+    width: 320px;
+    color: black;
+    font-weight: normal;
+    border-color: rgba(128, 128, 128, 0.5);
+}
+
+.button-section .small-button {
+    /* width: 10%; */
+    width: 80px;
+    min-width: fit-content;
+}
+
+.positive-button {
+    background-color: green;
+}
+
+.negative-button {
+    background-color: red;
+}
+
+.button-section button:hover {
+    color: black;
+    border-color: black;
+}
+
+.positive-button:hover {
+    background-color:rgba(0, 128, 0, 0.651) ;
+}
+
+.negative-button:hover {
+    background-color: rgba(255, 0, 0, 0.651);
+}
+
+.error-message {
+    display: block;
+    margin: auto;
+    color: red;
+    text-align: center;
+    font-size: medium;
+    font-style: italic;
+}
+
+.success-message {
+    display: block;
+    margin: auto;
+    color: green;
+    text-align: center;
+    font-size: medium;
+    font-style: italic;
+}
+
+table.db-table {
+    background-color: white;
+    width: 100%;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+table, table th, table td {
+    border: 2px solid black;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+table th, table td {
+    padding: 0 5px;
+    height: 30px;
+    /* font-size: small; */
+}
+
+table td.left-text {
+    text-align: left;
+}
+
+table td.right-text {
+    text-align: right;
+}
+
+table td.center-text {
+    text-align: center;
+}
+
+table.db-table tr .data-not-found {
+    color: red;
+    text-align: center;
+}
+
+div.view-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+div.view-content table {
+    width: fit-content;
+    background-color: white;
+}
+
+div.view-content table tr td {
+    max-width: 300px;
+    text-align: justify;
+}
+
+div.view-content table tr td:first-child {
+    font-weight: bold;
+    text-align: right;
+}
+
+div.view-content table tr td img {
+    display: block;
+    margin: auto;
+    max-width: 100%;
+    max-height: 200px;
+}
+
+button {
+    background-color: rgb(76, 192, 157);
+    max-width: 250px;
+}
+
+form button {
+    display: block;
+    margin: auto;
+    margin-bottom: 10px;
+    padding: 10px 0;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: white;
+    width: 100%;
+    min-width: 80px;
+    max-width: 500px;
+    /* min-height: 35px; */
+}
+
+form button:hover {
+    color: black;
+    border-color: black;
+}
+
+div.manage-section {
+    display: block;
+    margin: auto;
+    width: fit-content;
+    min-width: 70%;
+    margin-bottom: 10px;
+    /* max-width: 1200px; */
+}
+
+.cart-quantity {
+    display: block;
+    margin: auto;
+    width: 75%;
+    /* text-align: center; */
+    font-size: smaller;
+    min-height: 20px;
+    border: 2px solid black;
+}
+
+input#word-to-search {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.button-check-out button{
+    float: right;
+    font-weight: bold;
+    font-family: sans-serif;
+    font-size: 15px;
+    width: 180px;
+    margin: 4px;
+    padding: 4px;
+    color: white;
+    border: white;
+    border-radius: 5px;
+    border-width: 5px;
+}
+
+.button-check-out button:hover{
+    color: black;
+    border-color: black;
+    cursor: pointer;
 }

@@ -1,0 +1,441 @@
+:root {
+    --main-body-color: #EDF6F9;
+    --medium-dark-shade-of-cyan-: #264861;
+    --light-shade-of-red-orange: #FFDDD2;
+    --light-gray: #ddd;
+}
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: var(--main-body-color);
+    font-size: 17px;
+    height: 100vh;
+    min-height: fit-content;
+}
+
+@media (max-width: 1000px) {
+    body {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 800px) {
+    body {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        font-size: 14px;
+    }
+}
+
+header {
+    color: white;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    z-index: 1;
+    top: 0;
+    font-size: x-large;
+}
+
+footer {
+    color: white;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    z-index: 1;
+}
+
+header p, footer p {
+    margin: 0;
+    text-align: center;
+    padding: 20px 0;
+    font-weight: bold;
+}
+
+hr {
+    margin: 0;
+}
+
+main {
+    display: block;
+    margin: auto;
+    /* max-width: 1200px; */
+    min-height: 85%;
+    max-height: fit-content;
+    overflow-x: auto;
+}
+
+main h2 {
+    text-decoration: underline;
+}
+
+main h2, h3 {
+    margin: 0;
+    padding-top: 25px;
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+.error-message {
+    display: block;
+    margin: auto;
+    color: red;
+    text-align: center;
+    font-size: medium;
+    font-style: italic;
+}
+
+.success-message {
+    display: block;
+    margin: auto;
+    color: green;
+    text-align: center;
+    font-size: medium;
+    font-style: italic;
+}
+
+#admin-login-form {
+    display: block;
+    margin: auto;
+    width: fit-content;
+    font-size: medium;
+}
+
+#admin-login-form div {
+    margin: 15px;
+}
+
+#admin-login-form input {
+    border: 2px solid black;
+    border-radius: 3px;
+    height: 20px;
+    padding: 5px;
+}
+
+#admin-login-form button {
+    display: block;
+    font-size: medium;
+    padding: 10px 0;
+    width: 100%;
+    cursor: pointer;
+
+    font-weight: bold;
+    color: white;
+
+    border: 4px solid white;
+    border-radius: 10px;
+    background-color: rgb(68, 146, 156);
+}
+
+#admin-login-form button:hover {
+    cursor: pointer;
+    background-color: white;
+    color: rgb(68, 146, 156);
+    border-color: rgb(68, 146, 156);
+}
+
+nav.fixed_nav_bar {
+    padding: 0;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+    overflow:auto;
+}
+
+nav.fixed_nav_bar ul {
+    list-style-type: none;
+    margin: 0;
+    position: relative;
+    height: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 1;
+    padding: 0 15px;
+}
+
+nav.fixed_nav_bar li {
+    display: inline-block;
+    min-width: 11%;
+}
+
+nav.fixed_nav_bar li:last-child {
+    float: right;
+}
+
+nav.fixed_nav_bar li a {
+    color: white;
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+nav.fixed_nav_bar li a:hover {
+    color: var(--medium-dark-shade-of-cyan-);
+}
+
+nav.fixed_nav_bar li a.active {
+    color: var(--medium-dark-shade-of-cyan-);
+    background-color: var(--light-shade-of-red-orange);
+}
+
+nav.fixed_nav_bar li:hover:not(.active) {
+    color: var(--medium-dark-shade-of-cyan-);
+    background-color: var(--light-shade-of-red-orange);
+}
+
+div.manage-section, div.dashboard-content {
+    display: block;
+    margin: auto;
+    width: fit-content;
+    min-width: 70%;
+    margin-bottom: 10px;
+    /* max-width: 1200px; */
+}
+
+div.dashboard-content, div.chart-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+div.chart-container {
+    flex-direction: row;
+    width: 100%;
+    /* margin: 10px; */
+}
+
+div.chart-container div.chart {
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    min-width: 400px;
+    width: 500px;
+    padding: 5px;
+    margin: 10px;
+}
+
+div.chart-container div.chart canvas {
+    width: 100%;
+}
+
+table.db-table {
+    background-color: white;
+    width: 100%;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 80px;
+}
+
+/* table.db-table tr {
+    display: flex;
+} */
+
+table, table th, table td {
+    border: 2px solid black;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+table th, table td {
+    padding: 0 5px;
+    height: 30px;
+    /* font-size: small; */
+}
+
+table td.left-text {
+    text-align: left;
+}
+
+table td.right-text {
+    text-align: right;
+}
+
+table td.center-text {
+    text-align: center;
+}
+
+table.db-table tr .data-not-found {
+    color: red;
+    text-align: center;
+}
+
+button {
+    background-color: rgb(76, 192, 157);
+    max-width: 250px;
+}
+
+form button {
+    display: block;
+    margin: auto;
+    margin-bottom: 10px;
+    padding: 10px 0;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: white;
+    width: 100%;
+    min-width: 80px;
+    max-width: 500px;
+    /* min-height: 35px; */
+}
+
+table.db-table td button {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.button-section {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.button-section button, .button-section input {
+    width: 30%;
+    margin: 5px;
+    padding: 10px 0;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: white;
+}
+
+.button-section input {
+    width: 320px;
+    color: black;
+    font-weight: normal;
+    border-color: rgba(128, 128, 128, 0.5);
+}
+
+.button-section .small-button {
+    /* width: 10%; */
+    width: 80px;
+    min-width: fit-content;
+}
+
+.positive-button {
+    background-color: green;
+}
+
+.negative-button {
+    background-color: red;
+}
+
+table.db-table td button:hover, form button:hover, .button-section button:hover {
+    color: black;
+    border-color: black;
+}
+
+.positive-button:hover {
+    background-color:rgba(0, 128, 0, 0.651) ;
+}
+
+.negative-button:hover {
+    background-color: rgba(255, 0, 0, 0.651);
+}
+
+#manage-add-form, #manage-edit-form, #manage-delete-form {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: auto;
+}
+
+#manage-add-form div, #manage-edit-form div, #manage-delete-form div {
+    width: fit-content;
+    min-width: 250px;
+    margin: auto;
+    padding: 5px;
+}
+
+#manage-add-form div input, #manage-add-form div textarea, #manage-edit-form div input, #manage-edit-form div textarea, #manage-delete-form div input {
+    width: 100%;
+    min-height: 30px;
+}
+
+#manage-edit-form div select {
+    width: 70%;
+    min-height: 30px;
+}
+
+#manage-edit-form div select[value='6'] {
+    color: green;
+}
+
+#manage-add-form div textarea, #manage-edit-form div textarea {
+    resize: none;
+}
+
+div.view-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+div.view-content table {
+    background-color: white;
+}
+
+div.view-content table tr td {
+    max-width: 300px;
+    text-align: justify;
+}
+
+div.view-content table tr td:first-child {
+    font-weight: bold;
+    text-align: right;
+}
+
+div.view-content table tr td img {
+    display: block;
+    margin: auto;
+    max-width: 100%;
+    max-height: 120px;
+}
+
+div.view-content table tr td button, div.view-content table tr td a, button.sort-button {
+    font-size: medium;
+    text-align: left;
+    text-decoration: none;
+    margin: auto;
+    color: blue;
+    background-color: white;
+    border-width: 0;
+}
+
+button.sort-button {
+    font-size: 15px;
+    color: black;
+    text-align: center;
+}
+
+div.view-content table tr td button:hover, div.view-content table tr td a:hover, button.sort-button:hover {
+    color: rgb(119, 0, 255);
+    text-decoration: underline;
+}
+
+.multiline-text {
+    white-space: pre-wrap;
+}
+
+input#word-to-search {
+    padding-left: 5px;
+    padding-right: 5px;
+}
