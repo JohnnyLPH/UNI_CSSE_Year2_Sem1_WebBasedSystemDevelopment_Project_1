@@ -426,6 +426,34 @@ function approveOrderValidation(emptyMsg = true, showAlert = true) {
 
     res = /^(?=(?:.*[A-Z]))(?=(?:.*[a-z]))(?=.*?[^A-Za-z0-9])(?=(?:.*[\t\n]){0})(?=(?:.*\d){3,})(.{6,})$/;
 
+    // Check order status.
+    if (
+        document.getElementById("order-status").value == 'none' ||
+        (document.getElementById("order-status").value != '6' && document.getElementById("order-status").value != '0' && document.getElementById("order-status").value != '1')
+    ) {
+        warningMsg += "* Select a Valid New Status!\n";
+        passValidate = false;
+
+        document.getElementById("order-status").style.borderColor = "red";
+        document.getElementById("order-status").blur();
+    }
+    else {
+        document.getElementById("order-status").style.borderColor = "";
+    }
+
+    // Check order status message.
+    if (document.getElementById("order-status").value == '1' && !checkStringInput(document.getElementById("order-status-msg"), 5, 512)) {
+        warningMsg += "* Enter Valid Order Status Message (5 - 512 Char) for status Need Changes!\n";
+        passValidate = false;
+    }
+    else if (document.getElementById("order-status-msg").value.length > 0 && !checkStringInput(document.getElementById("order-status-msg"), 5, 512)) {
+        warningMsg += "* Enter Valid Order Status Message (5 - 512 Char) or Leave Empty!\n";
+        passValidate = false;
+    }
+    else {
+        document.getElementById("order-status-msg").style.borderColor = "";
+    }
+
     // Check current admin password if provided.
     if (!checkStringInput(document.getElementById("current-admin-password"), 6, 256, null, res, true)) {
         warningMsg += "* Enter Your Password (Must be Valid) to Confirm New Status!\n";

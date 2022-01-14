@@ -82,6 +82,7 @@
             $orderId = (isset($queryString['order-id'])) ? testInput($queryString['order-id']): "";
             $orderStatus = (isset($_POST['order-status'])) ? testInput($_POST['order-status']): "";
             $oldOlderStatus = "";
+            $orderStatusMsg = (isset($_POST['order-status-msg'])) ? testInput($_POST['order-status-msg']): "";
 
             $currentAdminPass = (isset($_POST['current-admin-password'])) ? testInput($_POST['current-admin-password']): "";
             
@@ -93,7 +94,7 @@
                 if ($rs) {
                     if ($record = mysqli_fetch_assoc($rs)) {
                         // 8 status [0 - 7].
-                        // Admin can update from 6th [5] status to 7th [6] or 1st [0].
+                        // Admin can update from 6th [5] status to 7th [6] or 1st [0] or 2nd [1].
                         // Order status 5 for those waiting for review.
                         if (isset($record['orderStatus']) && $record['orderStatus'] == 5) {
                             // Allow to edit.
@@ -114,9 +115,15 @@
             ) {
                 $passChecking = true;
 
-                // Check if new order status is valid, only accept 0 (Not approved) and 6 (Approved).
-                if ((empty($orderStatus) && $orderStatus != 0) || !is_numeric($orderStatus) || ($orderStatus != 0 && $orderStatus != 6)) {
+                // Check if new order status is valid, only accept 0 (Not approved) and 1 (Need Changes) and 6 (Approved).
+                if ((empty($orderStatus) && $orderStatus != 0) || $orderStatus == 'none' || !is_numeric($orderStatus) || ($orderStatus != 0 && $orderStatus != 1 && $orderStatus != 6)) {
                     $editOrderMsg = "* Invalid Order Status ($orderStatus) to update!";
+                    $passChecking = false;
+                }
+
+                // If need changes, must have order status message.
+                if ($passChecking && $orderStatus == 1 && (empty($orderStatusMsg) || strlen($orderStatusMsg) < 5 || strlen($orderStatusMsg) > 512)) {
+                    $editOrderMsg = "* Must write Message for status Need Changes!";
                     $passChecking = false;
                 }
 
@@ -143,7 +150,16 @@
                 $currentDate = date("Y-m-d H:i:s");
 
                 if ($passChecking) {
-                    $query = "UPDATE orders SET orders.orderStatus='$orderStatus', orders.reviewDate='$currentDate' WHERE orders.id=$orderId;";
+                    $orderStatusMsgEscaped = mysqli_real_escape_string($serverConnect, $orderStatusMsg);
+
+                    // $query = "UPDATE orders SET orders.orderStatus='$orderStatus', orders.reviewDate='$currentDate' WHERE orders.id=$orderId;";
+
+                    $query = "UPDATE orders SET orders.orderStatus='$orderStatus', orders.orderStatusMessage='$orderStatusMsgEscaped', orders.reviewDate='$currentDate' WHERE orders.id=$orderId;";
+
+                    // Need changes.
+                    if ($orderStatus == 1) {
+                        $query = "UPDATE orders SET orders.orderStatus='$orderStatus', orders.orderStatusMessage='$orderStatusMsgEscaped', orders.editable='1', orders.reviewDate='$currentDate' WHERE orders.id=$orderId;";
+                    }
 
                     $rs = mysqli_query($serverConnect, $query);
 
@@ -324,7 +340,6 @@
                                             <tr>
                                                 <td>Type</td>
                                                 <td><?php
-
                                                     // Type is 1 for personal, 2 for business.
                                                     $allType = array(
                                                         'Personal',
@@ -492,8 +507,8 @@
                                                 <td>Order Status</td>
                                                 <td <?php
                                                     if (isset($record["orderStatus"])) {
-                                                        // Not approved.
-                                                        if ($record["orderStatus"] == 0) {
+                                                        // Not approved or need changes.
+                                                        if ($record["orderStatus"] == 0 || $record["orderStatus"] == 1 ) {
                                                             echo("style='color: red; font-weight: bold;'");
                                                         }
                                                         // Approved.
@@ -508,7 +523,7 @@
                                                 ?>>
                                                     <?php
                                                         // 8 status [0 - 7].
-                                                        // Admin can update from 6th [5] status to 7th [6] or 1st [0].
+                                                        // Admin can update from 6th [5] status to 7th [6] or 1st [0] or 2nd [1].
                                                         $allOrderStatus = array(
                                                             'Ineligible.',
                                                             'Changes required.',
@@ -527,9 +542,9 @@
 
                                             <tr>
                                                 <td>Order Status Message</td>
-                                                <td>
-                                                    <?php echo((isset($record["orderStatusMessage"])) ? $record["orderStatusMessage"]: "-"); ?>
-                                                </td>
+                                                <td class='multiline-text'><?php
+                                                    echo((isset($record["orderStatusMessage"])) ? $record["orderStatusMessage"]: "-");
+                                                ?></td>
                                             </tr>
 
                                             <tr>
@@ -616,13 +631,41 @@
                                         Order Status:
                                     </label><br>
 
-                                    <div class="radio-section">
-                                        <label for="approve-order">Approve</label>
-                                        <input id="approve-order" type="radio" name="order-status" value="6" checked>
+                                    <select id="order-status" name="order-status">
+                                        <option value="none"<?php
+                                            if ($orderStatus != 1 && $orderStatus != 0 && $orderStatus != 6) {
+                                                echo(" selected");
+                                            }
+                                        ?>>-Select Status-</option>
 
-                                        <label for="not-approve-order">Not Approve</label>
-                                        <input id="not-approve-order" type="radio" name="order-status" value="0">
-                                    </div>
+                                        <option value="6"<?php
+                                            if ($orderStatus == 6) {
+                                                echo(" selected");
+                                            }
+                                        ?>>Approve</option>
+
+                                        <option value="0"<?php
+                                            if ($orderStatus == 0) {
+                                                echo(" selected");
+                                            }
+                                        ?>>Ineligible</option>
+
+                                        <option value="1"<?php
+                                            if ($orderStatus == 1) {
+                                                echo(" selected");
+                                            }
+                                        ?>>Need Changes</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label for='order-status-msg'>
+                                        Order Status Message:
+                                    </label><br>
+
+                                    <textarea id='order-status-msg' type='text' name='order-status-msg' placeholder='Optional (Required if Need Changes)' rows='5' minlength="5" maxlength='512'><?php
+                                        echo((!empty($orderStatusMsg)) ? $orderStatusMsg: "");
+                                    ?></textarea>
                                 </div>
 
                                 <div>
@@ -696,7 +739,7 @@
                         <tbody>
                             <?php
                                 // 8 status [0 - 7].
-                                // Admin can update from 6th [5] status to 7th [6] or 1st [0].
+                                // Admin can update from 6th [5] status to 7th [6] or 1st [0] or 2nd [1].
                                 // Select from Orders table.
                                 $query = "SELECT orders.id, orders.memberId, orders.orderStatus, orders.proposalDate, orders.reviewDate, orders.confirmDate FROM orders" .
                                 (
@@ -730,8 +773,8 @@
 
                                         <td class='center-text' <?php
                                             if (isset($record["orderStatus"])) {
-                                                // Not approved.
-                                                if ($record["orderStatus"] == 0) {
+                                                // Not approved or need changes.
+                                                if ($record["orderStatus"] == 0 || $record["orderStatus"] == 1 ) {
                                                     echo("style='color: red; font-weight: bold;'");
                                                 }
                                                 // Approved.
