@@ -124,7 +124,7 @@
                     }
 
                     // Try to fetch data from Transactions table.
-                    $query = "SELECT transactions.transactionDate, transactions.creditCard FROM transactions ORDER BY transactions.transactionDate DESC;";
+                    $query = "SELECT transactions.transactionDate, transactions.amount FROM transactions ORDER BY transactions.transactionDate DESC;";
 
                     $rs = mysqli_query($serverConnect, $query);
                     $totalRecord = 0;
@@ -141,8 +141,8 @@
                                     ) {
                                         $monthYTotalTransac[$i]++;
 
-                                        if (isset($record["creditCard"]) && isset(json_decode($record["creditCard"], true)['paymentAmount'])) {
-                                            $monthYTotalAmount[$i] += json_decode($record["creditCard"], true)['paymentAmount'];
+                                        if (isset($record["amount"])) {
+                                            $monthYTotalAmount[$i] += $record["amount"];
                                         }
                                         break;
                                     }
@@ -157,8 +157,8 @@
                                     ) {
                                         $weekYTotalTransac[$i]++;
 
-                                        if (isset($record["creditCard"]) && isset(json_decode($record["creditCard"], true)['paymentAmount'])) {
-                                            $weekYTotalAmount[$i] += json_decode($record["creditCard"], true)['paymentAmount'];
+                                        if (isset($record["amount"])) {
+                                            $weekYTotalAmount[$i] += $record["amount"];
                                         }
                                         break;
                                     }
@@ -171,8 +171,8 @@
                                     ) {
                                         $dayYTotalTransac[$i]++;
 
-                                        if (isset($record["creditCard"]) && isset(json_decode($record["creditCard"], true)['paymentAmount'])) {
-                                            $dayYTotalAmount[$i] += json_decode($record["creditCard"], true)['paymentAmount'];
+                                        if (isset($record["amount"])) {
+                                            $dayYTotalAmount[$i] += $record["amount"];
                                         }
                                         break;
                                     }
