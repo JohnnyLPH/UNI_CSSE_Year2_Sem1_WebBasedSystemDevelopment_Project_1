@@ -44,6 +44,20 @@
         mysqli_stmt_execute($updateSTMT) or showDBError();
     }
 
+    function newTrans($carId, $creditCard, $amount) {
+        // prepared statement to prevent SQL injection
+
+        global $db, $orderId, $memberId;
+        $updateSTMT = mysqli_prepare($db, 'INSERT INTO transactions (memberId, orderId, carId, creditCard, amount) VALUES (?, ?, ?, ?, ?)') or showDBError();
+        if(is_array($creditCard)) {
+            $creditCard = json_encode($creditCard);
+        }
+        mysqli_stmt_bind_param($updateSTMT, 'iissi', $memberId, $orderId, $carId, $creditCard, $amount) or showDBError();
+        mysqli_stmt_execute($updateSTMT) or showDBError();
+
+        return mysqli_insert_id($db);
+    }
+
     function orderExists() {
         return getOrderCol('id');
     }

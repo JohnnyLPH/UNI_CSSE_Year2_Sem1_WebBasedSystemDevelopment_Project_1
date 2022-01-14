@@ -49,7 +49,7 @@
                 showSessionExpiredError();                
                 printDeliveryInfoBanner();
                 printFormHeader2();
-            } else if(empty($inputError)) {
+            } else if(empty($inputError) || $goPrevious) {
                 // all inputs valid, save to database
                 if(orderExists()) {
                     updateOrderCol('preferredDelivery', $preferredDelivery);                    
