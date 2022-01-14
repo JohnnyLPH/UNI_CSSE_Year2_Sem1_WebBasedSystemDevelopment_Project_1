@@ -456,11 +456,9 @@
 
                         <?php if ($allowViewTransac): ?>
                             <?php
-                                $query = "SELECT transactions.id, transactions.memberId, members.email, transactions.carId, cars.carModel, brands.brandName, transactions.orderId, orders.orderStatus, orders.confirmDate, transactions.transactionDate, transactions.creditCard
+                                $query = "SELECT transactions.id, transactions.memberId, members.email, transactions.carId, transactions.orderId, orders.orderStatus, orders.confirmDate, transactions.transactionDate, transactions.creditCard, transactions.amount
                                 FROM transactions
                                 INNER JOIN members ON transactions.memberId = members.id
-                                INNER JOIN cars ON transactions.carId = cars.id
-                                INNER JOIN brands ON cars.brandId = brands.id
                                 INNER JOIN orders ON transactions.orderId = orders.id
                                 WHERE transactions.id=$transacId;";
 
@@ -504,30 +502,18 @@
                                             <tr>
                                                 <td>Car ID</td>
                                                 <td>
-                                                    <form method='get' action='/admin/manageVehicle.php'>
-                                                        <input type='hidden' name='manage-mode' value='view-car'>
-                                                        <input type='hidden' name='car-id' value='<?php
-                                                            echo((isset($record["carId"])) ? $record["carId"]: "");
-                                                        ?>'>
+                                                    <?php
+                                                        if (isset($record["carId"])) {
+                                                            $arrJson = json_decode($record["carId"], true);
 
-                                                        <button><?php
-                                                            echo((isset($record["carId"])) ? $record["carId"]: "-");
-                                                        ?></button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>Car Brand</td>
-                                                <td>
-                                                    <?php echo((isset($record["brandName"])) ? $record["brandName"]: "-"); ?>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>Car Model</td>
-                                                <td>
-                                                    <?php echo((isset($record["carModel"])) ? $record["carModel"]: "-"); ?>
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                echo("<a href='/admin/manageVehicle.php?manage-mode=view-car&car-id=$key'>\"$key\"</a> x $value<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    ?>
                                                 </td>
                                             </tr>
 
@@ -555,7 +541,7 @@
                                             </tr>
                                             
                                             <tr>
-                                                <td>Order Date</td>
+                                                <td>Confirm Date</td>
                                                 <td>
                                                     <?php echo((isset($record["confirmDate"])) ? $record["confirmDate"]: "-"); ?>
                                                 </td>
@@ -569,14 +555,19 @@
                                             </tr>
                                             
                                             <tr>
-                                                <td>Credit Card No.</td>
+                                                <td>Credit Card Details</td>
                                                 <td>
                                                     <?php
-                                                        echo(
-                                                            (isset($record["creditCard"]) && isset(json_decode($record["creditCard"], true)['cardNo'])) ?
-                                                            json_decode($record["creditCard"], true)['cardNo']:
-                                                            "-"
-                                                        );
+                                                        if (isset($record["creditCard"])) {
+                                                            $arrJson = json_decode($record["creditCard"], true);
+
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                echo("\"". $key . "\" = " . $value . "<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
                                                     ?>
                                                 </td>
                                             </tr>
@@ -584,13 +575,7 @@
                                             <tr>
                                                 <td>Amount (£)</td>
                                                 <td>
-                                                    <?php
-                                                        echo(
-                                                            (isset($record["creditCard"]) && isset(json_decode($record["creditCard"], true)['paymentAmount'])) ?
-                                                            json_decode($record["creditCard"], true)["paymentAmount"]:
-                                                            "-"
-                                                        );
-                                                    ?>
+                                                    <?php echo((isset($record["amount"])) ? $record["amount"]: "-"); ?>
                                                 </td>
                                             </tr>
                                             
@@ -792,14 +777,40 @@
                                         }
                                     ?></button>
                                 </form></th>
-                                <th>Amount (£)</th>
+
+                                <th><form method='get' action='/admin/manageTransaction.php'>
+                                    <input type='hidden' name='order-by' value='amount-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'amount-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-transaction'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-transaction'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Amount (£)<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'amount-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'amount-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
                                 <th>View</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
                                 // Select from Transactions table.
-                                $query = "SELECT transactions.id, transactions.memberId, transactions.carId, transactions.orderId, transactions.transactionDate, transactions.creditCard FROM transactions" .
+                                $query = "SELECT transactions.id, transactions.memberId, transactions.carId, transactions.orderId, transactions.transactionDate, transactions.amount FROM transactions" .
                                 (
                                     (isset($wordToSearch) && !empty($wordToSearch)) ?
                                     " WHERE transactions.id LIKE '%" .
@@ -839,6 +850,12 @@
                                     else if ($queryString['order-by'] == 'order-id-desc') {
                                         $query .= " transactions.orderId DESC";
                                     }
+                                    else if ($queryString['order-by'] == 'amount-asc') {
+                                        $query .= " transactions.amount ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'amount-desc') {
+                                        $query .= " transactions.amount DESC";
+                                    }
                                     else if ($queryString['order-by'] == 'transaction-date-asc') {
                                         $query .= " transactions.transactionDate ASC";
                                     }
@@ -869,7 +886,18 @@
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php echo((isset($transac["carId"])) ? $transac["carId"]: "-"); ?>
+                                            <?php
+                                                if (isset($transac["carId"])) {
+                                                    $arrJson = json_decode($transac["carId"], true);
+
+                                                    foreach ($arrJson as $key=>$value) {
+                                                        echo("\"". $key . "\" x " . $value . "<br>");
+                                                    }
+                                                }
+                                                else {
+                                                    echo("-");
+                                                }
+                                            ?>
                                         </td>
 
                                         <td class='center-text'>
@@ -881,13 +909,7 @@
                                         </td>
 
                                         <td class='center-text'>
-                                            <?php
-                                                echo(
-                                                    (isset($transac["creditCard"]) && isset(json_decode($transac["creditCard"], true)['paymentAmount'])) ?
-                                                    json_decode($transac["creditCard"], true)['paymentAmount']:
-                                                    "-"
-                                                );
-                                            ?>
+                                            <?php echo((isset($transac["amount"])) ? $transac["amount"]: "-"); ?>
                                         </td>
 
                                         <td>
@@ -936,6 +958,12 @@
                                                 }
                                                 else if ($queryString['order-by'] == 'order-id-desc') {
                                                     echo("Order ID; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'amount-asc') {
+                                                    echo("Amount; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'amount-desc') {
+                                                    echo("Amount; Descending");
                                                 }
                                                 else if ($queryString['order-by'] == 'transaction-date-asc') {
                                                     echo("Transaction Date; Ascending");
