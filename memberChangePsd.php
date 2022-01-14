@@ -62,7 +62,7 @@
                 }
                 
                 
-                if(!isset($passwordError) || !isset($confirmPasswordError)){
+                if(!isset($passwordError) && !isset($confirmPasswordError)){
                     $member = new Members();
                     if($member->isExistInDb("members", "email", $_SESSION['CHANGE_PASSWORD_EMAIL'])){
                         //get user personal information
