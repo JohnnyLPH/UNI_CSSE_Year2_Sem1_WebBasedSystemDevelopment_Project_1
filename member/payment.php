@@ -7,6 +7,8 @@
         printHTMLFormHeader(basename($_SERVER['SCRIPT_NAME']).'?id='.$orderId);       
     }
 
+    $orderId = filter_input(INPUT_GET, 'orderId', FILTER_VALIDATE_INT);
+
     if($post) {
         $name = $_POST['name'] ?? '';
         $number = $_POST['number'] ?? '';
@@ -66,6 +68,45 @@
                 // all inputs valid, save to database
                 if(orderExists()) {
                     $transactionId = newTrans($carId, $creditCard, $amount);
+                    if(!$transactionId) {
+                        printHeader();
+                        printNavBar();
+                        showError('Error 500: ', 'Transaction Error. Please try again or contact support.');
+                        die();
+                    }
+
+                    require_once './receipt.php';
+
+                    require_once './phpMailer/Exception.php';
+                    require_once './phpMailer/PHPMailer.php';
+                    require_once './phpMailer/SMTP.php';
+                    $email = getMemberEmail();
+                    
+                    if($email) {
+                        // send receipt to email
+                        $mail = new PHPMailer\PHPMailer\PHPMailer();
+                        $mail->isSMTP(); 
+                        $mail->SMTPDebug = 0; // 0 = off (for production use) - 1 = client messages - 2 = client and server messages        **
+                        $mail->Host = "smtp.gmail.com"; // use $mail->Host = gethostbyname('smtp.gmail.com'); // if your network does not support SMTP over IPv6
+                        $mail->Port = 587; // TLS only
+                        $mail->SMTPSecure = 'tls'; // ssl is deprecated
+                        $mail->SMTPAuth = true;
+                        $mail->Username = 'gorilajaker456@gmail.com'; // email
+                        $mail->Password = 'piicqkofqhuyzrad'; // password
+                        $mail->setFrom('noreply@LINGsCARS.com', 'LINGsCARS.com'); // From email and name  //set sender name   *
+                        $mail->addAddress($email, 'Mr. '.$_SESSION['memberFirstName']); // to email and name  //set receiver's email and name   *
+                        $mail->Subject =     'LingsCar\'s OTP for forgotten account password';   //set subject   *
+                        $mail->msgHTML(getHTMLReceipt()); //*$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,*
+                        $mail->AltBody = 'HTML messaging not supported'; // If html emails is not supported by the receiver, show this body
+                        $mail->SMTPOptions = array(
+                                'ssl' => array(
+                                'verify_peer' => false,
+                                'verify_peer_name' => false,
+                                'allow_self_signed' => true
+                            )
+                        );
+                        $mail->send();
+                    }
                     redirect('receipt.php?transactionId='.$transactionId);
                 } else {            
                     showProposalNotFoundError();

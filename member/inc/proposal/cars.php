@@ -13,7 +13,7 @@
     }
     
     $confirm = $_POST['confirm'] ?? '';
-
+    
     if($post) {        
         $applicationType = filter_input(INPUT_POST, 'applicationType', FILTER_VALIDATE_INT);
     } else {
@@ -46,6 +46,7 @@
         } else if($post) {
             $inputError['applicationType'] = 'Select your application type';
         }
+        $cars = '{}';
 
         if($post) {
             if(!$memberId) {
@@ -56,14 +57,16 @@
                 printAppTypeInfoBanner();
             } else if(empty($inputError)) {
                 // all inputs valid, save to database
-                if(orderExists()) {
-                    updateOrderCol('type', $type);
-                    setCurrentStageStatus(1);
-                    redirect(getFormActionURL($requestedStage + 1));
+                if(!$orderId) {
+                    $orderId = newProposal($type, $cars);
+                } else if(orderExists()) {
+                    updateOrderCol('type', $type);                    
+                    setCurrentStageStatus(1);                 
                 } else {            
                     showProposalNotFoundError();
                     die();
                 }
+                redirect(getFormActionURL($requestedStage + 1));
             } else {
                 // 1 or more invalid inputs, show warning
                 setCurrentStageStatus(-1);

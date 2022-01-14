@@ -33,16 +33,6 @@
     
     $stage = array('Car Details', 'Personal Info', 'Current Address', 'Job Info', 'Bank Details', 'Submission');
 
-    function showError($title, $message) {
-        echo
-   '<main>
-       <div class="warning-banner">
-            <svg width="40" height="40" viewBox="0 0 20 20"><path d="M11.31 2.85l6.56 11.93A1.5 1.5 0 0116.56 17H3.44a1.5 1.5 0 01-1.31-2.22L8.69 2.85a1.5 1.5 0 012.62 0zM10 13a.75.75 0 100 1.5.75.75 0 000-1.5zm0-6.25a.75.75 0 00-.75.75v4a.75.75 0 001.5 0v-4a.75.75 0 00-.75-.75z" fill-rule="nonzero"></path></svg>
-            <h1>'.$title.'</h1>
-            <h2>'.$message.'</h2>
-        </div>';
-    }
-
     function showProposalNotFoundError() {
         global $orderId;
         printHeader();

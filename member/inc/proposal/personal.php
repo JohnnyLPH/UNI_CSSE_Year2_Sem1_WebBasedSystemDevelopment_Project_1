@@ -50,7 +50,7 @@
         }
 
         // date of birth
-        if($dobYr === NULL || $dobYr === false) {
+        if($dobYr === NULL || $dobYr === false || $dobYr === '') {
             if($post) {
                 $inputError['dobYr'] = 'Select your year of birth';
             }
@@ -60,7 +60,7 @@
             $inputError['dobYr'] = 'Invalid year. Applicants must be at least 18 years old.';
         }
         
-        if($dobMth === NULL || $dobMth === false) {
+        if($dobMth === NULL || $dobMth === false || $dobMth === '') {
             if($post) {
                 $inputError['dobMth'] = 'Select your month of birth';
             }
@@ -68,7 +68,7 @@
             $inputError['dobMth'] = 'Invalid month. Select your month of birth from Jan to Dec.';
         }
 
-        if($dobDay === NULL || $dobDay === false) {
+        if($dobDay === NULL || $dobDay === false || $dobDay === '') {
             if($post) {
                 $inputError['dobDay'] = 'Select your day of birth';
             }
