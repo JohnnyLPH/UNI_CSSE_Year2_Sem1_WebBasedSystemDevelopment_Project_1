@@ -251,7 +251,7 @@
 
                         <?php if ($allowViewOrder): ?>
                             <?php
-                                $query = "SELECT orders.id, orders.memberId, orders.stages, orders.editable, orders.type, orders.fullName, orders.personal, orders.residentialAddress, orders.job, orders.company, orders.bank, orders.preferredDelivery, orders.orderStatus, orders.orderStatusMessage, orders.proposalDate, orders.reviewDate, orders.confirmDate
+                                $query = "SELECT orders.id, orders.memberId, orders.stages, orders.editable, orders.type, orders.fullName, orders.carsId, orders.personal, orders.residentialAddress, orders.job, orders.company, orders.bank, orders.preferredDelivery, orders.orderStatus, orders.orderStatusMessage, orders.proposalDate, orders.reviewDate, orders.confirmDate
                                 FROM orders
                                 INNER JOIN members ON orders.memberId = members.id
                                 WHERE orders.id=$orderId;";
@@ -362,6 +362,24 @@
                                                 <td>Full Name</td>
                                                 <td>
                                                     <?php echo((isset($record["fullName"])) ? $record["fullName"]: "-"); ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Car ID</td>
+                                                <td>
+                                                    <?php
+                                                        if (isset($record["carsId"])) {
+                                                            $arrJson = json_decode($record["carsId"], true);
+
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                echo("<a href='/admin/manageVehicle.php?manage-mode=view-car&car-id=$key'>\"$key\"</a> x $value<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    ?>
                                                 </td>
                                             </tr>
                                             
@@ -947,11 +965,11 @@
                                         $query .= " orders.confirmDate DESC";
                                     }
                                     else {
-                                        $query .= " CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 5 THEN 2 ELSE 3 END";
+                                        $query .= " CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 5 THEN 2 WHEN orders.orderStatus > 3 THEN 3 ELSE 4 END";
                                     }
                                 }
                                 else {
-                                    $query .= " CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 5 THEN 2 ELSE 3 END";
+                                    $query .= " CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 5 THEN 2 WHEN orders.orderStatus > 3 THEN 3 ELSE 4 END";
                                 }
                                 $query .= " LIMIT 25;";
                                 
