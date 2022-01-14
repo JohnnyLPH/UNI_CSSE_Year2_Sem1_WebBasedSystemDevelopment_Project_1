@@ -15,10 +15,10 @@
     dob          - dob              (date)
 */
 class Members{
-    const DB_HOST = "localhost:3306";
+    const DB_HOST = "localhost";
     const DB_USERNAME = "id18274200_wbsd";
     const DB_PSD = "G03abc-abc03G";
-    const DB = "id18274200_lingcars";
+    const DB = "id18274200_lingscars";
     private $userID;
     private $db_connector;
 
