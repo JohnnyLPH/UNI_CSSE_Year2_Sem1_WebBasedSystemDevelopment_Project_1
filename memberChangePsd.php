@@ -17,6 +17,10 @@
                 header('Location: '.getURIDirname().'/loginPage.php');
                 exit;
             }
+
+            define('HIDDEN_WARNING_HTML', ' hidden">');
+            define('NO_HIDDEN_WARNING_HTML', '">');
+            define('HTML_WARNING_CLASS', ' class="warning"');
             
             $password_change_success = false;
             if(!isset($_SESSION['CHANGE_PASSWORD_EMAIL']) || isset($_SESSION['session_otp_forgot_password'])){
@@ -39,7 +43,8 @@
                 }
             }
 
-            
+            $newPassword = '';
+            $newConfirmPassword = '';
             if($_SERVER["REQUEST_METHOD"] === "POST"){
                 //password
                 $newPassword = $_POST['newPassword'] ?? '';
@@ -96,16 +101,16 @@
                             Change Password
                         </legend>
                         <fieldset>
-                            <!-- login email -->
+                            <!-- Password -->
                             <label for="newPassword">Password</label>
-                            <input type="password" name="newPassword" id="newPassword">
-                            <p class="warning-text hidden">Error</p>
+                            <input type="password" name="newPassword" id="newPassword" '.(isset($passwordError) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($newPassword).'">
+                            <p class="warning-text'.(isset($passwordError) ? (NO_HIDDEN_WARNING_HTML.$passwordError) : (HIDDEN_WARNING_HTML.'Error')).'</p>
                         </fieldset>
                         <fieldset>
-                            <!-- password -->
+                            <!-- Confirm password -->
                             <label for="newConfirmPassword">Confirm Password</label>
-                            <input type="password" name="newConfirmPassword" id="newConfirmPassword" >
-                            <p class="warning-text hidden">Error</p>
+                            <input type="password" name="newConfirmPassword" id="newConfirmPassword" '.(isset($confirmPasswordError) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($newConfirmPassword).'">
+                            <p class="warning-text'.(isset($confirmPasswordError) ? (NO_HIDDEN_WARNING_HTML.$confirmPasswordError) : (HIDDEN_WARNING_HTML.'Error')).'</p>
                         </fieldset>
                         <fieldset>
                             <!-- submit -->

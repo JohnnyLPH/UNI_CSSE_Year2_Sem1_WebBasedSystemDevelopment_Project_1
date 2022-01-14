@@ -11,6 +11,7 @@
         <script src="./js/memberProfile.js" defer></script>
         <?php
             session_start();
+            include_once './account/dbConnection.php';
             include_once './assistanceTool.php';
 
             if(!checkIdleDuration()){

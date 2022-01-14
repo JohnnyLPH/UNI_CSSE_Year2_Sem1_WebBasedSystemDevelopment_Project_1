@@ -66,44 +66,18 @@
                 
                 //pre-set logout datetime, if user directly close the window,
                 //php perform operation to myql would not be handled
-                $temp_login_time = $_SESSION["loggedInTime"];
-                $minutes_to_add = 5;
-
-                $time = new DateTime();
-                $time->add(new DateInterval('PT' . $minutes_to_add . 'M'));
-
-                $temp_logout_time = $time->format('Y-m-d H:i:s');
-
-                $temp_duration = $time->format('U') - strtotime( $_SESSION["loggedInTime"]);
-                if($temp_duration > 1800){
-                    //1800 second == 30 minutes
-                    //if the idle duration is greater than 30 minutes, user are required to login again
-                    if(isset($_SESSION['memberId']) && isset($_SESSION['loggedInTime'])){
-                        include './account/dbConnection.php';
-                        $member = new Member();
-                        $member->updateLogoutDT();
-                        
-                    }
-                    if(isset($_SESSION["loggedIn"])){
-                        unset($_SESSION["loggedIn"]);
-                    }
-                    if(isset($_SESSION["memberId"])){
-                        unset($_SESSION['memberId']);
-                    }
-                    if(isset($_SESSION["memberFirstName"])){
-                        unset($_SESSION["memberFirstName"]);
-                    }
-                    if(isset($_SESSION['loggedInTime'])){
-                        unset($_SESSION['loggedInTime']);
-                    }
-                    return false;
-                }else{
+                if(isset($_SESSION['memberId']) && isset($_SESSION['loggedInTime'])){
                     
-                    updateActiveTime();
-                    //if the idle duration is within 30 minutes, return true
-                    //means that no need to prompt user to login again
-                    return true;
+                    $member = new Members();
+                    $member->updateLogoutDT();
+                    
                 }
+                
+                
+                //if the idle duration is within 30 minutes, return true
+                //means that no need to prompt user to login again
+                return true;
+                
             }
         }
        
