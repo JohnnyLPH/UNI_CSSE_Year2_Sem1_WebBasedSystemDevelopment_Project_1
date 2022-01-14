@@ -7,7 +7,39 @@
         <p id="header_p2">
             Leader of the Pack - The UK\'s favorite car leasing website!&#128168;&#128168;
         </p>
-        </header>    
+        </header>
+        <nav class="fixed_nav_bar">
+            <input type="checkbox" id="car-list">
+            <ul>
+                <li>
+                    <a href="./index.php" class="active">&#127984; <b>Home</b> &#127984;</a>
+                </li>
+
+                <li class="dropdown_list">
+                    Profile
+                    <div class="dropdown_menu">
+                        <a href="#">Manage Profile</a>
+                        <a href="logoutPage.php">Log Out</a>
+                    </div>
+                </li>
+
+                <li>
+                    <a href="/about.html">About Ling</a>
+                </li>
+
+                <li>
+                    <a href="/cart.php">Cart</a>
+                </li>
+
+                <li>
+                    <a href="#">Order History</a>
+                </li>
+
+                <li>
+                    <a href="./loginPage.php" style="margin-top:3px;">Log In</a>
+                </li>
+            </ul>
+        </nav>   
     ');
 
     define('footer_template','
