@@ -1,0 +1,263 @@
+:root {
+    --green-color: rgb(0, 176, 80);
+    --warning-background-color: #fff0f0;
+}
+
+nav.fixed_nav_bar {
+    z-index: 2;
+}
+
+.progress-line ul {
+    display: flex;
+    list-style-type: none;
+    padding-left: 0;
+    justify-content: center;
+}
+.progress-line ul li {
+    flex-basis: 166px;
+    text-align: center;
+}
+.progress-line ul li .process p {
+    background-color: white;
+    border-color: black;
+    border-style: solid;
+    border-radius: 50%;
+    font-size: x-large;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    width: 2.5rem;
+    margin: auto;
+    margin-bottom: 0.67rem;
+    position: relative;
+    z-index: 1;
+}
+.progress-line ul li.current {
+    font-weight: bold;
+}
+.progress-line ul li.current div {
+    border-color: var(--medium-dark-shade-of-cyan-) !important;
+}
+.progress-line ul li.current p {
+    border-color: var(--medium-dark-shade-of-cyan-);
+    color: var(--medium-dark-shade-of-cyan-);
+}
+.progress-line ul li.current a {
+    color: var(--medium-dark-shade-of-cyan-);
+}
+.progress-line ul li.completed {
+    font-weight: bold;
+}
+.progress-line ul li.completed p {
+    color: white;
+    font-size: xx-large;
+    background-color: var(--green-color);
+    border-color: var(--green-color);
+}
+.progress-line ul li.completed a {
+    color: var(--green-color);    
+}
+.progress-line ul li .process div {
+    position: relative;
+    border-top: 2px solid black;
+    height: 0;
+    width: 100%;
+    top: 1.25rem;
+    left: -50%;
+}
+
+fieldset#member-details legend {
+    font-size: x-large;
+    font-weight: bold;
+}
+fieldset#member-details div {
+    display: flex;    
+    align-items: center;
+    flex-wrap: wrap;
+}
+fieldset#member-details h3, fieldset#member-details p {
+    flex-grow: 1;
+}
+fieldset#member-details h3 {
+    flex-basis: 7rem;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+fieldset#member-details p {
+    flex-basis: 15rem;
+    margin-left: 0.67rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+main .banner {
+    background-color: rgb(222, 237, 246);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin: 0 -0.67rem;
+    padding: 0.83rem 0;
+    text-align: center;
+}
+main .banner div {
+    display: inline-block;
+    max-width: 85%;
+}
+main .banner img {    
+    max-height: 80px;
+    max-width: 80px;
+}
+main .warning-banner {
+    background-color: var(--warning-background-color);
+    color: red;
+    margin: 0 -0.67rem;
+    padding: 0.83rem 0;
+    text-align: center;
+}
+main .warning-banner svg {
+    fill: red;
+    vertical-align: middle;
+}
+main .warning-banner h1 {
+    display: inline-block;
+    margin-top: 0;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+main .warning-banner h2 {
+    margin-bottom: 0;
+}
+form fieldset {
+    border-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 1.33rem;
+    padding: 0;
+}
+form fieldset label, div.input {         
+    flex-grow: 1;
+}
+form fieldset label {
+    align-self: start;        
+    flex-basis: 8rem;
+    font-weight: bold;
+    margin-top: 0.66rem;
+}
+form fieldset div.input {
+    display: flex;
+    flex-basis: 15rem;
+    max-width: 100%;
+}
+form fieldset div.input > div {            
+    flex-grow: 1;
+}
+form fieldset div.input .form-icon {            
+    display: inline-block;
+    font-family: 'Material Icons Outlined';
+    font-size: xx-large;
+    flex-shrink: 0;
+    margin-right: 0.33rem;
+    user-select: none;
+}
+form select, form input[type=text], form input[type=number], form input[type=email], form input[type=tel], form input[type=password] {
+    font-size: medium;
+    padding: 0.67rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+form input[type=submit][value='◀ PREVIOUS'] {
+    background-color: var(--medium-dark-shade-of-cyan-);
+}
+form input[type=submit][value='◀ PREVIOUS']:hover {
+    background-color: #13242f;
+}
+form input[type=checkbox] {
+    height: 1.33rem;
+    width: 1.33rem;
+    vertical-align: middle;
+}
+form input.warning, form select.warning {
+    border-color: red;
+    border-style: solid;
+}
+form .button-flex {
+    border: none;
+    border-radius: 5px;
+    background-color: green;
+    color: white;
+    cursor: pointer;
+    flex-grow: 1;
+    font-size: large;
+    font-weight: bold;
+    margin: 0.33rem;
+    padding: 0.67rem;
+    text-align: center;
+    text-decoration: none;
+}
+form .button-flex:hover {
+    text-decoration: underline;
+    background-color: darkgreen;
+}
+form .button-flex#reset {
+    background-color: darkred;
+}
+form .button-flex#reset:hover {
+    background-color: rgb(92, 0, 0);
+}
+form p.warning-text {
+    color: red;
+    font-weight: bold;
+    margin: 0;
+}
+form p.warning-text.hidden {
+    display: none;
+}
+form p.warning-text::before {
+    content: "⚠ ";
+}
+form .input-flex-double, form .input-flex-triple {
+    display: flex;
+}
+form .input-flex-double {
+    flex-wrap: wrap;
+    margin-top: -0.33rem;
+}
+form .input-flex-triple {
+    justify-content: center;
+}
+form .input-flex-double div {
+    display: flex;
+    justify-content: center;
+}
+form .input-flex-double div {
+    flex-basis: 50%;
+    margin-top: 0.33rem;
+}
+form .input-flex-double input, form .input-flex-double select {
+    width: 6rem;
+}
+form .input-flex-double label {
+    align-self: center;
+    flex-basis: auto;
+    flex-grow: 0;
+    margin-top: 0;
+    padding: 0.33rem;
+}
+form #sortCode label {
+    align-self: center;
+    flex-basis: initial;
+    flex-grow: 0;
+    font-size: x-large;
+    margin: 0 0.67rem;
+    text-align: center;
+}
+form #sortCode input {
+    width: 3rem;
+}
+form #dob {
+    justify-content: space-between;
+}
+form #dob select {
+    flex-basis: 30%;
+}

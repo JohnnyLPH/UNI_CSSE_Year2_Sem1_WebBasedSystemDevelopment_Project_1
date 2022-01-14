@@ -1,0 +1,47 @@
+.grid-item {
+    background-color: var(--main-body-color);
+    padding: 0.67rem;
+    max-width: 470px;
+    width: 100%;
+}
+
+/* default drop placeholder style */
+.packery-drop-placeholder {
+    outline: 3px dashed #444;
+    outline-offset: -6px;
+    /* transition position changing */
+    -webkit-transition: -webkit-transform 0.2s;
+            transition: transform 0.2s;
+}
+
+.chart {
+    height: 150px;    
+}
+
+table {
+    margin-top: 0.67rem;
+    text-align: center;
+}
+table, th, td {
+    border-color: black;
+    border-style: solid;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 0.67rem;
+}
+
+a.button {
+    border: none;
+    border-radius: 5px;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    font-size: large;
+    font-weight: bold;
+    margin: 0.33rem;
+    padding: 0.67rem;
+    text-align: center;
+    text-decoration: none;
+}

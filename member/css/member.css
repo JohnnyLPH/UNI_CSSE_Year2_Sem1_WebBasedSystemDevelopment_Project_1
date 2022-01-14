@@ -1,0 +1,144 @@
+:root {
+    --main-body-color: #EDF6F9;
+    --medium-dark-shade-of-cyan-: #264861;
+    --light-shade-of-red-orange: #FFDDD2;
+    --light-gray: #ddd;
+}
+
+body {
+    font-family: sans-serif;
+    margin: 0;
+    background-color: var(--main-body-color);
+}
+
+header {
+    color: white;
+    width: 100%;
+    height: 100px;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    z-index: 1;
+    top: 0;
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+}
+header div {
+    display: inline-block;
+}
+#header_p1{
+    font-size: xx-large; 
+    margin: 0;
+}
+#header_p1 b {    
+    font-style: italic;
+    text-shadow: 2px 2px black;
+}
+#header_p2{
+    font-size: xx-large;
+    font-weight: bold;
+    margin: 0.67rem;
+}
+
+nav.fixed_nav_bar {
+    padding: 0;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    /* overflow: hidden; */
+    /* position: -webkit-sticky; /* Safari*/
+    position: sticky;
+    top: 0;
+    width:100%;
+    z-index: 1; /* prevent navigation from getting covered by video element */
+    /* height: 46px; */
+    
+    /* border:1px solid #264861; */
+    display: flex;
+
+}
+nav.fixed_nav_bar ul {
+    list-style-type: none;
+    margin: 0;
+    position: relative;
+    height: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 1; /* prevent navigation list from getting covered by Cars A-Z menu brand logos */
+}
+nav.fixed_nav_bar li {
+    /* float: left; */
+    display: inline-block;
+}
+nav.fixed_nav_bar li a {
+    color: white;
+    display: block;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+nav.fixed_nav_bar li a:hover {
+    color: var(--medium-dark-shade-of-cyan-);
+}
+nav.fixed_nav_bar li:hover:not(.active) {
+    color: var(--medium-dark-shade-of-cyan-);
+    background-color: var(--light-shade-of-red-orange);
+}
+
+.dropdown_list {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.dropdown_menu > div{
+    display: block;
+}
+#dropdown_menu_for_carlist{
+    height: 500px;
+    overflow: scroll;
+}
+.dropdown_menu > div > a ~ div{
+    display: none;
+    position: absolute;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    height: 200px;
+    overflow: scroll;
+}
+.dropdown_list:hover .dropdown_menu {
+    display: block;
+}
+.dropdown_menu {
+    margin-left: -16px;
+    margin-top: 14px;
+    display: none;
+    position: absolute;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+.dropdown_list:hover .dropdown_menu {
+    display: block;
+}
+.dropdown_menu > a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+nav.fixed_nav_bar li a.active, nav.fixed_nav_bar li.active, .dropdown_menu a:hover, .dropdown_menu a.active, .dropdown_menu>div:hover{
+    color: var(--medium-dark-shade-of-cyan-);
+    background-color: var(--light-shade-of-red-orange);
+}
+
+main {
+    padding: 1.5em;
+    background-color: white;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="../source/favicon.ico">
+        <title>Member Change Password | LINGsCARS</title>
+        <link rel="stylesheet" type="text/css" href="../css/loginPage.css" />
+        <script src="../js/changePsd.js" defer></script>
+
+        <?php
+            session_start();
+            include_once '../account/dbConnection.php';
+            include_once '../assistanceTool.php';
+
+            if(!checkIdleDuration()){
+                header('Location: '.getURIDirname().'/loginPage.php');
+                exit;
+            }
+
+            define('HIDDEN_WARNING_HTML', ' hidden">');
+            define('NO_HIDDEN_WARNING_HTML', '">');
+            define('HTML_WARNING_CLASS', ' class="warning"');
+            
+            $password_change_success = false;
+            if(!isset($_SESSION['CHANGE_PASSWORD_EMAIL']) || isset($_SESSION['session_otp_forgot_password'])){
+                //unset $_SESSION['session_otp_forgot_password'])
+                if(isset($_SESSION['session_otp_forgot_password'])){
+                    unset($_SESSION['session_otp_forgot_password']);
+                }
+                header('Location: '.getURIDirname().'/memberProfile.php'); //getURIDirname() from assistanceTool.php
+                exit;
+            }
+
+            // returns the index of the first match between the regular expression $pattern and the $subject string, or -1 if no match was found
+            function search($pattern, $subject) {
+                preg_match($pattern, $subject, $matches, PREG_OFFSET_CAPTURE);
+
+                if($matches) {
+                    return $matches[0][1];
+                } else {
+                    return -1;
+                }
+            }
+
+            $newPassword = '';
+            $newConfirmPassword = '';
+            if($_SERVER["REQUEST_METHOD"] === "POST"){
+                //password
+                $newPassword = $_POST['newPassword'] ?? '';
+                if($newPassword === '') {
+                    $passwordError = 'Enter your password';
+                } else if(search('/\s/', $newPassword) >= 0) {
+                    $passwordError = 'Password cannot contain any whitespace character (spaces, tabs, line breaks)';
+                } else if(search('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\W)(?=.*\d).{1,}$/', $newPassword) !== 0) {
+                    $passwordError = 'Password must contain at least 1 uppercase character (A-Z), 1 lowercase character (a-z), 1 special character (!, @, #, $, %, ^, &, *) and 1 number (0-9)';
+                } else if(strlen($newPassword) < 6) {
+                    $passwordError = 'Password must have at least 6 characters';
+                }
+
+                //confirm password
+                $newConfirmPassword = $_POST['newConfirmPassword'] ?? '';
+                if($newConfirmPassword === '') {
+                    $confirmPasswordError = 'Enter your password';
+                } else if(!isset($newPassword) || $newConfirmPassword !== $newPassword) {
+                    $confirmPasswordError = 'Passwords do not match. Confirm Password must be the same as Password.';
+                }
+                
+                
+                if(!isset($passwordError) && !isset($confirmPasswordError)){
+                    $member = new Members();
+                    if($member->isExistInDb("members", "email", $_SESSION['CHANGE_PASSWORD_EMAIL'])){
+                        //get user personal information
+                        if($member->readUserRecordByEmail($_SESSION['CHANGE_PASSWORD_EMAIL'], $array_user)){
+                            
+                            //set OTP
+                            if($member->updateUserPasswordByEmail("members",  $_SESSION['CHANGE_PASSWORD_EMAIL'], $newPassword)){
+                                
+                                unset($_SESSION['CHANGE_PASSWORD_EMAIL']);
+                                $password_change_success = true;
+                            }
+                        }
+
+                        
+                    }
+                }
+                
+
+            }
+            
+        ?>
+
+    </head>
+    <body>
+        
+        <main>
+            <?php 
+                if(!$password_change_success){
+                    echo '<form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'" method="post" name="changePasswordForm" onsubmit="return(validateForm());" novalidate>
+                        <legend>
+                            Change Password
+                        </legend>
+                        <fieldset>
+                            <!-- Password -->
+                            <label for="newPassword">Password</label>
+                            <input type="password" name="newPassword" id="newPassword" '.(isset($passwordError) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($newPassword).'">
+                            <p class="warning-text'.(isset($passwordError) ? (NO_HIDDEN_WARNING_HTML.$passwordError) : (HIDDEN_WARNING_HTML.'Error')).'</p>
+                        </fieldset>
+                        <fieldset>
+                            <!-- Confirm password -->
+                            <label for="newConfirmPassword">Confirm Password</label>
+                            <input type="password" name="newConfirmPassword" id="newConfirmPassword" '.(isset($confirmPasswordError) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($newConfirmPassword).'">
+                            <p class="warning-text'.(isset($confirmPasswordError) ? (NO_HIDDEN_WARNING_HTML.$confirmPasswordError) : (HIDDEN_WARNING_HTML.'Error')).'</p>
+                        </fieldset>
+                        <fieldset>
+                            <!-- submit -->
+                            <input type="submit" name="submit" value="Submit" class="button-flex">
+                        </fieldset>
+                    </form>';
+                }else{
+                    echo '
+                        <div style="text-align: center;">
+                            <img src="./source/images/registrationPage/man_girl.png" style="max-width: 200px; vertical-align: middle;">
+                            <h2 style="display: inline-block;">Password Change Success</h2>
+                            <img src="./source/images/registrationPage/check-mark-verified.gif" style="max-width: 100px; vertical-align: middle;">
+                        </div>';
+                        //unset all unneeded session
+                        if(isset($_SESSION['CHANGE_PASSWORD_EMAIL'])){
+                            unset($_SESSION['CHANGE_PASSWORD_EMAIL']);
+                        }
+                        if(isset($_SESSION['session_otp_forgot_password'])){
+                            unset($_SESSION['session_otp_forgot_password']);
+                        }
+                }
+                
+            ?>
+        </main>
+        <a id="return-to-main" href="memberProfile.php" >Back to Member Profile</a>
+           
+    </body>
+</html>
+
