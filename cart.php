@@ -120,8 +120,13 @@
                     Profile
                     <div class="dropdown_menu">
                         <a href="#">Manage Profile</a>
+                        <a href="./member/payment.php">Payment Details</a>
                         <a href="/logoutPage.php">Log Out</a>
                     </div>
+                </li>
+
+                <li>
+                    <a href="./member/">Member Dashboard</a>
                 </li>
 
                 <li>
@@ -129,11 +134,11 @@
                 </li>
 
                 <li>
-                    <a href="/cart.php" class="active"><b>Cart</b></a>
+                    <a href="/cart.php" class="active">&#128305; <b>Cart</b> &#128305;</a>
                 </li>
 
-                <li>
-                    <a href="#">Order History</a>
+                <li >
+                    <a href="./member/orders.php">Order</a>
                 </li>
 
                 <li>
