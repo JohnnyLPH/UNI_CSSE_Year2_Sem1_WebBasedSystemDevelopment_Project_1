@@ -3,16 +3,16 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="./source/favicon.ico">
+        <link rel="shortcut icon" href="../source/favicon.ico">
         <title>User Verification | LINGsCARS</title>
-        <link rel="stylesheet" type="text/css" href="./css/loginPage.css" />
+        <link rel="stylesheet" type="text/css" href="../css/loginPage.css" />
         
 
         <?php
             session_start();
-            include './account/dbConnection.php';
-            include 'sendEmail.php';
-            include 'assistanceTool.php';
+            include '../account/dbConnection.php';
+            include '../sendEmail.php';
+            include '../assistanceTool.php';
 
             if(!checkIdleDuration()){
                 header('Location: '.getURIDirname().'/loginPage.php');

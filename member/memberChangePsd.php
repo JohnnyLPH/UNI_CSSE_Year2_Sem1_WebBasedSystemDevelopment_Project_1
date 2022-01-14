@@ -3,15 +3,15 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="./source/favicon.ico">
+        <link rel="shortcut icon" href="../source/favicon.ico">
         <title>Member Change Password | LINGsCARS</title>
-        <link rel="stylesheet" type="text/css" href="./css/loginPage.css" />
-        <script src="./js/changePsd.js" defer></script>
+        <link rel="stylesheet" type="text/css" href="../css/loginPage.css" />
+        <script src="../js/changePsd.js" defer></script>
 
         <?php
             session_start();
-            include_once './account/dbConnection.php';
-            include_once 'assistanceTool.php';
+            include_once '../account/dbConnection.php';
+            include_once '../assistanceTool.php';
 
             if(!checkIdleDuration()){
                 header('Location: '.getURIDirname().'/loginPage.php');
