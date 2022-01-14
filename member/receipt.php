@@ -1,7 +1,7 @@
 <?php
-    require_once './inc/dbConnection.php';
+    require_once './inc/dbConnection.php';    
 
-    function getHTMLReceipt() {
+    function getHTMLReceipt($browserView = false) {
         global $db, $transactionId;
 
         $memberId = $_SESSION['memberId'];
@@ -23,8 +23,20 @@
             
         }
 
-        return '
-<body>
+        $html = '';
+
+        if($browserView) {
+            $html.='<head><link rel="stylesheet" href="./css/receipt.css"></head>';
+        }
+
+        $html.= '
+<body>';
+
+        if($browserView) {
+            $html.='<p class="hidden" style="text-align:center;">Receipt was sent to your email.</p>';
+        }
+
+        $html.='
     <div style="text-align:center;">
     <h2>🚦 <i>LINGsCARS.com</i> 🚦</h2>
     <h3>Official Payment Receipt</h3>
@@ -38,13 +50,19 @@
     <hr>
     <div style="text-align:center;">
         <h2>Thank You</h2>
-    </div>
+    </div>';
+    if($browserView) {
+        $html.='<div class="hidden" style="text-align:center;"><button onclick="window.print();">Print</button></div>';
+    }
+    $html.='
 </body>';
+
+        return $html;
     }
 
     if(!isset($transactionId)) {
         session_start();
         $transactionId = filter_input(INPUT_GET, 'transactionId', FILTER_VALIDATE_INT);
-        echo getHTMLReceipt();
+        echo getHTMLReceipt(true);
     }    
 ?>

@@ -100,6 +100,9 @@
 
         global $db, $orderId, $memberId;
         $updateSTMT = mysqli_prepare($db, 'INSERT INTO transactions (memberId, orderId, carId, creditCard, amount) VALUES (?, ?, ?, ?, ?)') or showDBError();
+        if(is_array($carId)) {
+            $carId = json_encode($carId);
+        }
         if(is_array($creditCard)) {
             $creditCard = json_encode($creditCard);
         }

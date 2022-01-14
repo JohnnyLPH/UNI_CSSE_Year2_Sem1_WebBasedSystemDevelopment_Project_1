@@ -69,18 +69,6 @@
         </div>';
     }
 
-    function printFormHeader1() {
-        echo
-        '<main>
-        <div style="text-align: center;">
-            <img src="./img/car-dealer.png" style="display: inline-block; max-height:80px; vertical-align:middle;"><h1 style="display:inline-block;">Car Proposal</h1>
-        </div>';
-     
-        printProgressLine(array(array('Car Proposal', CURRENT_STAGE), array('Wait for Review', INCOMPLETE_STAGE), array('Confirmation', INCOMPLETE_STAGE), array('Delivery', INCOMPLETE_STAGE)));
-
-        printProgressLine(array(array('Car Details', COMPLETED_STAGE), array('Personal Info', CURRENT_STAGE), array('Current Address', INCOMPLETE_STAGE), array('Job Info', INCOMPLETE_STAGE), array('Bank Details', INCOMPLETE_STAGE), array('Submission', INCOMPLETE_STAGE)));
-    }
-
     function printHTMLFormHeader($actionURL) {
         echo
         '<form action="./'.$actionURL.'" method="post" name="proposalForm" onsubmit="return(validateForm());" novalidate>

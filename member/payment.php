@@ -2,12 +2,44 @@
     
     require_once './inc/formValidation.php';
 
+    function printFormHeader1() {
+        echo
+        '<main>
+        <div style="text-align: center;">
+            <img src="./img/car-dealer.png" style="display: inline-block; max-height:80px; vertical-align:middle;"><h1 style="display:inline-block;">Car Proposal</h1>
+        </div>';
+     
+        printProgressLine(array(array('Car Proposal', INCOMPLETE_STAGE), array('Wait for Review', INCOMPLETE_STAGE), array('Confirmation', CURRENT_STAGE), array('Delivery', INCOMPLETE_STAGE)));
+    }
+
     function printFormHeader2() {
         global $orderId;
-        printHTMLFormHeader(basename($_SERVER['SCRIPT_NAME']).'?id='.$orderId);       
+        echo '<h2 style="text-align:center;">Payment</h2>';
+        printHTMLFormHeader(basename($_SERVER['SCRIPT_NAME']).'?orderId='.$orderId);       
+    }
+
+    function validateCars() {
+        global $cars, $orderId;
+        if(!$cars) {
+            printHeader();
+            printNavBar();
+            showError('500 Error: No cars in order ID '.$orderId, 'Please try again or contact support.');
+            die();
+        }
     }
 
     $orderId = filter_input(INPUT_GET, 'orderId', FILTER_VALIDATE_INT);
+    if(!$orderId) {
+        printHeader();
+        printNavBar();
+        showError('405 Error: Missing Proposal / Order ID in URL', 'Please try again or contact support.');
+        die();
+    }
+    
+    $cars = getOrderCol('carsId');
+    validateCars();
+    $cars = json_decode($cars['carsId'], true);
+    validateCars();
 
     if($post) {
         $name = $_POST['name'] ?? '';
@@ -16,7 +48,7 @@
         $cvv = filter_input(INPUT_POST, 'cvv', FILTER_VALIDATE_INT);
     } else {
         $name = '';
-        $number = '';    
+        $number = '';
         $expiry = '';
         $cvv = '';
 
@@ -58,7 +90,6 @@
         }
 
         if($post) {
-            $carId = '5';
             $amount = 10;
             if(!$memberId) {
                 // session expired
@@ -67,11 +98,11 @@
             } else if(empty($inputError)) {
                 // all inputs valid, save to database
                 if(orderExists()) {
-                    $transactionId = newTrans($carId, $creditCard, $amount);
+                    $transactionId = newTrans($cars, $creditCard, $amount);
                     if(!$transactionId) {
                         printHeader();
                         printNavBar();
-                        showError('Error 500: ', 'Transaction Error. Please try again or contact support.');
+                        showError('500 Error: Transaction Failed', 'Please try again or contact support.');
                         die();
                     }
 
