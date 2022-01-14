@@ -688,7 +688,51 @@
                                     testInput($wordToSearch) .
                                     "%'" : ""
                                 ) .
-                                " ORDER BY loginDate DESC LIMIT 25;";
+                                " ORDER BY";
+
+                                if (isset($queryString['order-by'])) {
+                                    if ($queryString['order-by'] == 'member-id-asc') {
+                                        $query .= " members.id ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'member-id-desc') {
+                                        $query .= " members.id DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'email-asc') {
+                                        $query .= " members.email ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'email-desc') {
+                                        $query .= " members.email DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'phone-no-asc') {
+                                        $query .= " members.phone ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'phone-no-desc') {
+                                        $query .= " members.phone DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'state-asc') {
+                                        $query .= " members.state ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'state-desc') {
+                                        $query .= " members.state DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'register-on-asc') {
+                                        $query .= " members.registerDate ASC";
+                                    }
+                                    else if ($queryString['order-by'] == 'register-on-desc') {
+                                        $query .= " members.registerDate DESC";
+                                    }
+                                    else if ($queryString['order-by'] == 'last-login-asc') {
+                                        $query .= " memberlog.loginDate ASC";
+                                    }
+                                    else {
+                                        $query .= " memberlog.loginDate DESC";
+                                    }
+                                }
+                                else {
+                                    $query .= " memberlog.loginDate DESC";
+                                }
+
+                                $query .= " LIMIT 25;";
                                 
                                 $rs = mysqli_query($serverConnect, $query);
                                 $recordCount = 0;
@@ -755,7 +799,49 @@
                                     </td>
                                 <?php else: ?>
                                     <td colspan='8'>
-                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By Login Date]
+                                        Total Displayed: <?php echo($recordCount); ?> [Max: 25; Order By <?php
+                                            if (isset($queryString['order-by'])) {
+                                                if ($queryString['order-by'] == 'member-id-asc') {
+                                                    echo("Member ID; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'member-id-desc') {
+                                                    echo("Member ID; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'email-asc') {
+                                                    echo("Email; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'email-desc') {
+                                                    echo("Email; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'phone-no-asc') {
+                                                    echo("Phone No.; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'phone-no-desc') {
+                                                    echo("Phone No.; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'state-asc') {
+                                                    echo("State; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'state-desc') {
+                                                    echo("State; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'register-on-asc') {
+                                                    echo("Register On; Ascending");
+                                                }
+                                                else if ($queryString['order-by'] == 'register-on-desc') {
+                                                    echo("Register On; Descending");
+                                                }
+                                                else if ($queryString['order-by'] == 'last-login-asc') {
+                                                    echo("Last Login; Ascending");
+                                                }
+                                                else {
+                                                    echo("Last Login; Descending");
+                                                }
+                                            }
+                                            else {
+                                                echo("Last Login; Descending");
+                                            }
+                                        ?>]
                                     </td>
                                 <?php endif; ?>
                             </tr>

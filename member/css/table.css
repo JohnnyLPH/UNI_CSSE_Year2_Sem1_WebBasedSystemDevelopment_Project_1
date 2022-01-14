@@ -1,0 +1,35 @@
+table {
+    margin: auto;
+    text-align: center;
+}
+
+table, th, td {
+    border-color: black;
+    border-style: solid;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.67rem;
+}
+
+a.button {
+    border: none;
+    border-radius: 5px;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    font-size: large;
+    font-weight: bold;
+    margin: 0.33rem;
+    padding: 0.67rem;
+    text-align: center;
+    text-decoration: none;
+}
+
+#myChart {
+    margin: 0.67rem auto;
+    height: 200px !important;
+    width: 500px;
+}

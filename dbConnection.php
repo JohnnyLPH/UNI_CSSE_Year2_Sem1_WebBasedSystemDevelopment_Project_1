@@ -1,12 +1,12 @@
 <?php
     // For DB Connection
-    $dbHost = "localhost:3306";
+    $dbHost = "localhost";
 
-    $dbUsername = "wbsd";
+    $dbUsername = "id18274200_wbsd";
     $dbPassword = "G03abc-abc03G";
 
     // Make sure the DB is already created.
-    $dbName = "LINGsCARS";
+    $dbName = "id18274200_lingscars";
 
     // Use mysqli_close($serverConnect) to terminate connection after use.
     $serverConnect = mysqli_connect($dbHost, $dbUsername, $dbPassword);
