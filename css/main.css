@@ -804,3 +804,23 @@ input#word-to-search {
     padding-left: 5px;
     padding-right: 5px;
 }
+
+.button-check-out button{
+    float: right;
+    font-weight: bold;
+    font-family: sans-serif;
+    font-size: 15px;
+    width: 180px;
+    margin: 4px;
+    padding: 4px;
+    color: white;
+    border: white;
+    border-radius: 5px;
+    border-width: 5px;
+}
+
+.button-check-out button:hover{
+    color: black;
+    border-color: black;
+    cursor: pointer;
+}

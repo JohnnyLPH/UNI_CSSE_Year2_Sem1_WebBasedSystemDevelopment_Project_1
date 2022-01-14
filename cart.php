@@ -260,8 +260,11 @@
                                     * None to show
                                 </td>
                             <?php else: ?>
-                                <td colspan='8'>
+                                <td colspan='8' class="button-check-out">
                                     Total Displayed: <?php echo($recordCount); ?>
+                                    <button>
+                                        Check Out
+                                    </button>
                                 </td>
                             <?php endif; ?>
                         </tr>
