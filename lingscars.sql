@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 13, 2022 at 06:31 PM
+-- Generation Time: Jan 14, 2022 at 09:50 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -40,7 +40,7 @@ CREATE TABLE `admins` (
 
 INSERT INTO `admins` (`id`, `adminName`, `adminPassword`, `lastLogin`) VALUES
 (1, 'admin', '$2y$10$YVeg46P7ezx1SQB8TcrFBexLFiQ6P7pxxTejduyk0d9jxRl6.7VPK', '2022-01-13 15:39:45'),
-(2, 'LPH', '$2y$10$yct3q9I2MQtR0d6PcGuo3uqXcclzX.rWufQoPyPNAqMp/N559fWli', '2022-01-13 23:53:13'),
+(2, 'LPH', '$2y$10$yct3q9I2MQtR0d6PcGuo3uqXcclzX.rWufQoPyPNAqMp/N559fWli', '2022-01-14 16:11:53'),
 (9, 'Yuki', '$2y$10$imUkUkgDE2Tw7/LvblSa6eh7NimHKQJPXqsuMBZyfBoQeQP0EjLDi', '2022-01-13 13:47:45'),
 (10, 'James', '$2y$10$L83B22yVT0qUuHojH7yc0.nQ1EpoUnSChAPXo/6qL40eeaEirLEOe', '2022-01-13 12:59:15'),
 (16, 'anotherAdmin', '$2y$10$EFo/GGgKKW9nugzBLQbUVuBdK0Br5diKBBSGBIj8TgfYIBUt7E81K', NULL),
@@ -214,7 +214,8 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `memberId`, `stages`, `editable`, `type`, `fullName`, `personal`, `residentialAddress`, `job`, `company`, `bank`, `preferredDelivery`, `orderStatus`, `orderStatusMessage`, `proposalDate`, `reviewDate`, `confirmDate`) VALUES
-(1, 1, '{\"2\": 1, \"3\": 1, \"4\": 1, \"5\": 1, \"6\": 1}', 1, 1, 'John Doe', '{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john@doe.com\",\"phone\":\"1234567890\",\"gender\":1,\"dob\":\"1999-01-15\"}', '{\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"status\":1,\"livedYrs\":1,\"livedMths\":3}', '{\"title\":\"Software Engineer\",\"salary\":10000,\"incomeDescription\":\"No additional bonus\",\"workedYrs\":3,\"workedMths\":6}', '{\"name\":\"Computer Solutions\",\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"email\":\"director@cs.com\",\"telephone\":\"123456789\",\"description\":\"Create Software\",\"type\":3,\"regNum\":\"SC123456\",\"estYr\":2001}', '{\"bankName\":\"HSBC in Covent Garden\",\"add1\":\"16 King Street\",\"add2\":\"Covent Garden\",\"city\":\"London\",\"postcode\":\"WC2E8JF\",\"sortCode\":\"400409\",\"accountName\":\"John Doe\",\"accountNum\":\"31926819\",\"accountYr\":2020}', '2022-11-01', 0, NULL, '2022-01-13 00:00:00', '2022-01-14 01:13:21', NULL);
+(1, 1, '{\"2\": 1, \"3\": 1, \"4\": 1, \"5\": 1, \"6\": 1}', 1, 1, 'John Doe', '{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john@doe.com\",\"phone\":\"1234567890\",\"gender\":1,\"dob\":\"1999-01-15\"}', '{\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"status\":1,\"livedYrs\":1,\"livedMths\":3}', '{\"title\":\"Software Engineer\",\"salary\":10000,\"incomeDescription\":\"No additional bonus\",\"workedYrs\":3,\"workedMths\":6}', '{\"name\":\"Computer Solutions\",\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"email\":\"director@cs.com\",\"telephone\":\"123456789\",\"description\":\"Create Software\",\"type\":3,\"regNum\":\"SC123456\",\"estYr\":2001}', '{\"bankName\":\"HSBC in Covent Garden\",\"add1\":\"16 King Street\",\"add2\":\"Covent Garden\",\"city\":\"London\",\"postcode\":\"WC2E8JF\",\"sortCode\":\"400409\",\"accountName\":\"John Doe\",\"accountNum\":\"31926819\",\"accountYr\":2020}', '2022-11-01', 1, 'You need to change something, I think?\r\nThat\'s it!', '2022-01-13 00:00:00', '2022-01-14 12:39:29', NULL),
+(2, 3, '{}', 1, 0, NULL, '{}', '{}', '{}', '{}', '{}', NULL, 0, NULL, '2022-01-14 06:35:10', '2022-01-14 06:35:10', '2022-01-14 06:35:10');
 
 -- --------------------------------------------------------
 
@@ -225,19 +226,20 @@ INSERT INTO `orders` (`id`, `memberId`, `stages`, `editable`, `type`, `fullName`
 CREATE TABLE `transactions` (
   `id` int(11) NOT NULL,
   `memberId` int(11) NOT NULL,
-  `carId` int(11) NOT NULL,
+  `carId` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`carId`)),
   `orderId` int(11) NOT NULL,
   `transactionDate` datetime NOT NULL DEFAULT current_timestamp(),
   `creditCard` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}',
-  `receipt` varchar(256) DEFAULT NULL
+  `amount` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`id`, `memberId`, `carId`, `orderId`, `transactionDate`, `creditCard`, `receipt`) VALUES
-(1, 1, 1, 1, '2021-09-10 10:13:11', '{\"cardNo\":\"1234123412341234\", \"paymentAmount\":\"2052\"}', 'testReceipt');
+INSERT INTO `transactions` (`id`, `memberId`, `carId`, `orderId`, `transactionDate`, `creditCard`, `amount`) VALUES
+(1, 1, '{\"2\": 1, \"6\": 1}', 1, '2021-09-10 10:13:11', '{\"cardNo\":\"1234123412341234\", \"paymentAmount\":\"2052\"}', 2052),
+(2, 3, '{\"4\": 1, \"9\": 1}', 2, '2022-01-14 13:50:25', '{}', 3099);
 
 --
 -- Indexes for dumped tables
@@ -327,13 +329,13 @@ ALTER TABLE `members`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
