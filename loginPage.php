@@ -35,7 +35,7 @@
                 $loginPassword = $_POST['userPassword']?? ''; 
 
                 //set AuthenticateIdentity object for login purpose    
-                $userLogin = new NormalUser();
+                $userLogin = new Members();
                 
                 
                 if($userLogin->login($loginEmail, $loginPassword)){

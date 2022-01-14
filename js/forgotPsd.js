@@ -97,9 +97,9 @@ function validateForm() {
 
 window.addEventListener('load', function() {
     
-    form.verifiedPasswordEmail.addEventListener('blur', () => {
+    /* form.verifiedPasswordEmail.addEventListener('blur', () => {
         userEmail.validate();
-    });
+    }); */
     
     /* form.OTPInput.addEventListener('blur', () => {
         userOTP.validate();

@@ -27,7 +27,8 @@
     <link rel="stylesheet" type="text/css" href="./css/registrationPage.css" />
     <link rel="stylesheet" type="text/css" href="./css/LINGsCARStemplate.css" />
     <?php
-    include_once './account/dbConnection.php';
+        session_start();
+        include_once './account/dbConnection.php';
                 
         define('SCRIPT_HTML', '
             <script type="text/javascript">
@@ -49,7 +50,7 @@
                     document.getElementById("terms-statement").style.removeProperty("display");
                 }
             </script>
-            <script src="./js/formValidation.js" defer></script>
+            <script src="./js/registrationPage.js" defer></script>
             ');
             
             include('templateHeaderFooter.php'); 
@@ -302,7 +303,7 @@
                     <div class="input">
                         <span class="form-icon calender"></span>
                         <div>
-                            <input type="date" id="dob" name="dob">
+                            <input type="date" id="dob" name="dob" value="'.$dob.'">
                             <p class="warning-text'.(isset($dobError) ? (NO_HIDDEN_WARNING_HTML.$dobError) : (HIDDEN_WARNING_HTML.'Error')).'</p>
                         </div>
                     </div>
@@ -336,7 +337,7 @@
             // all inputs are correct, 
             
             //write in database through MYSQL
-            $userRegister = new NormalUser();
+            $userRegister = new Members();
             //In mysql -> gender VARCHAR(1), SO WE NEED TO CONVERT IT INTO 
             //F == FEMALE OR M == MALE
             $genderSymbol = ($gender == 'Female')?2:1;

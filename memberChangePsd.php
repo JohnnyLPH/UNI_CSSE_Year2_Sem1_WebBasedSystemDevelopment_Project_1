@@ -4,8 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="./source/favicon.ico">
-        <title>Forgot Password | LINGsCARS</title>
-        <link rel="stylesheet" type="text/css" href="./css/LINGsCARStemplate.css" />
+        <title>Member Change Password | LINGsCARS</title>
         <link rel="stylesheet" type="text/css" href="./css/loginPage.css" />
         <script src="./js/changePsd.js" defer></script>
 
@@ -13,6 +12,11 @@
             session_start();
             include_once './account/dbConnection.php';
             include_once 'assistanceTool.php';
+
+            if(!checkIdleDuration()){
+                header('Location: '.getURIDirname().'/loginPage.php');
+                exit;
+            }
             
             $password_change_success = false;
             if(!isset($_SESSION['CHANGE_PASSWORD_EMAIL']) || isset($_SESSION['session_otp_forgot_password'])){
@@ -20,7 +24,7 @@
                 if(isset($_SESSION['session_otp_forgot_password'])){
                     unset($_SESSION['session_otp_forgot_password']);
                 }
-                header('Location: '.getURIDirname().'/loginPage.php'); //getURIDirname() from assistanceTool.php
+                header('Location: '.getURIDirname().'/memberProfile.php'); //getURIDirname() from assistanceTool.php
                 exit;
             }
 
@@ -83,11 +87,7 @@
 
     </head>
     <body>
-        <!-- https://www.djtechblog.com/php/email-verification-in-php-using-otp/ -->
-        <?php 
-             include('templateHeaderFooter.php'); 
-            echo header_template; 
-        ?>
+        
         <main>
             <?php 
                 if(!$password_change_success){
@@ -130,13 +130,8 @@
                 
             ?>
         </main>
-        <div class="go-back-container">
-            <a id="return-to-login" href="index.php" >Back to Main Page</a>
-            <a id="return-to-login" href="loginPage.php" >Back to Login</a>
-        </div>
-        <?php 
-            echo footer_template; 
-        ?>    
+        <a id="return-to-main" href="memberProfile.php" >Back to Member Profile</a>
+           
     </body>
 </html>
 

@@ -290,6 +290,16 @@ main .warning-banner h1 {
 main .warning-banner h2 {
     margin-bottom: 0;
 }
+
+main>h3{
+    margin: 0.33rem;
+    text-align: center;
+}
+
+main>h3>a{
+    text-decoration: none;
+}
+
 div.go-back-container{
     max-width: 35rem;
     margin: 1.33rem auto;

@@ -2,20 +2,23 @@
 
 /*
     the mysql table element
-    user ID    - userID (int 11) (PRIMARY KEY AUTOMATIC)
-    first name - f_name   (VARCHAR (50))
-    last name  - l_name   (VARCHAR (50))
-    email      - email    (VARCHAR (50))
-    mobile num - mobile   (VARCHAR (50))
-    password   - password (VARCHAR (50)) (in hash form)
-    gender     - gender   (VARCHAR (6))
-    state      - state    (VARCHAR (30))
+    user ID      - id               (int 11) (PRIMARY KEY AUTOMATIC)
+    first name   - firstName        (VARCHAR (100))
+    last name    - lastName         (VARCHAR (100))
+    email        - email            (VARCHAR (256))
+    countryCode  - countryCode      (VARCHAR (4))
+    mobile num   - phone            (VARCHAR (10))
+    password     - password         (VARCHAR (256)) (in hash form)
+    gender       - gender           (VARCHAR (1))
+    state        - state            (VARCHAR (30))
+    registerDate - registerDate     datetime
+    dob          - dob              (date)
 */
-class NormalUser{
-    const DB_HOST = "localhost";
-    const DB_USERNAME = "p1-admin";
-    const DB_PSD = "dummy123";
-    const DB = "db75405";
+class Members{
+    const DB_HOST = "localhost:3306";
+    const DB_USERNAME = "id18274200_wbsd";
+    const DB_PSD = "G03abc-abc03G";
+    const DB = "id18274200_lingcars";
     private $userID;
     private $db_connector;
 
@@ -34,7 +37,6 @@ class NormalUser{
 
     function execQuery($query, &$rs){
         $rs = mysqli_query($this->db_connector, $query);
-       /*  echo '<br/>halo<br/>'; */
         if (!$rs) {
             echo "Could not execute query: $query";
             trigger_error(mysqli_error(), E_USER_ERROR); 
@@ -62,7 +64,7 @@ class NormalUser{
 
     //if register success, return true
     //else return false
-    function insertNewRecord($post_fname, $post_lname, $post_email, $post_mobile, $post_password, $post_gender, $post_state){
+    function insertNewRecord($post_fname, $post_lname, $post_email, $post_mobile, $post_password, $post_gender, $post_state, $post_dob){
         $f_name_escape = mysqli_real_escape_string($this->db_connector, $post_fname);
         $l_name_escape = mysqli_real_escape_string($this->db_connector, $post_lname);
         $email_escape = mysqli_real_escape_string($this->db_connector, $post_email);
@@ -70,17 +72,18 @@ class NormalUser{
         $password_escape = mysqli_real_escape_string($this->db_connector, $post_password);
         $gender_escape = mysqli_real_escape_string($this->db_connector, $post_gender);
         $state_escape = mysqli_real_escape_string($this->db_connector, $post_state);
+        $dob_escape = mysqli_real_escape_string($this->db_connector, $post_dob);
 
         //generate hash password
         $hash_password_generated = password_hash($password_escape, PASSWORD_DEFAULT);
         
         //check whether if the email had registered
-        //$query1 = "SELECT EXISTS(SELECT * from normalUser WHERE email = 'email_escape')";
-        if(!self::isExistInDb("normalUser", "email", $post_email)){
+        //$query1 = "SELECT EXISTS(SELECT * from members WHERE email = 'email_escape')";
+        if(!self::isExistInDb("members", "email", $post_email)){
             //if no, then insert new record to db
-            $query = "INSERT INTO normalUser (f_name, l_name, email, mobile, password, gender, state) VALUES (
+            $query = "INSERT INTO members (firstName, lastName, email, phone, password, gender, state, dob) VALUES (
                 '$f_name_escape', '$l_name_escape', '$email_escape', '$mobile_escape', 
-                '$hash_password_generated', '$gender_escape', '$state_escape')";
+                '$hash_password_generated', '$gender_escape', '$state_escape', '$dob_escape')";
             //if mysqli_query return null
             
             return (mysqli_query($this->db_connector, $query) != false);
@@ -91,10 +94,12 @@ class NormalUser{
         
     }
 
+
+
     //return true, if login success
     //else return false
     function login($post_email, $post_password){
-        $query = "SELECT * FROM normalUser";
+        $query = "SELECT * FROM members";
         $email_login= $password_login = "";
         
         $email_login = mysqli_real_escape_string($this->db_connector, $post_email);
@@ -103,7 +108,7 @@ class NormalUser{
         $password_extracted = $userID_extracted = $email_extracted = "";
 
         // Prepare a select statement
-        $sql = "SELECT userID, email, password FROM normalUser WHERE email = ?";
+        $sql = "SELECT id, firstName, email, password FROM members WHERE email = ?";
         
         if($stmt = mysqli_prepare($this->db_connector, $sql)){
             // Bind variables to the prepared statement as parameters
@@ -120,28 +125,35 @@ class NormalUser{
                 // Check if email exists, if yes then verify password
                 if(mysqli_stmt_num_rows($stmt) == 1){                    
                     // Bind result variables
-                    mysqli_stmt_bind_result($stmt, $userID_extracted, $email_extracted, $password_extracted);
+                    mysqli_stmt_bind_result($stmt, $userID_extracted, $firstName_extracted, $email_extracted, $password_extracted);
                     if(mysqli_stmt_fetch($stmt)){
                         /* echo '<br/>'.password_hash($password_login, PASSWORD_DEFAULT).'<br/>'.strlen(password_hash($password_login, PASSWORD_DEFAULT)).'<br/>';
                         echo $password_login; */
                         if(password_verify($password_login, $password_extracted)){
                             // Password is correct, so start a new session
                            // Store data in session variables
-                           if(isset($_SESSION["loggedIn"])){
-                               unset($_SESSION["loggedIn"]);
-                           }
-                           if(isset($_SESSION["userID"])){
-                               unset($_SESSION["userID"]);
-                           }
-                           if(isset($_SESSION["loggedInTime"])){
-                               unset($_SESSION["loggedInTime"]);
-                           }
+                          
                             $_SESSION["loggedIn"] = true;
-                            $_SESSION["userID"] = $userID_extracted;
+                            $_SESSION["memberId"] = $userID_extracted;
+                            $_SESSION["memberFirstName"] = $firstName_extracted;
                             $_SESSION["loggedInTime"] = date('Y-m-d H:i:s');
                             //pre-set logout datetime, if user directly close the window,
                             //php perform operation to myql would not be handled
-                            return true;
+                           //insert loggin time to members log
+                            $temp_login_time = $_SESSION["loggedInTime"];
+                            $minutes_to_add = 5;
+
+                            $time = new DateTime();
+                            $time->add(new DateInterval('PT' . $minutes_to_add . 'M'));
+
+                            $temp_logout_time = $time->format('Y-m-d H:i:s');
+
+                            $temp_duration = $time->format('U') - strtotime( $_SESSION["loggedInTime"]);
+                            $query3 = "INSERT INTO memberlog (memberId, loginDate, logoutDate, duration) VALUE ('$userID_extracted', '$temp_login_time', '$temp_logout_time','$temp_duration')";
+                            if(self::execQuery($query3, $rs)){
+                                /* echo 'insert into myUserLog login date time success<br/>'; */
+                                return true;
+                            }
                             
                         } else{
                             // Password is not valid, display a generic error message
@@ -165,7 +177,16 @@ class NormalUser{
 
         return false;
     }
-
+    function updateLogoutDT(){
+        $user_id_login = $_SESSION['memberId'];
+        $login_dateTime_save = $_SESSION['loggedInTime'];
+        $logout_dateTime_save = date("Y-m-d H:i:s");
+        /*echo $logout_dateTime_save.'<br/>'; */
+        $duration_save = strtotime($logout_dateTime_save) - strtotime($login_dateTime_save);
+        /* echo $duration_save; */
+        $t_sql = "UPDATE memberlog SET logoutDate='$logout_dateTime_save' , duration = '$duration_save' WHERE memberId = '$user_id_login' AND loginDate = '$login_dateTime_save'";
+        mysqli_query($this->db_connector,$t_sql);
+    }
     
     
 
@@ -174,8 +195,8 @@ class NormalUser{
     //$key == the data column that you want to updated/modified
     //$value == value that you want to added to that column 
     function updateUserRecordByID($table, $userID ,$key, $value){
-        if(self::isExistInDb($table, "userID", $userID)){
-            $query = "UPDATE ".$table." SET ".$key."='".$value."' WHERE userID=".$userID;
+        if(self::isExistInDb($table, "id", $userID)){
+            $query = "UPDATE ".$table." SET ".$key."='".$value."' WHERE id=".$userID;
             return execQuery($query, $rss) == true;
         }else{
             return false;
@@ -184,28 +205,29 @@ class NormalUser{
 
     function updateUserRecordByEmail($table, $userEmail ,$key, $value){
         if(!self::isExistInDb($table, "email", $userEmail)){
-            $query = "UPDATE ".$table." SET ".$key."='".$value."' WHERE userID=".$userID;
+            $query = "UPDATE ".$table." SET ".$key."='".$value."' WHERE email=".$userEmail;
             return execQuery($query, $rss) == true;
         }else{
             return false;
         }
     }
 
+
     function updateUserPasswordByEmail($table, $userEmail , $value){
         
-        if(self::isExistInDb("normalUser", "email", $userEmail)){
+        if(self::isExistInDb("members", "email", $userEmail)){
             
             // Prepare a select statement
             $password_update = mysqli_real_escape_string($this->db_connector ,$value);
             $hash_password_generated = password_hash($password_update, PASSWORD_DEFAULT);
             $email_update = mysqli_real_escape_string($this->db_connector ,$userEmail);
             
-            $sql = "UPDATE normalUser SET password= ? WHERE email = ?";
+            $sql = "UPDATE members SET password= ? WHERE email = ?";
 
             if($stmt = mysqli_prepare($this->db_connector, $sql)){  
                 
                 // Bind variables to the prepared statement as parameters
-                mysqli_stmt_bind_param($stmt, "ss", $hash_password_generated,$email_update);
+                mysqli_stmt_bind_param($stmt, "ss", $hash_password_generated, $email_update);
                 // Attempt to execute the prepared statement
                 if(mysqli_stmt_execute($stmt)){
                     
@@ -219,12 +241,29 @@ class NormalUser{
         return false;  
     }
 
+    function updateExistedRecord($post_fname, $post_lname, $post_email, $post_mobile,  $post_gender, $post_state, $post_dob){
+        $f_name_escape = mysqli_real_escape_string($this->db_connector, $post_fname);
+        $l_name_escape = mysqli_real_escape_string($this->db_connector, $post_lname);
+        $email_escape = mysqli_real_escape_string($this->db_connector, $post_email);
+        $mobile_escape = mysqli_real_escape_string($this->db_connector, $post_mobile);
+        $gender_escape = mysqli_real_escape_string($this->db_connector, $post_gender);
+        $state_escape = mysqli_real_escape_string($this->db_connector, $post_state);
+        $dob_escape = mysqli_real_escape_string($this->db_connector, $post_dob);
+
+        $sql = "UPDATE members SET firstName = '$f_name_escape', lastName = '$l_name_escape', phone = '$mobile_escape', gender = '$gender_escape', state ='$state_escape', dob = '$dob_escape'  WHERE email = '$email_escape'";
+        if(self::execQuery($sql, $rs)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     //Check password with userID
     function authenticatePassword($userID, $passwordTest){ 
 
-        if(self::isExistInDb("normalUser", "userID", $userID)){
+        if(self::isExistInDb("members", "id", $userID)){
             // Prepare a select statement
-            $sql = "SELECT userID, password FROM normalUser WHERE userID = ?";
+            $sql = "SELECT id, password FROM members WHERE id = ?";
             $userID_login = mysqli_real_escape_string($this->db_connector, $userID);
             $password_login = mysqli_real_escape_string($this->db_connector ,$passwordTest);
 
@@ -252,21 +291,21 @@ class NormalUser{
     }
 
     function deleteUserRecord($userID){
-        if(self::isExistInDb("normalUser", "userID", $userID)){
-            $query1 = "DELETE from normalUser where userID='".$userID."'";
+        if(self::isExistInDb("members", "id", $userID)){
+            $query1 = "DELETE from members where id='".$userID."'";
             return execQuery($query1, $rss);
         }
 
         return true;
     }
 
-    function readUserRecordByID($userID, $array_user){
-        if(self::isExistInDb("normalUser", "userID", $userID)){
-            $query = "SELECT * FROM normalUser WHERE userID=".$userID; 
+    function readUserRecordByID($userID, &$array_user){
+        if(self::isExistInDb("members", "id", $userID)){
+            $query = "SELECT * FROM members WHERE id=".$userID; 
             if(self::execQuery($query, $rs)){
                 $array_user = [];
                 foreach($rs as $x){
-                    array_push($array_user, $x);
+                    $array_user = $x;
                 }
 
                 return true;
@@ -278,8 +317,8 @@ class NormalUser{
 
     function readUserRecordByEmail($userEmail, &$array_user){
 
-        if(self::isExistInDb("normalUser", "email", $userEmail)){
-            $query = "SELECT * FROM normalUser WHERE email='".$userEmail."'"; 
+        if(self::isExistInDb("members", "email", $userEmail)){
+            $query = "SELECT * FROM members WHERE email='".$userEmail."'"; 
             if(self::execQuery($query, $rs)){
                 $array_user = [];
                 foreach($rs as $x){
@@ -290,24 +329,24 @@ class NormalUser{
                 return true;
             }
         }
-        echo '<br/>no connect';
+        
         return false;
     }
 
-    //$array_row is a two-dimensional array, it store all row record from normalUser table
+    //$array_row is a two-dimensional array, it store all row record from members table
     //for exp:
-    //      $array_row[0] == normalUser record with userID == 1,
-    //      $array_row[1] == normalUser record with userID == 2...    
+    //      $array_row[0] == members record with userID == 1,
+    //      $array_row[1] == members record with userID == 2...    
     //$array_th == storing table header (column name),
     //for exp:  
     //      $array_th[0] == f_name 
     //      $array_th[1] == l_name....
     //      ......
     //      $array_th[n] == state
-    //The storing order follows the normalUser table
+    //The storing order follows the members table
 
     function readAllUserRecord($array_th, $array_row){
-        $query = "SELECT * FROM userNormal";
+        $query = "SELECT * FROM members";
         if(self::execQuery($query, $rs)){
             $array1 = [];
             for($i=0;$i<mysqli_num_fields($rs);$i++){

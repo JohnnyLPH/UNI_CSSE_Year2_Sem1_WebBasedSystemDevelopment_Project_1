@@ -4,16 +4,20 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="./source/favicon.ico">
-        <title>Forgot Password | LINGsCARS</title>
-        <link rel="stylesheet" type="text/css" href="./css/LINGsCARStemplate.css" />
+        <title>User Verification | LINGsCARS</title>
         <link rel="stylesheet" type="text/css" href="./css/loginPage.css" />
-        <script src="./js/forgotPsd.js" defer></script>
+        
 
         <?php
             session_start();
             include './account/dbConnection.php';
             include 'sendEmail.php';
             include 'assistanceTool.php';
+
+            if(!checkIdleDuration()){
+                header('Location: '.getURIDirname().'/loginPage.php');
+                exit;
+            }
 
             // returns the index of the first match between the regular expression $pattern and the $subject string, or -1 if no match was found
             function search($pattern, $subject) {
@@ -32,7 +36,7 @@
                 //if getOTP
                 if(isset($_POST['getOTP']) && $_POST['getOTP'] === "Get Verified OTP"){
                     
-                    $verifiedEmail = $_POST['verifiedPasswordEmail'] ?? '';
+                    $verifiedEmail = $_POST['memberEmail'] ?? '';
                     if($verifiedEmail === '') {
                         $emailError = 'Enter your email';
                     } else if(search('/\s/', $verifiedEmail) >= 0) {
@@ -99,46 +103,43 @@
                         if($_SESSION['session_otp_forgot_password'] == $_POST['OTPInput']){
                             
                             unset($_SESSION['session_otp_forgot_password']);
-                            header('Location: '.getURIDirname().'/changePsd.php'); //getURIDirname() from assistanceTool.php
+                            header('Location: '.getURIDirname().'/memberChangePsd.php'); //getURIDirname() from assistanceTool.php
                             exit;
                         }
                     }
                     //if no click the 'Get Verified OTP' button and directly click 'Submit' button
                     
-                    $verifiedEmail = $_POST['verifiedPasswordEmail']?? '';
+                    
                 }
                     
                 
 
 
+            }else{
+                $array_member = [];
+                $member = new Members();
+                $member->readUserRecordByID($_SESSION['memberId'], $array_member);
+                $memberEmail = $array_member['email'];
             }
         ?>
 
     </head>
     <body>
         <!-- https://www.djtechblog.com/php/email-verification-in-php-using-otp/ -->
-        <?php  
-            include('templateHeaderFooter.php'); 
-            echo header_template; 
-        ?>
         <section class="guidance-container">
             <h3>Guidance</h3>
-            <p> 1.  Enter valid email and click Get Verified Email.<br/>
+            <p> 1.  Click 'Get Verified Email' button.<br/>
                 2.  Go copying the OTP from your email and paste the OTP to the OTP column<br/>
-                3.  Click Submit button</p>
+                3.  (optional) if no received email, please click the 'Get Verified Email' button again<br/>
+                4.  Click Submit button</p>
         </section>
 
         <main>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post" name="forgotPasswordForm" onsubmit="return(validateForm());" novalidate>
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post" name="forgotPasswordForm" novalidate>
                 <legend>
-                    Fogotten Your Password?
+                    Change Password?
                 </legend>
-                <fieldset>
-                    <!-- login email -->
-                    <label for="verifiedPasswordEmail">User Email</label>
-                    <input type="email" name="verifiedPasswordEmail" id="verifiedPasswordEmail" value='<?php echo $verifiedEmail ?>'>
-                    <p class="warning-text hidden">Error</p>
-                </fieldset>
+                <input type="hidden" name="memberEmail" value="<?php echo $memberEmail; ?>">
                 <fieldset>
                     <!-- password -->
                     <label for="OTPInput">Verified OTP</label>
@@ -152,14 +153,9 @@
                 </fieldset>
             </form>
         </main>
-        <div class="go-back-container">
-            <a id="return-to-login" href="index.php" >Back to Main Page</a>
-            <a id="return-to-login" href="loginPage.php" >Back to Login</a>
-        </div>
         
-        <?php 
-            echo footer_template; 
-        ?>
+        
+        <a id="return-to-main" href="memberProfile.php" >Back to Member Profile</a>
     </body>
 </html>
 

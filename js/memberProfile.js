@@ -1,20 +1,10 @@
 
 function resetForm() {
-    if(window.confirm("Clear the Registration Form?")) {
+    if(window.confirm("Remove the change made?")) {
         return true;
     } else {
         return false;
     }
-}
-
-function showTerms() {
-    document.registrationForm.style.display = "none";
-    document.getElementById("terms-statement").style.display = "block";
-}
-
-function hideTerms() {
-    document.registrationForm.style.removeProperty("display");
-    document.getElementById("terms-statement").style.removeProperty("display");
 }
 
 class FormElement {
@@ -49,7 +39,7 @@ class FormElement {
         let inputType = this.inputElement.getAttribute('type');
         if(inputType) {
             inputType = inputType.toLowerCase();
-            const boxInputTypes = ['text', 'email', 'tel', 'password', 'date'];
+            const boxInputTypes = ['text', 'tel', 'date'];
             if(boxInputTypes.indexOf(inputType) >= 0) {
                 setRedBorder(this.inputElement);
             }
@@ -107,19 +97,6 @@ const lastName = new FormElement(form.lastName, function() {
     }
     return false;
 });
-const email = new FormElement(form.email, function() {
-    if(this.inputElement.value == '') {
-        this.showWarning('Enter your email');
-    } else if(this.inputElement.value.search(/\s/) >= 0) {
-        this.showWarning('Email cannot contain any whitespace character (spaces, tabs, line breaks)');
-    } else if(this.inputElement.value.search(/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/i) !== 0) {
-        this.showWarning('Invalid email format. Email should have a format similar to <em>username@domain.com</em>');
-    } else {
-        this.hideWarning();
-        return true;
-    }
-    return false;
-});
 const phone = new FormElement(form.phone, function() {
     if(this.inputElement.value == '') {
         this.showWarning('Enter your mobile phone number');
@@ -132,32 +109,6 @@ const phone = new FormElement(form.phone, function() {
     } else if(this.inputElement.value.length < 9 || this.inputElement.value.length > 10) {
         this.showWarning('Malaysia mobile phone number must have 9 - 10 digits (excluding +60)');
     }   else {
-        this.hideWarning();
-        return true;
-    }
-    return false;
-});
-const password = new FormElement(form.password, function() {
-    if(this.inputElement.value == '') {
-        this.showWarning('Enter your password');
-    } else if (this.inputElement.value.search(/\s/) >= 0) {
-        this.showWarning('Password cannot contain any whitespace character (spaces, tabs, line breaks)');
-    } else if (this.inputElement.value.search(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\W)(?=.*\d).{1,}$/) !== 0) {
-        this.showWarning('Password must contain at least 1 uppercase character (A-Z), 1 lowercase character (a-z), 1 special character (!, @, #, $, %, ^, &, *) and 1 number (0-9)');
-    } else if (this.inputElement.value.length < 6) {
-        this.showWarning('Password must have at least 6 characters');
-    } else {
-        this.hideWarning();
-        return true;
-    }
-    return false;
-});
-const confirmPassword = new FormElement(form.confirmPassword, function() {
-    if(this.inputElement.value == '') {
-        this.showWarning('Enter your password');
-    } else if (this.inputElement.value !== form.password.value) {
-        this.showWarning('Passwords do not match. Confirm Password must be the same as Password.');
-    } else {
         this.hideWarning();
         return true;
     }
@@ -176,15 +127,6 @@ const state = new FormElement(form.state, function() {
     /* if(this.inputElement.value.search(/^(MY-)(0[1-9]|1[0-6])$/) !== 0) { */
     if(this.inputElement.value.search(/^(UK-)(0[1-4])$/) !== 0) {
         this.showWarning('Select your state');
-    } else {
-        this.hideWarning();
-        return true;
-    }
-    return false;
-});
-const terms = new FormElement(form.terms, function() {
-    if(!this.inputElement.checked) {
-        this.showWarning('The Terms and Conditions must be accepted');
     } else {
         this.hideWarning();
         return true;
@@ -217,26 +159,14 @@ function validateForm() {
     if(!lastName.validate() && !invalidFormElementToFocus) {
         invalidFormElementToFocus = lastName;
     }
-    if(!email.validate() && !invalidFormElementToFocus) {
-        invalidFormElementToFocus = email;
-    }
     if(!phone.validate() && !invalidFormElementToFocus) {
         invalidFormElementToFocus = phone;
-    }
-    if(!password.validate() && !invalidFormElementToFocus) {
-        invalidFormElementToFocus = password;
-    }
-    if(!confirmPassword.validate() && !invalidFormElementToFocus) {
-        invalidFormElementToFocus = confirmPassword;
     }
     if(!gender.validate() && !invalidFormElementToFocus) {
         invalidFormElementToFocus = gender;
     }
     if(!state.validate() && !invalidFormElementToFocus) {
         invalidFormElementToFocus = state;
-    }
-    if(!terms.validate() && !invalidFormElementToFocus) {
-        invalidFormElementToFocus = terms;
     }
     if(!dob.validate() && !invalidFormElementToFocus) {
         invalidFormElementToFocus = dob;
@@ -257,23 +187,11 @@ window.addEventListener('load', function() {
     form.lastName.addEventListener('blur', () => {
         lastName.validate();
     });
-    form.email.addEventListener('blur', () => {
-        email.validate();
-    });
     form.phone.addEventListener('blur', () => {
         phone.validate();
     });
-    form.password.addEventListener('blur', () => {
-        password.validate();
-    });
-    form.confirmPassword.addEventListener('blur', () => {
-        confirmPassword.validate();    
-    });
     form.state.addEventListener('change', () => {
         state.validate();     
-    });
-    form.terms.addEventListener('change', () => {
-        terms.validate();      
     });
     form.dob.addEventListener('change', ()=>{
         dob.validate();
