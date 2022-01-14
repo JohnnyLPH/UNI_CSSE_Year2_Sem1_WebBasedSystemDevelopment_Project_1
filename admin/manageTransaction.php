@@ -456,7 +456,7 @@
 
                         <?php if ($allowViewTransac): ?>
                             <?php
-                                $query = "SELECT transactions.id, transactions.memberId, members.email, transactions.carId, cars.carModel, brands.brandName, transactions.orderId, orders.orderStatus, orders.confirmDate, transactions.transactionDate, transactions.creditCard, transactions.receipt
+                                $query = "SELECT transactions.id, transactions.memberId, members.email, transactions.carId, cars.carModel, brands.brandName, transactions.orderId, orders.orderStatus, orders.confirmDate, transactions.transactionDate, transactions.creditCard
                                 FROM transactions
                                 INNER JOIN members ON transactions.memberId = members.id
                                 INNER JOIN cars ON transactions.carId = cars.id
@@ -597,7 +597,9 @@
                                             <tr>
                                                 <td>Receipt</td>
                                                 <td>
-                                                    <?php echo((isset($record["receipt"])) ? $record["receipt"]: "-"); ?>
+                                                    <a href='/member/receipt.php?transactionId=<?php
+                                                        echo((isset($record["id"])) ? $record["id"]: "-");
+                                                    ?>' target="_blank">Click to View</a>
                                                 </td>
                                             </tr>
                                         </table>

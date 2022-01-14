@@ -410,9 +410,10 @@ div.view-content table tr td img {
     max-height: 120px;
 }
 
-div.view-content table tr td button, button.sort-button {
+div.view-content table tr td button, div.view-content table tr td a, button.sort-button {
     font-size: medium;
     text-align: left;
+    text-decoration: none;
     margin: auto;
     color: blue;
     background-color: white;
@@ -425,7 +426,7 @@ button.sort-button {
     text-align: center;
 }
 
-div.view-content table tr td button:hover, button.sort-button:hover {
+div.view-content table tr td button:hover, div.view-content table tr td a:hover, button.sort-button:hover {
     color: rgb(119, 0, 255);
     text-decoration: underline;
 }
