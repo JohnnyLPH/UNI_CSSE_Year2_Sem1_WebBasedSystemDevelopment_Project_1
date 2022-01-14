@@ -13,7 +13,7 @@
             include_once '../assistanceTool.php';
 
             if(!checkIdleDuration()){
-                header('Location: '.getURIDirname().'/loginPage.php');
+                header('Location: '.getURIDirname().'/../loginPage.php');
                 exit;
             }
 
