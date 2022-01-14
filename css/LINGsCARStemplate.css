@@ -7,7 +7,7 @@
 }
 
 html {
-    scroll-padding-top: 4rem; /* max-height of sticky nav bar */
+    scroll-padding-top: 60px; /* max-height of sticky nav bar */
 }
 
 
@@ -62,7 +62,6 @@ body::before {
     width: 100%;
     z-index: -1;
 }
-
 /*for navigation bar*/
 nav.fixed_nav_bar {
     padding: 0;
@@ -95,6 +94,12 @@ nav.fixed_nav_bar li {
     width: 11%;
 }
 
+nav.fixed_nav_bar li:last-child {
+    float: right;
+    margin-right: 20px;
+    padding: 0px;
+}
+
 nav.fixed_nav_bar li a {
     color: white;
     display: block;
@@ -104,8 +109,13 @@ nav.fixed_nav_bar li a {
     cursor: pointer;
 }
 
+nav.fixed_nav_bar li a:hover {
+    color: var(--medium-dark-shade-of-cyan-);
+}
+
 nav.fixed_nav_bar li:hover:not(.active) {
-    background-color: var(--light-gray);
+    color: var(--medium-dark-shade-of-cyan-);
+    background-color: var(--light-shade-of-red-orange);
 }
 
 /* since only Home require <a>
@@ -219,13 +229,18 @@ nav.fixed_nav_bar li a.active, nav.fixed_nav_bar li.active, .dropdown_menu a:hov
 nav input#car-list {
     display: none;
 }
+nav #car-list-button {
+    padding: 0;
+}
 nav #car-list-button label {
     cursor: pointer;
     display: inline-block;
+    padding: 14px 0;
     width: 100%;
 }
 nav input#car-list:checked ~ ul li#car-list-button {
-    background-color: var(--light-gray);
+    color: var(--medium-dark-shade-of-cyan-);
+    background-color: var(--light-shade-of-red-orange);
 }
 nav input#car-list:checked ~ div#car-list-menu {
     display: block;
@@ -265,7 +280,7 @@ nav #car-list-menu section article label {
     margin-block-end: 1em;
 }
 nav #car-list-menu section article label::before {
-    background-image: url(../source/images/carLogo/brands-to-sprite.png);
+    background-image: url(./../img/brands-to-sprite.png);
     content: " ";
     display: inline-block;    
     filter: drop-shadow(0 0 4px white);
@@ -278,7 +293,7 @@ nav #car-list-menu section article label::before {
 }
 nav #car-list-menu input#ABARTH + label::before { background-position: 0 0;}nav #car-list-menu input#ALFA-ROMEO + label::before { background-position: -100px 0;}nav #car-list-menu input#AUDI + label::before { background-position: -200px -30px;height: 43px;}nav #car-list-menu input#BMW + label::before { background-position: -400px 0;}nav #car-list-menu input#CITROEN + label::before { background-position: -700px -15px;height: 80px;}nav #car-list-menu input#CUPRA + label::before { background-position: -700px -500px;}nav #car-list-menu input#DACIA + label::before { background-position: -900px -10px;height: 90px;}nav #car-list-menu input#DS + label::before { background-position: -500px -500px;}nav #car-list-menu input#FIAT + label::before { background-position: -200px -100px;}nav #car-list-menu input#FORD + label::before { background-position: -300px -125px;height: 50px;}nav #car-list-menu input#HYUNDAI + label::before { background-position: -500px -120px;height: 60px;}nav #car-list-menu input#JAGUAR + label::before { background-position: -800px -120px;height: 60px;}nav #car-list-menu input#JEEP + label::before { background-position: -900px -130px;height: 40px;}nav #car-list-menu input#KIA + label::before { background-position: 0 -220px;height: 60px;}nav #car-list-menu input#LEXUS + label::before { background-position: -400px -215px;height: 75px;}nav #car-list-menu input#MAZDA + label::before { background-position: -700px -210px;height: 85px;}nav #car-list-menu input#MERCEDES + label::before { background-position: -800px -200px;}nav #car-list-menu input#MG + label::before { background-position: -900px -200px;}nav #car-list-menu input#MINI + label::before { background-position: 0 -330px;height: 50px;}nav #car-list-menu input#NISSAN + label::before { background-position: -300px -310px;height: 90px;}nav #car-list-menu input#PEUGEOT + label::before { background-position: -500px -315px;height: 80px;}nav #car-list-menu input#POLESTAR + label::before { background-position: 0 0;}nav #car-list-menu input#RENAULT + label::before { background-position: 0 -400px;}nav #car-list-menu input#SEAT + label::before { background-position: -200px -400px;}nav #car-list-menu input#SKODA + label::before { background-position: -400px -400px;}nav #car-list-menu input#SMART + label::before { background-position: -500px -430px;height: 40px;}nav #car-list-menu input#SUBARU + label::before { background-position: -701px -420px;height: 60px;}nav #car-list-menu input#SUZUKI + label::before { background-position: -800px -400px;}nav #car-list-menu input#TESLA + label::before { background-position: -1900px -400px;height: 75px;}nav #car-list-menu input#TOYOTA + label::before { background-position: 0 -515px;height: 75px;}nav #car-list-menu input#VAUXHALL + label::before { background-position: -100px -500px;}nav #car-list-menu input#VOLVO + label::before { background-position: -300px -500px;}nav #car-list-menu input#VW + label::before { background-position: -200px -500px;}
 nav #car-list-menu input#POLESTAR + label::before {
-    background-image: url(../source/images/carLogo/polestar.jpg);
+    background-image: url(./../img/car/polestar/polestar.jpg);
 }
 nav #car-list-menu section article label::after {
     content: " ▼";
@@ -296,19 +311,6 @@ nav #car-list-menu section article a {
     text-decoration: none;
 }
 
-@media screen and (max-width: 601px) {
-    
-    body::before {
-        background: none;
-    }
-    main {
-        border-radius: 0;
-        box-shadow: none;
-    }
-    form .button-flex {
-        width: 100%;
-    }
-}
 
 /* main content */
 
