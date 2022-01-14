@@ -510,13 +510,170 @@
                         <thead>
                             <!-- 8 Columns -->
                             <tr>
-                                <th>Member ID</th>
-                                <th>Email</th>
-                                <th>Phone No.</th>
-                                <th>State</th>
-                                <th>Register On</th>
-                                <th>Last Login</th>
+                                <th><form method='get' action='/admin/manageMember.php'>
+                                    <input type='hidden' name='order-by' value='member-id-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'member-id-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-member'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-member'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Member ID<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'member-id-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'member-id-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageMember.php'>
+                                    <input type='hidden' name='order-by' value='email-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'email-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-member'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-member'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Email<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'email-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'email-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageMember.php'>
+                                    <input type='hidden' name='order-by' value='phone-no-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'phone-no-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-member'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-member'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Phone No.<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'phone-no-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'phone-no-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageMember.php'>
+                                    <input type='hidden' name='order-by' value='state-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'state-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-member'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-member'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>State<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'state-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'state-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageMember.php'>
+                                    <input type='hidden' name='order-by' value='register-on-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'register-on-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-member'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-member'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Register On<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'register-on-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'register-on-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageMember.php'>
+                                    <input type='hidden' name='order-by' value='last-login-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'last-login-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-member'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-member'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Last Login<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'last-login-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'last-login-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
                                 <th>View</th>
+
                                 <th>Delete</th>
                             </tr>
                         </thead>

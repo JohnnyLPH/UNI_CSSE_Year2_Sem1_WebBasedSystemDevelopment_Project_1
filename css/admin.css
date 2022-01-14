@@ -367,33 +367,13 @@ table.db-table td button:hover, form button:hover, .button-section button:hover 
     min-height: 30px;
 }
 
-#manage-edit-form div div.radio-section {
-    padding: 0;
+#manage-edit-form div select {
+    width: 70%;
     min-height: 30px;
 }
 
-#manage-edit-form div div.radio-section label {
-    font-weight: bold;
-}
-
-#manage-edit-form div div.radio-section input[type='radio'] {
-    width: fit-content;
-    height: fit-content;
-    padding: 0;
-    margin: 0 15px 0 5px;
-    vertical-align: middle;
-}
-
-#manage-edit-form div div.radio-section input[type='radio']:last-child {
-    margin-right: 0;
-}
-
-label[for="approve-order"] {
+#manage-edit-form div select[value='6'] {
     color: green;
-}
-
-label[for="not-approve-order"] {
-    color: red;
 }
 
 #manage-add-form div textarea, #manage-edit-form div textarea {
@@ -430,7 +410,7 @@ div.view-content table tr td img {
     max-height: 120px;
 }
 
-div.view-content table tr td button {
+div.view-content table tr td button, button.sort-button {
     font-size: medium;
     text-align: left;
     margin: auto;
@@ -439,7 +419,12 @@ div.view-content table tr td button {
     border-width: 0;
 }
 
-div.view-content table tr td button:hover {
+button.sort-button {
+    color: black;
+    text-align: center;
+}
+
+div.view-content table tr td button:hover, button.sort-button:hover {
     color: rgb(119, 0, 255);
     text-decoration: underline;
 }
