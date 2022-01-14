@@ -146,7 +146,7 @@
                     Profile
                     <div class="dropdown_menu">
                         <a href="#">Manage Profile</a>
-                        <a href="#">Log Out</a>
+                        <a href="/logoutPage.php">Log Out</a>
                     </div>
                 </li>
 
