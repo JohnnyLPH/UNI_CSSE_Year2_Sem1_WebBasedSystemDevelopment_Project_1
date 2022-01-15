@@ -9,7 +9,7 @@
         <link rel="stylesheet" type="text/css" href="./css/loginPage.css" />
         <script src="./js/forgotPsd.js" defer></script>
 
-        <?php
+        <?php 
             session_start();
             include './account/dbConnection.php';
             include 'sendEmail.php';
@@ -75,20 +75,17 @@
                                                     )
                                                 );
                                 $mail->send();
-                                     //email is send 
-                                echo '<script>var msg = "OTP is sent to the email inputted. Please check back to your email and enter the OTP to the column privoded.\n\n";
-                                msg += "Note: If you do not received the email from us, please check back you email inputted\n";
-                                msg += "1. Guarantee that you have enter a correct valid email in the column provided.\n";
-                                msg += "2. Guarantee that you have enter a correct valid email during the registration.";
-                                alert(msg);</script>';
-                                
-                                
-                                
-                                
+                                    
                             }
 
                             
                         }
+                        //email is send 
+                        echo '<script>var msg = "OTP is sent to the email inputted. Please check back to your email and enter the OTP to the column privoded.\n\n";
+                                msg += "Note: If you do not received the email from us, please check back you email inputted\n";
+                                msg += "1. Guarantee that you have enter a correct valid email in the column provided.\n";
+                                msg += "2. Guarantee that you have enter a correct valid email during the registration.";
+                                alert(msg);</script>';
                     }
                     
 

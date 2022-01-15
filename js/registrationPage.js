@@ -130,7 +130,7 @@ const phone = new FormElement(form.phone, function() {
     }*/ else if(this.inputElement.value.search(/[^0-9]/) >= 0) {
         this.showWarning("Phone number can only contain numbers without any special character such as '-'");
     } else if(this.inputElement.value.length < 9 || this.inputElement.value.length > 10) {
-        this.showWarning('Malaysia mobile phone number must have 9 - 10 digits (excluding +60)');
+        this.showWarning('UK mobile phone number must have 9 - 10 digits (excluding +44)');
     }   else {
         this.hideWarning();
         return true;
