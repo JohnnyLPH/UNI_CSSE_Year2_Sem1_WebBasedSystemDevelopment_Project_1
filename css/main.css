@@ -137,18 +137,23 @@ nav.fixed_nav_bar ul {
     margin-left: auto;
     margin-right: auto;
     z-index: 1; /* prevent navigation list from getting covered by Cars A-Z menu brand logos */
+    padding: 0 15px;
 }
 
 nav.fixed_nav_bar li {
     /* float: left; */
     display: inline-block;
-    width: 11%;
+    min-width: 11%;
+    /* min-height: 18px; */
 }
 
 nav.fixed_nav_bar li:last-child {
     float: right;
     margin-right: 20px;
     padding: 0px;
+    min-width: 11%;
+    min-height: 18px;
+    margin-top: 3px;
 }
 
 nav.fixed_nav_bar li a {

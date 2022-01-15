@@ -458,8 +458,8 @@
                             <?php
                                 $query = "SELECT transactions.id, transactions.memberId, members.email, transactions.carId, transactions.orderId, orders.orderStatus, orders.confirmDate, transactions.transactionDate, transactions.creditCard, transactions.amount
                                 FROM transactions
-                                INNER JOIN members ON transactions.memberId = members.id
-                                INNER JOIN orders ON transactions.orderId = orders.id
+                                LEFT JOIN members ON transactions.memberId = members.id
+                                LEFT JOIN orders ON transactions.orderId = orders.id
                                 WHERE transactions.id=$transacId;";
 
                                 $rs = mysqli_query($serverConnect, $query);
@@ -535,8 +535,37 @@
 
                                             <tr>
                                                 <td>Order Status</td>
-                                                <td>
-                                                    <?php echo((isset($record["orderStatus"])) ? $record["orderStatus"]: "-"); ?>
+                                                <td <?php
+                                                    if (isset($record["orderStatus"])) {
+                                                        // Not approved or need changes.
+                                                        if ($record["orderStatus"] == 0 || $record["orderStatus"] == 1 ) {
+                                                            echo("style='color: red; font-weight: bold;'");
+                                                        }
+                                                        // Approved.
+                                                        else if ($record["orderStatus"] > 5) {
+                                                            echo("style='color: green; font-weight: bold;'");
+                                                        }
+                                                        // Waiting for review.
+                                                        else if ($record["orderStatus"] == 5) {
+                                                            echo("style='font-style: italic; font-weight: bold;'");
+                                                        }
+                                                    }
+                                                ?>>
+                                                    <?php
+                                                        // 8 status [0 - 7].
+                                                        $allOrderStatus = array(
+                                                            'Ineligible.',
+                                                            'Changes required.',
+                                                            'Incomplete Payment.',
+                                                            'Proposal cancelled.',
+                                                            'Draft Proposal pending submission. Please complete and submit your proposal.',
+                                                            'Proposal under review.',
+                                                            'Proposal approved. Awaiting for your confirmation.',
+                                                            'Order Confirmed.'
+                                                        );
+
+                                                        echo((isset($record["orderStatus"]) && isset($allOrderStatus[$record["orderStatus"]])) ? $allOrderStatus[$record["orderStatus"]]: "-");
+                                                    ?>
                                                 </td>
                                             </tr>
                                             
