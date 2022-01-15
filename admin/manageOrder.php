@@ -253,7 +253,6 @@
                             <?php
                                 $query = "SELECT orders.id, orders.memberId, orders.stages, orders.editable, orders.type, orders.fullName, orders.carsId, orders.personal, orders.residentialAddress, orders.job, orders.company, orders.bank, orders.preferredDelivery, orders.orderStatus, orders.orderStatusMessage, orders.proposalDate, orders.reviewDate, orders.confirmDate
                                 FROM orders
-                                INNER JOIN members ON orders.memberId = members.id
                                 WHERE orders.id=$orderId;";
 
                                 $rs = mysqli_query($serverConnect, $query);
