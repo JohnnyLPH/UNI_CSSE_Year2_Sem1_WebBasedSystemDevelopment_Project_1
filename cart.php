@@ -120,8 +120,13 @@
                     Profile
                     <div class="dropdown_menu">
                         <a href="#">Manage Profile</a>
+                        <a href="./member/payment.php">Payment Details</a>
                         <a href="/logoutPage.php">Log Out</a>
                     </div>
+                </li>
+
+                <li>
+                    <a href="./member/">Member Dashboard</a>
                 </li>
 
                 <li>
@@ -129,11 +134,11 @@
                 </li>
 
                 <li>
-                    <a href="/cart.php" class="active"><b>Cart</b></a>
+                    <a href="/cart.php" class="active">&#128305; <b>Cart</b> &#128305;</a>
                 </li>
 
-                <li>
-                    <a href="#">Order History</a>
+                <li >
+                    <a href="./member/orders.php">Order</a>
                 </li>
 
                 <li>
@@ -169,7 +174,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $recordCount = 0; ?>
+                        <?php
+                            $recordCount = 0;
+                            $carToProposal = array();
+                        ?>
 
                         <?php foreach ($_SESSION['cart-item'] as $key=>$value): ?>
                             <?php
@@ -240,10 +248,10 @@
                                         
                                         <td>
                                             <!-- To proposal page -->
-                                            <form method='post' action='/index.php'>
-                                                <input type='hidden' name='manage-mode' value='order-car'>
-                                                <input type='hidden' name='car-id' value='<?php
-                                                    echo((isset($car["id"])) ? $car["id"]: "");
+                                            <form method='post' action='/member/proposal.php?stage=1'>
+                                                <input type='hidden' name='cart' value='<?php
+                                                    $carToProposal[$key] = $value;
+                                                    echo(json_encode(array($key=>$value)));
                                                 ?>'>
 
                                                 <button class='negative-button'>Order</button>
@@ -262,7 +270,14 @@
                             <?php else: ?>
                                 <td colspan='8' class="button-check-out">
                                     Total Displayed: <?php echo($recordCount); ?>
-                                    <button>
+                                    
+                                    <form id="check-out-all" method='post' action='/member/proposal.php?stage=1'>
+                                        <input type='hidden' name='cart' value='<?php
+                                            echo(json_encode($carToProposal));
+                                        ?>'>
+                                    </form>
+
+                                    <button form='check-out-all'>
                                         Check Out
                                     </button>
                                 </td>

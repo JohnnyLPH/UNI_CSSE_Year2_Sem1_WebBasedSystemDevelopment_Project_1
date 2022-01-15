@@ -110,7 +110,7 @@
                 }
                 // Check if car model (same brand) is already added before.
                 else {
-                    $query = "SELECT brands.brandName, cars.carModel FROM cars INNER JOIN brands ON cars.brandId = brands.id WHERE carModel='$carModel';";
+                    $query = "SELECT brands.brandName, cars.carModel FROM cars LEFT JOIN brands ON cars.brandId = brands.id WHERE carModel='$carModel';";
                     $rs = mysqli_query($serverConnect, $query);
 
                     $passChecking = true;
@@ -291,7 +291,7 @@
             
             // Check if the car is allowed to be edited.
             if (!empty($carId) && is_numeric($carId)) {
-                $query = "SELECT brands.brandName, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, cars.carDesc FROM cars INNER JOIN brands ON cars.brandId = brands.id WHERE cars.id=$carId;";
+                $query = "SELECT brands.brandName, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, cars.carDesc FROM cars LEFT JOIN brands ON cars.brandId = brands.id WHERE cars.id=$carId;";
                 $rs = mysqli_query($serverConnect, $query);
 
                 if ($rs) {
@@ -744,7 +744,7 @@
 
                         <?php if ($allowViewCar): ?>
                             <?php
-                                $query = "SELECT cars.id, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, cars.carDesc, cars.carImage, cars.imagePath, cars.dateAdded, cars.dateEdited, brands.brandName FROM cars INNER JOIN brands ON cars.brandId = brands.id WHERE cars.id=$carId;";
+                                $query = "SELECT cars.id, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, cars.carDesc, cars.carImage, cars.imagePath, cars.dateAdded, cars.dateEdited, brands.brandName FROM cars LEFT JOIN brands ON cars.brandId = brands.id WHERE cars.id=$carId;";
                                 $rs = mysqli_query($serverConnect, $query);
                             ?>
 
@@ -1211,7 +1211,7 @@
                         <tbody>
                             <?php
                                 // Select from Cars and Brands tables.
-                                $query = "SELECT cars.id, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, brands.brandName FROM cars INNER JOIN brands ON cars.brandId = brands.id" .
+                                $query = "SELECT cars.id, cars.carModel, cars.monthPrice, cars.leaseTime, cars.initialPay, brands.brandName FROM cars LEFT JOIN brands ON cars.brandId = brands.id" .
                                 (
                                     (isset($wordToSearch) && !empty($wordToSearch)) ?
                                     " WHERE cars.id LIKE '%" .
