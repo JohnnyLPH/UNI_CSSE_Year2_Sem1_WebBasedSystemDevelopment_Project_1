@@ -76,7 +76,7 @@
                     $userLogin = new Members();
                     if($userLogin->login($loginEmail, $loginPassword)){
                         //if login success
-                        $previous_page = (isset($_SESSION['redirect_url']))?$_SESSION['redirect_url']: $uri.$dirname.'/index.php';
+                        $previous_page = $uri.((isset($_SESSION['redirect_url']) ? $_SESSION['redirect_url'] : '/'));
                         unset($_SESSION['redirect_url']);
                         header('Location: '.$previous_page); 
                         echo '<script>alert("login success");</script>'; 
