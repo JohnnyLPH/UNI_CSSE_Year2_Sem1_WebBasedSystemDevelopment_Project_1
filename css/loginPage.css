@@ -19,6 +19,28 @@ main {
     max-width: 35rem;
 } 
 
+
+main .warning-banner {
+    background-color: var(--warning-background-color);
+    color: red;
+    margin: 0 -0.67rem;
+    padding: 0.83rem 0;
+    text-align: center;
+}
+main .warning-banner svg {
+    fill: red;
+    vertical-align: middle;
+}
+main .warning-banner h1 {
+    display: inline-block;
+    margin-top: 0;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+main .warning-banner h2 {
+    margin-bottom: 0;
+}
+
 form legend{
     text-align: center;
     font-weight: bold;
