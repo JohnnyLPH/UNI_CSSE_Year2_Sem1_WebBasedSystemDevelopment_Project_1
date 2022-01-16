@@ -210,7 +210,7 @@ div.chart-container {
     /* margin: 10px; */
 }
 
-div.chart-container div.chart {
+div.chart-container div.chart, div.chart-container div.data-value {
     background-color: rgba(255, 255, 255, 0.5);
     border: 2px solid rgba(0, 0, 0, 0.25);
     border-radius: 10px;
@@ -218,6 +218,35 @@ div.chart-container div.chart {
     width: 500px;
     padding: 5px;
     margin: 10px;
+}
+
+div.data-value {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+div.data-value div.data-group {
+    margin: 15px;
+}
+
+div.data-value div.data-group span.overall-data {
+    text-align: center;
+    font-size: 30px;
+    display: block;
+    margin: auto;
+    margin-bottom: 7px;
+}
+
+div.data-value div.data-group span.data-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    font-style: italic;
+    text-decoration: overline;
+    display: block;
+    margin: auto;
+
 }
 
 div.chart-container div.chart canvas {

@@ -456,7 +456,7 @@
 
                         <?php if ($allowViewTransac): ?>
                             <?php
-                                $query = "SELECT transactions.id, transactions.memberId, members.email, transactions.carId, transactions.orderId, orders.orderStatus, orders.confirmDate, transactions.transactionDate, transactions.creditCard, transactions.amount
+                                $query = "SELECT transactions.id, transactions.memberId, members.email, transactions.leasedCars, transactions.orderId, orders.orderStatus, orders.confirmDate, transactions.transactionDate, transactions.creditCard, transactions.amount
                                 FROM transactions
                                 LEFT JOIN members ON transactions.memberId = members.id
                                 LEFT JOIN orders ON transactions.orderId = orders.id
@@ -500,11 +500,11 @@
                                             </tr>
 
                                             <tr>
-                                                <td>Car ID</td>
+                                                <td>Leased Cars</td>
                                                 <td>
                                                     <?php
-                                                        if (isset($record["carId"])) {
-                                                            $arrJson = json_decode($record["carId"], true);
+                                                        if (isset($record["leasedCars"])) {
+                                                            $arrJson = json_decode($record["leasedCars"], true);
 
                                                             foreach ($arrJson as $key=>$value) {
                                                                 echo("<a href='/admin/manageVehicle.php?manage-mode=view-car&car-id=$key'>\"$key\"</a> x $value<br>");
@@ -654,7 +654,7 @@
                     </form>
                 
                     <div class='button-section'>
-                        <input id='word-to-search' form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Transaction/Member/Car/Order ID' value='<?php
+                        <input id='word-to-search' form='manage-search-form' type='text' name='word-to-search' placeholder='Enter Transaction/Member/Order ID' value='<?php
                             echo((isset($wordToSearch) && !empty($wordToSearch)) ? testInput($wordToSearch): "");
                         ?>' minlength="1" maxlength="100" required>
                         
@@ -727,33 +727,6 @@
                                 </form></th>
 
                                 <th><form method='get' action='/admin/manageTransaction.php'>
-                                    <input type='hidden' name='order-by' value='car-id-<?php
-                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'car-id-desc') {
-                                            echo("asc");
-                                        }
-                                        else {
-                                            echo("desc");
-                                        }
-                                    ?>'>
-
-                                    <?php if ($manageMode == 'search-transaction'): ?>
-                                        <input type='hidden' name='manage-mode' value='search-transaction'>
-                                        <input type='hidden' name='word-to-search' value='<?php
-                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
-                                        ?>'>
-                                    <?php endif; ?>
-
-                                    <button class='sort-button'>Car ID<?php
-                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'car-id-asc') {
-                                            echo(" &#8593;");
-                                        }
-                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'car-id-desc') {
-                                            echo(" &#8595;");
-                                        }
-                                    ?></button>
-                                </form></th>
-
-                                <th><form method='get' action='/admin/manageTransaction.php'>
                                     <input type='hidden' name='order-by' value='order-id-<?php
                                         if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-id-desc') {
                                             echo("asc");
@@ -775,6 +748,33 @@
                                             echo(" &#8593;");
                                         }
                                         else if (isset($queryString['order-by']) && $queryString['order-by'] == 'order-id-desc') {
+                                            echo(" &#8595;");
+                                        }
+                                    ?></button>
+                                </form></th>
+
+                                <th><form method='get' action='/admin/manageTransaction.php'>
+                                    <input type='hidden' name='order-by' value='leased-cars-<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'leased-cars-desc') {
+                                            echo("asc");
+                                        }
+                                        else {
+                                            echo("desc");
+                                        }
+                                    ?>'>
+
+                                    <?php if ($manageMode == 'search-transaction'): ?>
+                                        <input type='hidden' name='manage-mode' value='search-transaction'>
+                                        <input type='hidden' name='word-to-search' value='<?php
+                                            echo((isset($wordToSearch)) ? $wordToSearch: "");
+                                        ?>'>
+                                    <?php endif; ?>
+
+                                    <button class='sort-button'>Leased Cars<?php
+                                        if (isset($queryString['order-by']) && $queryString['order-by'] == 'leased-cars-asc') {
+                                            echo(" &#8593;");
+                                        }
+                                        else if (isset($queryString['order-by']) && $queryString['order-by'] == 'leased-cars-desc') {
                                             echo(" &#8595;");
                                         }
                                     ?></button>
@@ -839,14 +839,12 @@
                         <tbody>
                             <?php
                                 // Select from Transactions table.
-                                $query = "SELECT transactions.id, transactions.memberId, transactions.carId, transactions.orderId, transactions.transactionDate, transactions.amount FROM transactions" .
+                                $query = "SELECT transactions.id, transactions.memberId, transactions.leasedCars, transactions.orderId, transactions.transactionDate, transactions.amount FROM transactions" .
                                 (
                                     (isset($wordToSearch) && !empty($wordToSearch)) ?
                                     " WHERE transactions.id LIKE '%" .
                                     testInput($wordToSearch) .
                                     "%' OR transactions.memberId LIKE '%" .
-                                    testInput($wordToSearch) .
-                                    "%' OR transactions.carId LIKE '%" .
                                     testInput($wordToSearch) .
                                     "%' OR transactions.orderId LIKE '%" .
                                     testInput($wordToSearch) .
@@ -867,11 +865,11 @@
                                     else if ($queryString['order-by'] == 'member-id-desc') {
                                         $query .= " transactions.memberId DESC";
                                     }
-                                    else if ($queryString['order-by'] == 'car-id-asc') {
-                                        $query .= " transactions.carId ASC";
+                                    else if ($queryString['order-by'] == 'leased-cars-asc') {
+                                        $query .= " transactions.leasedCars ASC";
                                     }
-                                    else if ($queryString['order-by'] == 'car-id-desc') {
-                                        $query .= " transactions.carId DESC";
+                                    else if ($queryString['order-by'] == 'leased-cars-desc') {
+                                        $query .= " transactions.leasedCars DESC";
                                     }
                                     else if ($queryString['order-by'] == 'order-id-asc') {
                                         $query .= " transactions.orderId ASC";
@@ -915,9 +913,13 @@
                                         </td>
 
                                         <td class='center-text'>
+                                            <?php echo((isset($transac["orderId"])) ? $transac["orderId"]: "-"); ?>
+                                        </td>
+
+                                        <td class='center-text'>
                                             <?php
-                                                if (isset($transac["carId"])) {
-                                                    $arrJson = json_decode($transac["carId"], true);
+                                                if (isset($transac["leasedCars"])) {
+                                                    $arrJson = json_decode($transac["leasedCars"], true);
 
                                                     foreach ($arrJson as $key=>$value) {
                                                         echo("\"". $key . "\" x " . $value . "<br>");
@@ -927,10 +929,6 @@
                                                     echo("-");
                                                 }
                                             ?>
-                                        </td>
-
-                                        <td class='center-text'>
-                                            <?php echo((isset($transac["orderId"])) ? $transac["orderId"]: "-"); ?>
                                         </td>
 
                                         <td class='center-text'>
@@ -976,11 +974,11 @@
                                                 else if ($queryString['order-by'] == 'member-id-desc') {
                                                     echo("Member ID; Descending");
                                                 }
-                                                else if ($queryString['order-by'] == 'car-id-asc') {
-                                                    echo("Car ID; Ascending");
+                                                else if ($queryString['order-by'] == 'leased-cars-asc') {
+                                                    echo("Leased Cars; Ascending");
                                                 }
-                                                else if ($queryString['order-by'] == 'car-id-desc') {
-                                                    echo("Car ID; Descending");
+                                                else if ($queryString['order-by'] == 'leased-cars-desc') {
+                                                    echo("Leased Cars; Descending");
                                                 }
                                                 else if ($queryString['order-by'] == 'order-id-asc') {
                                                     echo("Order ID; Ascending");
