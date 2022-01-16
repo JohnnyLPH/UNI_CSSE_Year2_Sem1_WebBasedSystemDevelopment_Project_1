@@ -99,6 +99,7 @@
                             header('Location: '.getURIDirname().'/changePsd.php'); //getURIDirname() from assistanceTool.php
                             exit;
                         }
+                        
                     }
                     //if no click the 'Get Verified OTP' button and directly click 'Submit' button
                     

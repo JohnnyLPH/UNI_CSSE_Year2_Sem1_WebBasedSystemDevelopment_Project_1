@@ -84,8 +84,7 @@
                     }else{
                         //if login failure, back to login page
                        
-                        header('Location: '.$uri.$dirname.'/loginPage.php');  
-                        exit;
+                        $emailError = "The email address you entered isn't connected to an account. Make sure you had entered a correct registered email and password!!!";
                     }
                 }
                 

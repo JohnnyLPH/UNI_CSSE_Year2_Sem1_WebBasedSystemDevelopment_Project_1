@@ -70,7 +70,7 @@
                         //get user personal information
                         if($member->readUserRecordByEmail($_SESSION['CHANGE_PASSWORD_EMAIL'], $array_user)){
                             
-                            //set OTP
+                            
                             if($member->updateUserPasswordByEmail("members",  $_SESSION['CHANGE_PASSWORD_EMAIL'], $newPassword)){
                                 
                                 unset($_SESSION['CHANGE_PASSWORD_EMAIL']);
