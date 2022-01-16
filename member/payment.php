@@ -1,5 +1,5 @@
 <?php
-    
+    include_once './inc/member.php';
     require_once './inc/formValidation.php';
 
     function printFormHeader1() {
@@ -9,7 +9,7 @@
             <img src="./img/car-dealer.png" style="display: inline-block; max-height:80px; vertical-align:middle;"><h1 style="display:inline-block;">Car Proposal</h1>
         </div>';
      
-        printProgressLine(array(array('Car Proposal', INCOMPLETE_STAGE), array('Wait for Review', INCOMPLETE_STAGE), array('Confirmation', CURRENT_STAGE), array('Delivery', INCOMPLETE_STAGE)));
+        printProgressLine(array(array('Car Proposal', COMPLETED_STAGE), array('Wait for Review', COMPLETED_STAGE), array('Confirmation', CURRENT_STAGE), array('Delivery', INCOMPLETE_STAGE)));
     }
 
     function printFormHeader2() {
@@ -108,12 +108,18 @@
 
                     require_once './receipt.php';
 
-                    require_once './phpMailer/Exception.php';
-                    require_once './phpMailer/PHPMailer.php';
-                    require_once './phpMailer/SMTP.php';
+                    require_once '../sendEmail.php';
                     $email = getMemberEmail();
+                    $receiptHTML = getHTMLReceipt();
+
+                    if(!$receiptHTML) {
+                        printHeader();
+                        printNavBar();
+                        showError('500 Error: Failed to Generate Payment Receipt', 'Please try again or contact support.');
+                        die();
+                    }
                     
-                    if($email) {
+                    if($email && $receiptHTML) {
                         // send receipt to email
                         $mail = new PHPMailer\PHPMailer\PHPMailer();
                         $mail->isSMTP(); 
@@ -126,8 +132,9 @@
                         $mail->Password = 'piicqkofqhuyzrad'; // password
                         $mail->setFrom('noreply@LINGsCARS.com', 'LINGsCARS.com'); // From email and name  //set sender name   *
                         $mail->addAddress($email, 'Mr. '.$_SESSION['memberFirstName']); // to email and name  //set receiver's email and name   *
-                        $mail->Subject =     'LingsCar\'s OTP for forgotten account password';   //set subject   *
-                        $mail->msgHTML(getHTMLReceipt()); //*$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,*
+                        $mail->Subject = 'LINGsCAR\'s Official Payment Receipt for Order ID '.$orderId;   //set subject   *
+                        $mail->CharSet = $CHARSET_UTF8;
+                        $mail->msgHTML($receiptHTML); //*$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,*
                         $mail->AltBody = 'HTML messaging not supported'; // If html emails is not supported by the receiver, show this body
                         $mail->SMTPOptions = array(
                                 'ssl' => array(
@@ -161,7 +168,7 @@
                     <span class="form-icon">badge</span>
                     <div>
                         <input type="text" name="name" id="name"'.(isset($inputError['name']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($name).'">
-                        <p class="warning-text'.(isset($inputError['name']) ? (HTML_NO_HIDDEN_WARNING.$inputError['name']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['name']) ? (HTML_SHOW_WARNING.$inputError['name']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -171,7 +178,7 @@
                 <span class="form-icon">numbers</span>
                     <div>
                         <input type="number" min="1000000000" placeholder="Carefully enter your correct credit card number." name="number" id="number"'.(isset($inputError['number']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($number).'">
-                        <p class="warning-text'.(isset($inputError['number']) ? (HTML_NO_HIDDEN_WARNING.$inputError['number']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['number']) ? (HTML_SHOW_WARNING.$inputError['number']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -181,7 +188,7 @@
                 <span class="form-icon">event</span>
                     <div>
                         <input type="text" maxlength="5" placeholder="MM/YY" name="expiry" id="expiry"'.(isset($inputError['expiry']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($expiry).'">
-                        <p class="warning-text'.(isset($inputError['expiry']) ? (HTML_NO_HIDDEN_WARNING.$inputError['expiry']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['expiry']) ? (HTML_SHOW_WARNING.$inputError['expiry']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>          
@@ -191,7 +198,7 @@
                 <span class="form-icon">pin</span>
                     <div>
                         <input type="number" min="10" max="9999" name="cvv" id="cvv"'.(isset($inputError['cvv']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($cvv).'">
-                        <p class="warning-text'.(isset($inputError['cvv']) ? (HTML_NO_HIDDEN_WARNING.$inputError['cvv']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['cvv']) ? (HTML_SHOW_WARNING.$inputError['cvv']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>';

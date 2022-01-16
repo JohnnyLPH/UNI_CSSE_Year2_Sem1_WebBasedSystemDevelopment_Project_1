@@ -1,25 +1,5 @@
 <?php
 
-    function redirect($page) {
-        if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
-            $uri = 'https://';
-        } else {
-            $uri = 'http://';
-        }
-        $uri .= $_SERVER['HTTP_HOST'];
-        $dirname = dirname($_SERVER['SCRIPT_NAME']);
-        if(strlen($dirname) === 1) {
-            $dirname = '';
-        }
-
-        if($page[0] === '/') {
-            $page = substr($page, 1);
-        }
-        
-        header('Location: '.$uri.$dirname.'/'.$page);
-        die();
-    }
-
     date_default_timezone_set('Europe/London');
 
     $db = mysqli_connect('localhost', 'id18274200_wbsd', 'G03abc-abc03G', 'id18274200_lingscars');
@@ -51,17 +31,41 @@
         }
     }
 
+    function getAllOrders($memberId) {
+        global $db;
+        $result = mysqli_query($db, 'SELECT * FROM orders WHERE memberId = '.mysqli_real_escape_string($db, $memberId)) or showDBError();
+        if(mysqli_num_rows($result) >= 1) {
+            return ($result);
+        } else {
+            return false;
+        }
+    }
+
+    function getMultipleCars($cars) {
+        global $db;
+        $result = mysqli_query($db, 'SELECT cars.id, brandId, brandName, carModel, monthPrice, leaseTime, initialPay, carImage, imagePath FROM cars INNER JOIN brands ON cars.brandId = brands.id WHERE cars.id IN ('.implode(',', $cars).')') or showDBError();
+        if(mysqli_num_rows($result) >= 1) {
+            return ($result);
+        } else {
+            return false;
+        }
+    }
+
     function getOrderCol($columnName) {
         // gets data from specific column
         // also updates current proposal stage status
 
-        global $db, $orderId, $memberId, $requestedStage, $stageStatus;
-        $result = mysqli_query($db, 'SELECT '.$columnName.', stages FROM orders WHERE id = '.mysqli_real_escape_string($db, $orderId).' AND memberId = '.mysqli_real_escape_string($db, $memberId).' LIMIT 1') or showDBError();
+        global $db, $orderId, $memberId, $requestedStage, $stages, $stageStatus;
+        $result = mysqli_query($db, 'SELECT '.$columnName.', orderStatus, stages FROM orders WHERE id = '.mysqli_real_escape_string($db, $orderId).' AND memberId = '.mysqli_real_escape_string($db, $memberId).' LIMIT 1') or showDBError();
         if(mysqli_num_rows($result) === 1) {
             $column = mysqli_fetch_assoc($result) or showDBError();
 
-            $stageStatus = json_decode($column['stages'], true);
-            $stageStatus = $stageStatus[$requestedStage] ?? 0;
+            if($column && $column['orderStatus'] == 3) {
+                return false;
+            }
+
+            $stages = json_decode($column['stages'], true);
+            $stageStatus = $stages[$requestedStage] ?? 0;
 
             return $column;
         } else {
@@ -112,6 +116,14 @@
         return mysqli_insert_id($db);
     }
 
+    function cancelOrder($orderId) {
+        global $db, $memberId;
+        $result = mysqli_query($db, 'UPDATE orders SET editable = false, orderStatus = 3, orderStatusMessage = "Cancellation made on '.date('j F Y g:i:s A').'." WHERE id = '.mysqli_real_escape_string($db, $orderId).' AND memberId = '.mysqli_real_escape_string($db, $memberId).' LIMIT 1') or showDBError();
+        return mysqli_affected_rows($db);
+    }
+
     function orderExists() {
-        return getOrderCol('id');
+        $result = getOrderCol('id');
+
+        return $result;
     }

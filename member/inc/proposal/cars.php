@@ -1,5 +1,4 @@
 <?php
-
     function printCarInfoBanner() {
         printInfoBanner('car-wash.png', 'Confirm your Cars',
         'Then, fill in the proposal form.</p>
@@ -11,31 +10,70 @@
         'Are you applying for yourself or applying using the name of your company for commercial usage?</p>
         <p>You can only apply for your company if you have been given the legal permission to do so.');
     }
+
+    function printCarsTable($cars, $carsResult) {
+        if($cars && $carsResult) {
+            echo 
+            '<br>
+            <div style="overflow-x:auto;">
+                <table id="car-confirmation-table">
+                    <thead>
+                        <tr>
+                            <th>Car</th>
+                            <th>Price (£/mth)</th>
+                            <th>Lease Time (Month)</th>
+                            <th>Initial Pay (* £/mth)</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+            while ($carRow = mysqli_fetch_assoc($carsResult)) {
+                echo '<tr><td><img src="..'.$carRow['imagePath'].$carRow['carImage'].'">
+                <p><strong>'.$carRow['brandName'].' '.$carRow['carModel'].'</strong><br>
+                <strong>Car ID: </strong>'.$carRow['id'].'</p></td>
+                <td>'.$carRow['monthPrice'].'</td>
+                <td>'.$carRow['leaseTime'].'</td>
+                <td>'.$carRow['initialPay'].'</td>
+                <td>'.$cars[$carRow['id']].'</td>
+                </tr>';
+            }
+            echo
+                    '</tbody>
+                </table>
+            </div>';
+        }
+    }
+
+    /*
+    Allowed Methods:
+    GET from existing order
+    POST from existing order (confirm == true)
+    POST from CART
+    POST to create new order (confirm == true)
+    */   
     
     $confirm = $_POST['confirm'] ?? '';
-    
+
     if($post) {        
         $applicationType = filter_input(INPUT_POST, 'applicationType', FILTER_VALIDATE_INT);
+        $cars = $_POST['cart'] ?? '';
     } else {
         // retrieve from database
-        $applicationType = getOrderCol('type');
+        $result = getOrderCol('type, carsId');
 
-        if(!$applicationType) {
+        if(!$result) {
             showProposalNotFoundError();
             die();
         }
         
-        $applicationType = intval($applicationType['type']); 
+        $applicationType = intval($result['type']); 
+        $cars = $result['carsId'];
     }
-    
-    if(!$confirm) {
-        // either GET, or POST from cart.php
-        printHeader();
-        printNavBar();
-        printFormHeader1();
-        printCarInfoBanner();
-        printFormHeader2();
-        printAppTypeInfoBanner();
+
+    if($cars) {
+        $cars = json_decode($cars, true);
+
+        $carsResult = getMultipleCars(array_keys($cars));            
     }
     
     if(($confirm && $post) || $stageStatus === -1) {
@@ -46,19 +84,16 @@
         } else if($post) {
             $inputError['applicationType'] = 'Select your application type';
         }
-        $cars = '{}';
 
         if($post) {
-            if(!$memberId) {
-                // session expired
-                showSessionExpiredError();
-                printCarInfoBanner();
-                printFormHeader2();
-                printAppTypeInfoBanner();
-            } else if(empty($inputError)) {
+            if($memberId && empty($inputError)) {
                 // all inputs valid, save to database
                 if(!$orderId) {
                     $orderId = newProposal($type, $cars);
+                    foreach(array_keys($cars) as &$value) {
+                        unset($_SESSION['cart-item'][$value]);
+                    }
+                    unset($value);
                 } else if(orderExists()) {
                     updateOrderCol('type', $type);                    
                     setCurrentStageStatus(1);                 
@@ -67,21 +102,36 @@
                     die();
                 }
                 redirect(getFormActionURL($requestedStage + 1));
-            } else {
-                // 1 or more invalid inputs, show warning
-                setCurrentStageStatus(-1);
-                printHeader();
-                printNavBar();
-                printFormHeader1();
-                printCarInfoBanner();
-                printFormHeader2();
-                printAppTypeInfoBanner();
-                echo HTML_WARNING_BANNER;
             }
         }
     }
-    
-    echo   '<input type="hidden" name="confirm" value="true">
+
+    if($memberId) {
+        printHeader();
+        printNavBar();
+        if($carsResult) {
+            printFormHeader1();
+        } else {
+            showError('500 Error: No Cars in Proposal / Cart', 'Please try again or contact support.');
+        }
+    } else {
+        // session expired
+        showSessionExpiredError();
+    }
+    printCarInfoBanner();
+    printCarsTable($cars, $carsResult);
+    printFormHeader2();                
+    printAppTypeInfoBanner();
+    if((($confirm && $post) || $stageStatus === -1) && !empty($inputError)) {
+        // 1 or more invalid inputs, show warning
+        if($orderId && orderExists()) {
+            setCurrentStageStatus(-1);
+        }
+        echo HTML_WARNING_BANNER;
+    }
+
+    echo   '<input type="hidden" name="cart" value="'.htmlspecialchars(json_encode($cars)).'">
+            <input type="hidden" name="confirm" value="true">
             <fieldset>
                 <label for="applicationType">Type: </label>
                 <div class="input" style="text-align: center;">
@@ -91,10 +141,10 @@
                         <label for="personal" style="font-weight: normal;">Personal</label>
                         <input type="radio" name="applicationType" value="2" id="business"'.(($applicationType === 2) ? ' checked' : '').'>
                         <label for="business" style="font-weight: normal;">Business</label>        
-                        <p class="warning-text'.(isset($inputError['applicationType']) ? (HTML_NO_HIDDEN_WARNING.$inputError['applicationType']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['applicationType']) ? (HTML_SHOW_WARNING.$inputError['applicationType']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>';
         
-        echo printFormFooter();
+    echo printFormFooter();
 ?>

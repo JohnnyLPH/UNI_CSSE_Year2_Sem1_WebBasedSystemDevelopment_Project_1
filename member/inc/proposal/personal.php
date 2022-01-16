@@ -146,7 +146,7 @@
                     <span class="form-icon">badge</span>
                     <div>
                         <input type="text" name="firstName" id="firstName"'.(isset($inputError['firstName']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($firstName).'">
-                        <p class="warning-text'.(isset($inputError['firstName']) ? (HTML_NO_HIDDEN_WARNING.$inputError['firstName']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['firstName']) ? (HTML_SHOW_WARNING.$inputError['firstName']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -156,7 +156,7 @@
                     <span class="form-icon">badge</span>
                     <div>
                         <input type="text" name="lastName" id="lastName"'.(isset($inputError['lastName']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($lastName).'">
-                        <p class="warning-text'.(isset($inputError['lastName']) ? (HTML_NO_HIDDEN_WARNING.$inputError['lastName']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['lastName']) ? (HTML_SHOW_WARNING.$inputError['lastName']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -166,7 +166,7 @@
                     <span class="form-icon">email</span>
                     <div>
                         <input type="email" name="email" placeholder="username@domain.com" id="email"'.(isset($inputError['email']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($email).'">
-                        <p class="warning-text'.(isset($inputError['email']) ? (HTML_NO_HIDDEN_WARNING.$inputError['email']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['email']) ? (HTML_SHOW_WARNING.$inputError['email']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -179,7 +179,7 @@
                             <span style="white-space: pre;">+44 </span>
                             <input type="tel" name="phone" placeholder="7123456789" id="phone"'.(isset($inputError['phone']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($phone).'">
                         </div>
-                        <p class="warning-text'.(isset($inputError['phone']) ? (HTML_NO_HIDDEN_WARNING.$inputError['phone']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['phone']) ? (HTML_SHOW_WARNING.$inputError['phone']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -194,7 +194,7 @@
                         <label for="female" style="font-weight: normal;">Female</label>
                         <input type="radio" name="gender" value="0" id="hidden"'.(($gender === 0) ? ' checked' : '').'>
                         <label for="hidden" style="font-weight: normal;">Prefer Not to Say</label>               
-                        <p class="warning-text'.(isset($inputError['gender']) ? (HTML_NO_HIDDEN_WARNING.$inputError['gender']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['gender']) ? (HTML_SHOW_WARNING.$inputError['gender']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -228,15 +228,15 @@
                         </div>
                         <p class="warning-text';
         if(isset($inputError['dobYr']) && isset($inputError['dobMth']) && isset($inputError['dobDay'])) {
-            echo HTML_NO_HIDDEN_WARNING.'Select your date of birth';
+            echo HTML_SHOW_WARNING.'Select your date of birth';
         } else if(isset($inputError['dobYr'])) {
-            echo HTML_NO_HIDDEN_WARNING.$inputError['dobYr'];
+            echo HTML_SHOW_WARNING.$inputError['dobYr'];
         } else if(isset($inputError['dobMth'])) {
-            echo HTML_NO_HIDDEN_WARNING.$inputError['dobMth'];
+            echo HTML_SHOW_WARNING.$inputError['dobMth'];
         } else if(isset($inputError['dobDay'])) {
-            echo HTML_NO_HIDDEN_WARNING.$inputError['dobDay'];
+            echo HTML_SHOW_WARNING.$inputError['dobDay'];
         } else {
-            echo HTML_HIDDEN_WARNING.'Error';
+            echo HTML_HIDE_WARNING.'Error';
         }
         echo           '</p>
                     </div>

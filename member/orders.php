@@ -1,14 +1,26 @@
 <?php
+
+    include_once './inc/member.php';
+
     session_start();
+    $memberId = $_SESSION['memberId'] ?? '';
+    if(!$memberId) {
+        redirect(RELATIVE_LOGIN_URL);
+    }
+    
+    require_once './inc/dbConnection.php';
+    include_once './inc/orders.php';
     
     function getOrderStatus($type) {
-        $status = array('Ineligible.',
-        'Changes required.',
-        'Incomplete Payment.',
-        'Proposal cancelled.',
-        'Draft Proposal pending submission. Please complete and submit your proposal.',
-        'Proposal approved. Awaiting for your confirmation.',
-        'Order Confirmed.');
+        $status = array(
+            'Ineligible.',
+            'Changes required.',
+            'Incomplete Payment.',
+            'Proposal Cancelled.',
+            'Draft Proposal pending submission. Please complete and submit your proposal.',
+            'Proposal under review.',
+            'Proposal approved. Awaiting for your confirmation.',
+            'Order Confirmed.');
         
         if($type >= 0 && isset($status[$type])) {
             return $status[$type];
@@ -20,64 +32,168 @@
     <link rel="stylesheet" href="./css/table.css">
     <script src="./js/Chart.js/3.7.0/chart.min.js"></script>
     
-<?php include_once './inc/postHead.php';
-    printNavBar(4);
-?>
-    <main>
-        <h2 style="text-align: center;">Pending Proposals</h2>    
-        <div>
-            <canvas id="myChart"></canvas>
-        </div>
-        <h2 style="text-align: center;">All Proposals</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Cars</th>
-                    <th>Status</th>
-                    <th>Proposal Date</th>
-                    <th>Review Date</th>
-                    <th>Confirm Date</th>
-                    <th>Receipt</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td><td>Test</td><td><p style="margin: 0;">Draft Proposal pending submission. Please complete and submit your order.</p><a class="button">Complete Order</a></td><td>-</td><td>-</td><td>-</td><td>-</td>
-                </tr>
-            </tbody>
-        </table>
-        <script>
+<?php
+    include_once './inc/postHead.php';
+    printNavBar();    
+
+    echo '<main>';
+        
+    $htmlTable =
+        '<div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Type</th>
+                        <th>Cars</th>
+                        <th>Status</th>
+                        <th>Proposal Date</th>
+                        <th>Review Date</th>
+                        <th>Confirm Date</th>
+                        <th>Payment</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+    function reformatDate(&$datetime) {
+        if($datetime) {
+            $datetime = date_format(date_create($datetime), 'j M y');
+        } else {
+            $datetime = '-';
+        }
+    }
+
+    $numOfProposalsUnderReview = 0;
+    $numOfUnsubmittedProposals = 0;
+
+    $orders = getAllOrders($memberId);
+    if($orders) {
+        while ($row = mysqli_fetch_assoc($orders)) {
+            $orderId = $row['id'];
+
+            $type = $row['type'];       
+            
+            $htmlCars = getCarsHTML($row['carsId']);
+
+            $stage = 2;
+            if($row['stages']) {
+                $stages = json_decode($row['stages'], true);                
+                if($stages) {
+                    $maxStage = max($stages);
+                    if($maxStage > 1) {
+                        if($type == 1 && $maxStage > 6) {
+                            $stage = 6;
+                        } else if($type == 2 && $maxStage > 7) {
+                            $stage = 7;
+                        } else {
+                            $stage = $maxStage;
+                        }
+                    }
+                }
+            }
+
+            $orderStatus = $row['orderStatus'];
+            $orderStatus = '<p style="text-align:justify; margin: 0;">'.getOrderStatus($row['orderStatus']).($row['orderStatusMessage'] ? ('<br>'.$row['orderStatusMessage']) : '').'</p>';
+            switch($row['orderStatus']) {
+                case 1:
+                    $numOfUnsubmittedProposals++;
+                    $orderStatus.='<a class="button">Edit Proposal</a>';
+                    break;
+                case 2:
+                    $orderStatus.='<a class="button">Pay Now</a>';
+                    break;
+                case 4:
+                    $numOfUnsubmittedProposals++;
+                    $orderStatus.='<a class="button" href="./proposal.php?id='.$orderId.'&type='.$type.'&stage='.$stage.'" target="_blank">Edit Proposal</a>';
+                    break;
+                case 5:
+                    $numOfProposalsUnderReview++;
+                    break;
+                case 6:
+                    $orderStatus.='<a class="button">Confirm Order</a>';
+                    break;
+            }            
+
+            if($type == 1) {
+                $type = 'Personal';
+            } else if($type == 2) {
+                $type = 'Business';
+            }
+
+            reformatDate($row['proposalDate']);
+            reformatDate($row['reviewDate']);
+            reformatDate($row['confirmDate']);
+
+            $row = array($orderId, $type, $htmlCars, $orderStatus, $row['proposalDate'], $row['reviewDate'], $row['confirmDate']);
+            $htmlTable.='<tr>';
+            foreach ($row as &$cell) {
+                $htmlTable.='<td>'.$cell.'</td>';
+            }
+            unset($cell);
+            $htmlTable.='</tr>';
+        }        
+    }           
+    $htmlTable.=
+                '</tbody>
+            </table>
+        </div>';
+
+    echo
+        '<h2 style="text-align: center;">Pending Proposals</h2>';
+
+    if($numOfProposalsUnderReview || $numOfUnsubmittedProposals) {
+        echo
+       '<div>
+            <canvas id="chart"></canvas>
+        </div>';
+    } else {
+        echo '<p>There are no pending proposals.</p>';
+    }
+
+    echo
+       '<h2 style="text-align: center;">All Proposals</h2>';
+    if($orders) {
+        echo $htmlTable;
+    } else {
+        echo '<p>No proposals have been made. Add Cars to cart and Checkout to create a new proposal.</p>';
+    }
+
+    if($numOfProposalsUnderReview || $numOfUnsubmittedProposals) {    
+        echo
+        '<script>
             const DATA_COUNT = 5;
             const NUMBER_CFG = {count: DATA_COUNT, min: 0, max: 100};
 
             const data = {
-                labels: ['Unsubmitted Proposals', 'Proposals Under Review'],
+                labels: ["Unsubmitted Proposals", "Proposals Under Review"],
                 datasets: [
                     {
-                        label: 'Dataset 1',
-                        data: [70, 30],
-                        backgroundColor: ['rgb(255, 99, 132)', 'rgb(255, 205, 86)']
+                        label: "Dataset 1",
+                        data: ['.$numOfUnsubmittedProposals.', '.$numOfProposalsUnderReview.'],
+                        backgroundColor: ["rgb(255, 99, 132)", "rgb(255, 205, 86)"]
                     }
                 ]
             };
 
             const config = {
-                type: 'doughnut',
+                type: "doughnut",
                 data: data,
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                     legend: {
-                        position: 'right',
+                        position: "right",
                     },
                     }
                 },
             };
             const myChart = new Chart(
-                document.getElementById('myChart'),
+                document.getElementById("chart"),
                 config
             );
-        </script>
-    </main>
+        </script>';
+    }
+
+    echo '</main>'.HTML_FOOTER;
+?>

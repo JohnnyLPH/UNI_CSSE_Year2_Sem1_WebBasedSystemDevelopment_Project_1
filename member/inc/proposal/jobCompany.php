@@ -234,7 +234,7 @@
                     <span class="form-icon">business</span>
                     <div>
                         <input type="text" name="name" id="name"'.(isset($inputError['name']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($companyName).'">
-                        <p class="warning-text'.(isset($inputError['name']) ? (HTML_NO_HIDDEN_WARNING.$inputError['name']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['name']) ? (HTML_SHOW_WARNING.$inputError['name']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -244,7 +244,7 @@
                     <span class="form-icon">place</span>
                     <div>
                         <input type="text" name="add1" id="add1"'.(isset($inputError['add1']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($add1).'">
-                        <p class="warning-text'.(isset($inputError['add1']) ? (HTML_NO_HIDDEN_WARNING.$inputError['add1']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['add1']) ? (HTML_SHOW_WARNING.$inputError['add1']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -254,7 +254,7 @@
                     <span class="form-icon">place</span>
                     <div>
                         <input type="text" name="add2" id="add2"'.(isset($inputError['add2']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($add2).'">
-                        <p class="warning-text'.(isset($inputError['add2']) ? (HTML_NO_HIDDEN_WARNING.$inputError['add2']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['add2']) ? (HTML_SHOW_WARNING.$inputError['add2']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -264,7 +264,7 @@
                     <span class="form-icon">location_city</span>
                     <div>
                         <input type="text" name="city" id="city"'.(isset($inputError['city']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($city).'">
-                        <p class="warning-text'.(isset($inputError['city']) ? (HTML_NO_HIDDEN_WARNING.$inputError['city']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['city']) ? (HTML_SHOW_WARNING.$inputError['city']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -274,7 +274,7 @@
                     <span class="form-icon">markunread_mailbox</span>
                     <div>
                         <input type="text" name="postcode" id="postcode"'.(isset($inputError['postcode']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($postcode).'">
-                        <p class="warning-text'.(isset($inputError['postcode']) ? (HTML_NO_HIDDEN_WARNING.$inputError['postcode']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['postcode']) ? (HTML_SHOW_WARNING.$inputError['postcode']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -284,7 +284,7 @@
                     <span class="form-icon">email</span>
                     <div>
                         <input type="email" name="email" placeholder="username@domain.com" id="email"'.(isset($inputError['email']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($email).'">
-                        <p class="warning-text'.(isset($inputError['email']) ? (HTML_NO_HIDDEN_WARNING.$inputError['email']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['email']) ? (HTML_SHOW_WARNING.$inputError['email']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -297,7 +297,7 @@
                             <span style="white-space: pre;">+44 </span>
                             <input type="tel" name="telephone" placeholder="7123456789" id="telephone"'.(isset($inputError['telephone']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($telephone).'">
                         </div>
-                        <p class="warning-text'.(isset($inputError['telephone']) ? (HTML_NO_HIDDEN_WARNING.$inputError['telephone']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['telephone']) ? (HTML_SHOW_WARNING.$inputError['telephone']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -307,7 +307,7 @@
                     <span class="form-icon">location_city</span>
                     <div>
                         <input type="text" placeholder="What is the company about?" name="description" id="description"'.(isset($inputError['description']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($companyDescription).'">
-                        <p class="warning-text'.(isset($inputError['description']) ? (HTML_NO_HIDDEN_WARNING.$inputError['description']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['description']) ? (HTML_SHOW_WARNING.$inputError['description']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>';
@@ -329,7 +329,7 @@
                             <option value="5"'.(($companyType == 5) ? ' selected' : '').'>Government Agency</option>
                             <option value="6"'.(($companyType == 6) ? ' selected' : '').'>Other</option>
                         </select>
-                        <p class="warning-text'.(isset($inputError['companyType']) ? (HTML_NO_HIDDEN_WARNING.$inputError['companyType']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['companyType']) ? (HTML_SHOW_WARNING.$inputError['companyType']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -339,7 +339,7 @@
                     <span class="form-icon">numbers</span>
                     <div>
                         <input type="text" name="regNum" id="regNum"'.(isset($inputError['regNum']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($regNum).'">
-                        <p class="warning-text'.(isset($inputError['regNum']) ? (HTML_NO_HIDDEN_WARNING.$inputError['regNum']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['regNum']) ? (HTML_SHOW_WARNING.$inputError['regNum']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -349,7 +349,7 @@
                     <span class="form-icon">schedule</span>
                     <div>
                         <input type="number" min="1900" max="'.date('Y').'" maxlength="4" placeholder="Which year was your company founded?" name="estYr" id="estYr"'.(isset($inputError['estYr']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($estYr).'">
-                        <p class="warning-text'.(isset($inputError['estYr']) ? (HTML_NO_HIDDEN_WARNING.$inputError['estYr']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['estYr']) ? (HTML_SHOW_WARNING.$inputError['estYr']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>';            
@@ -361,7 +361,7 @@
                     <span class="form-icon">work</span>
                     <div>
                         <input type="text" name="title" id="title"'.(isset($inputError['title']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($jobTitle).'">
-                        <p class="warning-text'.(isset($inputError['title']) ? (HTML_NO_HIDDEN_WARNING.$inputError['title']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['title']) ? (HTML_SHOW_WARNING.$inputError['title']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -371,7 +371,7 @@
                     <span class="form-icon">local_atm</span>
                     <div>
                         <input type="text" name="salary" id="salary"'.(isset($inputError['salary']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($salary).'">
-                        <p class="warning-text'.(isset($inputError['salary']) ? (HTML_NO_HIDDEN_WARNING.$inputError['salary']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['salary']) ? (HTML_SHOW_WARNING.$inputError['salary']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -381,7 +381,7 @@
                     <span class="form-icon">local_atm</span>
                     <div>
                         <input type="text" placeholder="What / How are the bonuses / allowances offered?" name="incomeDescription" id="incomeDescription"'.(isset($inputError['incomeDescription']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($incomeDescription).'">
-                        <p class="warning-text'.(isset($inputError['incomeDescription']) ? (HTML_NO_HIDDEN_WARNING.$inputError['incomeDescription']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['incomeDescription']) ? (HTML_SHOW_WARNING.$inputError['incomeDescription']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>

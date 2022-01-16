@@ -25,6 +25,16 @@
         }
 
         $bank = json_decode($bank['bank'], true);
+
+        $bankName = $bank['name'] ?? '';
+        $add1 = $bank['add1'] ?? '';
+        $add2 = $bank['add2'] ?? '';
+        $city = $bank['city'] ?? '';
+        $postcode = $bank['postcode'] ?? '';
+        $sortCode = $bank['sortCode'] ?? '';
+        $accountName = $bank['accountName'] ?? '';
+        $accountNum = $bank['accountNum'] ?? '';
+        $accountYr = $bank['accountYr'] ?? '';
         
         printHeader();
         printNavBar();
@@ -36,16 +46,34 @@
     if($post || $stageStatus === -1) {
         // perform input validation if new data is received or existing stage data is incomplete       
                 
-        validateName($bankName, 'Bank name', 'name', $company, false);
+        validateName($bankName, 'Bank name', 'name', $bank, false);
         validateAddress($add1, 'add1', $bank);
         validateAddress($add2, 'add2', $bank);
         validateName($city, 'Bank\'s town/city name', 'city', $bank);
         validatePostcode($postcode, 'postcode', $bank);
         
+        if($sortCode === '') {
+            if($post) {
+                $inputError['sortCode'] = 'Enter your '.($type === 2 ? 'company\'s ' : '').'bank sort code';
+            }
+        } else if (search('/[^\d]/', $sortCode) >= 0) {
+            $inputError['sortCode'] = 'Invalid number. Bank sort code can only contain number digits without any space nor any other character.';
+        } else if (strlen($sortCode) !== 6) {
+            $inputError['sortCode'] = 'UK bank sort code must have exactly 6 digits.';
+        }
         $bank['sortCode'] = $sortCode;
 
-        validateName($accountName, 'Bank\'s account name', 'accountName', $bank, false);
+        validateName($accountName, ($type === 2 ? 'Company\'s ' : '').'bank account name', 'accountName', $bank, false);
 
+        if($accountNum === '') {
+            if($post) {
+                $inputError['accountNum'] = 'Enter your '.($type === 2 ? 'company\'s ' : '').'bank account number';
+            }
+        } else if (search('/[^\d]/', $accountNum) >= 0) {
+            $inputError['accountNum'] = 'Invalid number. Bank account number can only contain number digits without any space nor any other character.';
+        } else if (strlen($accountNum) < 7 || strlen($accountNum) > 8) {
+            $inputError['accountNum'] = 'UK bank account number must have 7-8 digits.';
+        }
         $bank['accountNum'] = $accountNum;
 
         if($accountYr === NULL || $accountYr === false) {
@@ -103,7 +131,7 @@
                     <span class="form-icon">business</span>
                     <div>
                         <input type="text" name="name" id="name"'.(isset($inputError['name']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($bankName).'">
-                        <p class="warning-text'.(isset($inputError['name']) ? (HTML_NO_HIDDEN_WARNING.$inputError['name']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['name']) ? (HTML_SHOW_WARNING.$inputError['name']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -113,7 +141,7 @@
                     <span class="form-icon">place</span>
                     <div>
                         <input type="text" name="add1" id="add1"'.(isset($inputError['add1']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($add1).'">
-                        <p class="warning-text'.(isset($inputError['add1']) ? (HTML_NO_HIDDEN_WARNING.$inputError['add1']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['add1']) ? (HTML_SHOW_WARNING.$inputError['add1']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -123,7 +151,7 @@
                     <span class="form-icon">place</span>
                     <div>
                         <input type="text" name="add2" id="add2"'.(isset($inputError['add2']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($add2).'">
-                        <p class="warning-text'.(isset($inputError['add2']) ? (HTML_NO_HIDDEN_WARNING.$inputError['add2']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['add2']) ? (HTML_SHOW_WARNING.$inputError['add2']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -133,7 +161,7 @@
                     <span class="form-icon">location_city</span>
                     <div>
                         <input type="text" name="city" id="city"'.(isset($inputError['city']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($city).'">
-                        <p class="warning-text'.(isset($inputError['city']) ? (HTML_NO_HIDDEN_WARNING.$inputError['city']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['city']) ? (HTML_SHOW_WARNING.$inputError['city']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -143,7 +171,7 @@
                     <span class="form-icon">markunread_mailbox</span>
                     <div>
                         <input type="text" name="postcode" id="postcode"'.(isset($inputError['postcode']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($postcode).'">
-                        <p class="warning-text'.(isset($inputError['postcode']) ? (HTML_NO_HIDDEN_WARNING.$inputError['postcode']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['postcode']) ? (HTML_SHOW_WARNING.$inputError['postcode']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>         
@@ -151,14 +179,16 @@
                 <label for="sortCode">Bank Sort Code: </label>
                 <div class="input">
                     <span class="form-icon">pin</span>
-                    <div class="input-flex-triple" id="sortCode">
-                        <input type="text" maxlength="2" inputmode="numeric" name="sortCode[0]" id="sortCode[0]">
-                        <label>–</label>
-                        <input type="text" maxlength="2" inputmode="numeric" name="sortCode[1]" id="sortCode[1]">
-                        <label>–</label>
-                        <input type="text" maxlength="2" inputmode="numeric" name="sortCode[2]" id="sortCode[2]">
+                    <div>
+                        <div class="input-flex-triple" id="sortCode">
+                            <input type="text" maxlength="2" inputmode="numeric" name="sortCode[0]" id="sortCode[0]"'.(isset($inputError['sortCode']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars(substr($sortCode, 0,2)).'">
+                            <label>–</label>
+                            <input type="text" maxlength="2" inputmode="numeric" name="sortCode[1]" id="sortCode[1]"'.(isset($inputError['sortCode']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars(substr($sortCode, 2,2)).'">
+                            <label>–</label>
+                            <input type="text" maxlength="2" inputmode="numeric" name="sortCode[2]" id="sortCode[2]"'.(isset($inputError['sortCode']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars(substr($sortCode, 4,2)).'">
+                        </div>
+                        <p class="warning-text'.(isset($inputError['sortCode']) ? (HTML_SHOW_WARNING.$inputError['sortCode']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
-                    <p class="warning-text hidden">Error</p>
                 </div>
             </fieldset>
             <fieldset>
@@ -166,8 +196,8 @@
                 <div class="input">
                     <span class="form-icon">badge</span>
                     <div>
-                        <input type="text" placeholder="What is the full legal name of your bank account?" name="accountName" id="accountName">
-                        <p class="warning-text hidden">Error</p>
+                        <input type="text" placeholder="What is the full legal name of your bank account?" name="accountName" id="accountName"'.(isset($inputError['accountName']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($accountName).'">
+                        <p class="warning-text'.(isset($inputError['accountName']) ? (HTML_SHOW_WARNING.$inputError['accountName']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -176,8 +206,8 @@
                 <div class="input">
                 <span class="form-icon">numbers</span>
                     <div>
-                        <input type="text" placeholder="Carefully enter your correct bank account number." name="accountNum" id="accountNum">
-                        <p class="warning-text hidden">Error</p>
+                        <input type="number" min="1000000" placeholder="Carefully enter your correct bank account number." name="accountNum" id="accountNum"'.(isset($inputError['accountNum']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($accountNum).'">
+                        <p class="warning-text'.(isset($inputError['accountNum']) ? (HTML_SHOW_WARNING.$inputError['accountNum']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -186,8 +216,8 @@
                 <div class="input">
                     <span class="form-icon">schedule</span>
                     <div>
-                        <input type="number" min="1900" max="'.date('Y').'" maxlength="4" placeholder="Which year was your bank account opened?" name="accountYr" id="accountYr">
-                        <p class="warning-text hidden">Error</p>
+                        <input type="number" min="1900" max="'.date('Y').'" maxlength="4" placeholder="Which year was your bank account opened?" name="accountYr" id="accountYr"'.(isset($inputError['accountYr']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($accountYr).'">
+                        <p class="warning-text'.(isset($inputError['accountYr']) ? (HTML_SHOW_WARNING.$inputError['accountYr']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>';

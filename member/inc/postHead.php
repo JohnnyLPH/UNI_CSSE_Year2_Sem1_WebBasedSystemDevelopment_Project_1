@@ -24,6 +24,10 @@ function printNavBar() {
     echo '<nav class="fixed_nav_bar">        
         <ul>
             <li>
+                <a href="../">LINGsCARS</a>
+            </li>
+
+            <li>
                 <a href="./"'.($scriptName === 'index.php' ? $htmlActiveClass : '').'>Overview</a>
             </li>
 
@@ -57,8 +61,8 @@ function printNavBar() {
             <li class="dropdown_list">
                 '.$memberFirstName.' ▼
                 <div class="dropdown_menu" style="right: 0;">
-                    <a href="#">Profile</a>
-                    <a href="#">Account</a>
+                    <a href="./memberProfile.php">Profile</a>
+                    <a href="./memberVerifyEmailForPassword.php">Change Account Password</a>
                     <a href="../logoutPage.php">Log Out</a>
                 </div>
             </li>

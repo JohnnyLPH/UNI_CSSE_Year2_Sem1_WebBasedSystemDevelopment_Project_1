@@ -2,11 +2,16 @@
     require_once './inc/dbConnection.php';
 
     function printHeader() {
+        global $requestedStage;
         include_once './inc/preHead.php';
         echo
         '
     <link rel="stylesheet" href="./css/form.css">
     <script src="./js/formValidation.js" defer></script>';
+    
+        if($requestedStage && $requestedStage === 1) {
+            echo '<link rel="stylesheet" href="./css/table.css">';
+        }
         include_once './inc/postHead.php';
     }
 
@@ -21,8 +26,7 @@
         }
     }
 
-    define('PROBLEM_STAGE', -2);
-    define('WARNING_STAGE', -1);
+    define('PROBLEM_STAGE', -1);
     define('INCOMPLETE_STAGE', 0);
     define('CURRENT_STAGE', 1);
     define('COMPLETED_STAGE', 2);    
@@ -35,6 +39,9 @@
         for($i = 0; $i < $stageCount; $i++) {
             echo '<li';
             switch($stage[$i][1]) {
+                case PROBLEM_STAGE:
+                    echo ' class="problem"';
+                    break;
                 case CURRENT_STAGE:
                     echo ' class="current"';
                     break;
@@ -45,6 +52,9 @@
             echo '>
                     <div class="process">'.(($i !== 0) ? '<div></div>' : '').'<p>';
             switch($stage[$i][1]) {
+                case PROBLEM_STAGE:
+                    echo '!';
+                    break;
                 case COMPLETED_STAGE:
                     echo '✓';
                     break;
@@ -57,16 +67,6 @@
         }
         echo '</ul>
         </article>';
-    }       
-    
-    function showError($title, $message) {
-        echo
-   '<main>
-       <div class="warning-banner">
-            <svg width="40" height="40" viewBox="0 0 20 20"><path d="M11.31 2.85l6.56 11.93A1.5 1.5 0 0116.56 17H3.44a1.5 1.5 0 01-1.31-2.22L8.69 2.85a1.5 1.5 0 012.62 0zM10 13a.75.75 0 100 1.5.75.75 0 000-1.5zm0-6.25a.75.75 0 00-.75.75v4a.75.75 0 001.5 0v-4a.75.75 0 00-.75-.75z" fill-rule="nonzero"></path></svg>
-            <h1>'.$title.'</h1>
-            <h2>'.$message.'</h2>
-        </div>';
     }
 
     function printHTMLFormHeader($actionURL) {
@@ -76,6 +76,7 @@
     }
 
     function trimExtraSpaces($string) {
+        // remove duplicated or consecutive blank spaces
         $trimmedStr = preg_replace('/ +/', ' ', trim($string));
         return $trimmedStr;
     }
@@ -94,14 +95,13 @@
             $inputError[$key] = ucfirst($title).' too short. '.ucfirst($title).' must have at least 3 characters';
         } else if(strlen($input) > 50) {
             $inputError[$key] = ucfirst($title).' too long. '.ucfirst($title).' can only have a maximum of up to 50 number of characters.';
-        } else {
-            $input = ucwords(strtolower(trimExtraSpaces($input)));
-            $JSON[$key] = $input;
         }
+        $input = ucwords(strtolower(trimExtraSpaces($input)));
+        $JSON[$key] = $input;
     }
 
-    define('HTML_HIDDEN_WARNING', ' hidden">');
-    define('HTML_NO_HIDDEN_WARNING', '">');
+    define('HTML_HIDE_WARNING', ' hidden">');
+    define('HTML_SHOW_WARNING', '">');
     define('HTML_WARNING_CLASS', ' class="warning"');
     define('HTML_WARNING_BANNER',
     '<div class="warning-banner">
