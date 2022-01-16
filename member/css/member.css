@@ -2,7 +2,8 @@
     --main-body-color: #EDF6F9;
     --medium-dark-shade-of-cyan-: #264861;
     --light-shade-of-red-orange: #FFDDD2;
-    --light-gray: #ddd;
+    --light-gray: #ddd;    
+    --warning-background-color: #fff0f0;
 }
 
 body {
@@ -12,9 +13,10 @@ body {
 }
 
 header {
-    color: white;
+    color: white;    
+    font-size: xx-large;
     width: 100%;
-    height: 100px;
+    max-height: 100px;
     background-color: var(--medium-dark-shade-of-cyan-);
     z-index: 1;
     top: 0;
@@ -26,7 +28,6 @@ header div {
     display: inline-block;
 }
 #header_p1{
-    font-size: xx-large; 
     margin: 0;
 }
 #header_p1 b {    
@@ -34,9 +35,19 @@ header div {
     text-shadow: 2px 2px black;
 }
 #header_p2{
-    font-size: xx-large;
     font-weight: bold;
     margin: 0.67rem;
+}
+
+@media only screen and (max-width: 512px) {
+    
+    header {
+        font-size: x-large !important;
+    }
+
+    header .material-icons-outlined {
+        font-size: initial !important;
+    }
 }
 
 nav.fixed_nav_bar {
@@ -141,4 +152,88 @@ main {
     margin-left: auto;
     margin-right: auto;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+main .warning-banner {
+    background-color: var(--warning-background-color);
+    color: red;
+    margin: 0 -0.67rem;
+    padding: 0.83rem 0;
+    text-align: center;
+}
+main .warning-banner svg {
+    fill: red;
+    vertical-align: middle;
+}
+main .warning-banner h1 {
+    display: inline-block;
+    margin-top: 0;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+main .warning-banner h2 {
+    margin-bottom: 0;
+}
+
+a.button {
+    border: none;
+    border-radius: 5px;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    font-size: large;
+    font-weight: bold;
+    margin: 0.33rem;
+    padding: 0.67rem;
+    text-align: center;
+    text-decoration: none;
+}
+
+a.button:hover {
+    text-decoration: underline;
+}
+
+footer {
+    padding: 1.5em;
+    background-color: var(--medium-dark-shade-of-cyan-);
+    color: white;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    text-align: center;
+}
+footer #leaseInfo {
+    display: none;
+}
+footer label {
+    cursor: pointer;
+}
+footer label::after {
+    content: " ▼";
+}
+footer label, .fixed_nav_bar {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+footer #leaseInfoText {
+    display: none;
+}
+footer input:checked ~ #leaseInfoText {
+    text-align: justify;
+    display: block;
+}
+footer input:checked + label::after {
+    content: " ▲";
+}
+footer ul li {
+    display: inline-block;
+}
+footer ul li a {
+    color:white;
+}
+footer ul li:not(:last-child):after {
+    content: " |";
 }

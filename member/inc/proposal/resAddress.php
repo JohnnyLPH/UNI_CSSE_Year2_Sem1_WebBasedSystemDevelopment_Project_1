@@ -10,7 +10,7 @@
         $add2 = $_POST['add2'] ?? '';
         $city = $_POST['city'] ?? '';
         $postcode = $_POST['postcode'] ?? '';
-        $status = $_POST['status'] ?? '';
+        $status = filter_input(INPUT_POST, 'status', FILTER_VALIDATE_INT);
         $livedYrs = filter_input(INPUT_POST, 'livedYrs', FILTER_VALIDATE_INT);
         $livedMths = filter_input(INPUT_POST, 'livedMths', FILTER_VALIDATE_INT);
 
@@ -46,35 +46,31 @@
         validateAddress($add1, 'add1', $residentialAddress);
         validateAddress($add2, 'add2', $residentialAddress);
         validateName($city, 'Town/city name', 'city', $residentialAddress);
-
-        if($postcode === '') {
+        validatePostcode($postcode, 'postcode', $residentialAddress);        
+        
+        if($status === NULL || $status === false || $status === '') {
             if($post) {
-                $inputError['postcode'] = 'Enter your house postcode';
-            }
-        } else if(search('/[^\w]/', $postcode) >= 0) {
-            $inputError['postcode'] = 'Invalid character. Postcode can only contain letters from A-Z and a-z without any space \' \' character.';
-        } else if(strlen($postcode) < 5 || strlen($postcode) > 7) {
-            $inputError['postcode'] = 'Invalid length. UK postcode must have 5 - 7 number of characters.';
+                $inputError['status'] = 'Select your residential status.';
+            }                
+        } else if ($status < 1 || $status > 4) {
+            $inputError['status'] = 'Invalid residential status. Please select a company type from the dropdown menu.';
         }
-        $postcode = strtoupper($postcode);
-        $residentialAddress['postcode'] = $postcode;
+        $residentialAddress['status'] = $status;
+        
 
-        $residentialAddress['status'] = intval($status);
-
-        if($livedYrs === NULL || $livedYrs === false) {
+        if($livedYrs === NULL || $livedYrs === false || $alivedYrs === '') {
                 
         } else if ($livedYrs < 0 || $livedYrs > 100) {
             $inputError['livedYrs'] = 'Invalid number of years lived. Number of years lived must be in 0 - 100 years.';
         }
         $residentialAddress['livedYrs'] = $livedYrs;
 
-        if($livedMths === NULL || $livedMths === false) {
+        if($livedMths === NULL || $livedMths === false || $alivedMths === '') {
             
         } else if ($livedMths < 0 || $livedMths > 12) {
             $inputError['livedMths'] = 'Invalid number of months lived. Number of months lived must be in 0 - 12 months.';
         }
-        $residentialAddress['livedMths'] = $livedMths;
-        
+        $residentialAddress['livedMths'] = $livedMths;        
 
         if($post) {
             if(!$memberId) {
@@ -120,7 +116,7 @@
                     <span class="form-icon">place</span>
                     <div>
                         <input type="text" name="add1" id="add1"'.(isset($inputError['add1']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($add1).'">
-                        <p class="warning-text'.(isset($inputError['add1']) ? (HTML_NO_HIDDEN_WARNING.$inputError['add1']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['add1']) ? (HTML_SHOW_WARNING.$inputError['add1']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -130,7 +126,7 @@
                     <span class="form-icon">place</span>
                     <div>
                         <input type="text" name="add2" id="add2"'.(isset($inputError['add2']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($add2).'">
-                        <p class="warning-text'.(isset($inputError['add2']) ? (HTML_NO_HIDDEN_WARNING.$inputError['add2']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['add2']) ? (HTML_SHOW_WARNING.$inputError['add2']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -140,7 +136,7 @@
                     <span class="form-icon">location_city</span>
                     <div>
                         <input type="text" name="city" id="city"'.(isset($inputError['city']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($city).'">
-                        <p class="warning-text'.(isset($inputError['city']) ? (HTML_NO_HIDDEN_WARNING.$inputError['city']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['city']) ? (HTML_SHOW_WARNING.$inputError['city']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -150,7 +146,7 @@
                     <span class="form-icon">markunread_mailbox</span>
                     <div>
                         <input type="text" name="postcode" id="postcode"'.(isset($inputError['postcode']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($postcode).'">
-                        <p class="warning-text'.(isset($inputError['postcode']) ? (HTML_NO_HIDDEN_WARNING.$inputError['postcode']) : (HTML_HIDDEN_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['postcode']) ? (HTML_SHOW_WARNING.$inputError['postcode']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -159,14 +155,14 @@
                 <div class="input">
                     <span class="form-icon">people</span>
                     <div>
-                        <select name="status" id="status">
+                        <select name="status" id="status"'.(isset($inputError['status']) ? HTML_WARNING_CLASS : '').'>
                             <option value="">-- Select status --</option>
-                            <option value="1">Property Owner</option>
-                            <option value="2">Property Tenant</option>
-                            <option value="3">Property Occupant (Live with Parents)</option>
-                            <option value="4">Property Occupant (Live with Friends/Partner)</option>
+                            <option value="1"'.(($status == 1) ? ' selected' : '').'>Property Owner</option>
+                            <option value="2"'.(($status == 2) ? ' selected' : '').'>Property Tenant</option>
+                            <option value="3"'.(($status == 3) ? ' selected' : '').'>Property Occupant (Live with Parents)</option>
+                            <option value="4"'.(($status == 4) ? ' selected' : '').'>Property Occupant (Live with Friends/Partner)</option>
                         </select>
-                        <p class="warning-text hidden">Error</p>
+                        <p class="warning-text'.(isset($inputError['status']) ? (HTML_SHOW_WARNING.$inputError['status']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
             </fieldset>
@@ -177,30 +173,40 @@
                     <div>
                         <div class="input-flex-double">
                             <div>
-                                <input type="number" min="0" max="100" name="livedYrs" id="livedYrs">
+                                <input type="number" min="0" max="100" name="livedYrs" id="livedYrs"'.(isset($inputError['livedYrs']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($livedYrs).'">
                                 <label for="livedYrs">year(s)</label>
                             </div>
                             <div>
-                                <select name="livedMths" id="livedMths">
+                                <select name="livedMths" id="livedMths"'.(isset($inputError['livedMths']) ? HTML_WARNING_CLASS : '').'>
                                     <option value=""></option>
-                                    <option value="0">0</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>
-                                    <option value="11">11</option>
-                                    <option value="12">12</option>
+                                    <option value="0"'.(($livedMths == 0) ? ' selected' : '').'>0</option>
+                                    <option value="1"'.(($livedMths == 1) ? ' selected' : '').'>1</option>
+                                    <option value="2"'.(($livedMths == 2) ? ' selected' : '').'>2</option>
+                                    <option value="3"'.(($livedMths == 3) ? ' selected' : '').'>3</option>
+                                    <option value="4"'.(($livedMths == 4) ? ' selected' : '').'>4</option>
+                                    <option value="5"'.(($livedMths == 5) ? ' selected' : '').'>5</option>
+                                    <option value="6"'.(($livedMths == 6) ? ' selected' : '').'>6</option>
+                                    <option value="7"'.(($livedMths == 7) ? ' selected' : '').'>7</option>
+                                    <option value="8"'.(($livedMths == 8) ? ' selected' : '').'>8</option>
+                                    <option value="9"'.(($livedMths == 9) ? ' selected' : '').'>9</option>
+                                    <option value="10"'.(($livedMths == 10) ? ' selected' : '').'>10</option>
+                                    <option value="11"'.(($livedMths == 11) ? ' selected' : '').'>11</option>
+                                    <option value="12"'.(($livedMths == 12) ? ' selected' : '').'>12</option>
                                 </select>
                                 <label for="livedMths">month(s)</label>
                             </div>                        
                         </div>
-                        <p class="warning-text hidden">Error</p>
+                        <p class="warning-text';
+
+    if(isset($inputError['livedMths'])) {
+        echo HTML_SHOW_WARNING.$inputError['livedMths'];
+    } else if(isset($inputError['livedYrs'])) {
+        echo HTML_SHOW_WARNING.$inputError['livedYrs'];
+    } else {
+        echo HTML_HIDE_WARNING.'Error';
+    }
+    
+    echo               '</p>
                     </div>
                 </div>
             </fieldset>';

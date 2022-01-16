@@ -1,3 +1,10 @@
+function cancel() {
+    if(window.confirm('Cancel the order? This action cannot be undone.')) {
+        proposalForm.cancel.value = true;
+        proposalForm.submit();
+    }
+}
+
 function goPrevious() {
     proposalForm.goPrevious.value = true;
 
