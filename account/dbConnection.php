@@ -198,6 +198,20 @@ class Members{
         $t_sql = "UPDATE memberlog SET logoutDate='$logout_dateTime_save' , duration = '$duration_save' WHERE memberId = '$user_id_login' AND loginDate = '$login_dateTime_save'";
         mysqli_query($this->db_connector,$t_sql);
     }
+
+    function updateCurrentLogoutDT(){
+        $user_id_login = $_SESSION['memberId'];
+        $login_dateTime_save = $_SESSION['loggedInTime'];
+        /*echo $logout_dateTime_save.'<br/>'; */
+        $time = new DateTime();
+
+        $logout_dateTime_save = $time->format('Y-m-d H:i:s');
+
+        $duration_save = $time->format('U') - strtotime($login_dateTime_save);
+        /* echo $duration_save; */
+        $t_sql = "UPDATE memberlog SET logoutDate='$logout_dateTime_save' , duration = '$duration_save' WHERE memberId = '$user_id_login' AND loginDate = '$login_dateTime_save'";
+        mysqli_query($this->db_connector,$t_sql);
+    }
     
     
 
