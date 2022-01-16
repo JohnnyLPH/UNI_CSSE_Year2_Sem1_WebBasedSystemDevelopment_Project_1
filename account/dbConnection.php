@@ -151,7 +151,7 @@ class Members{
                             $temp_duration = $time->format('U') - strtotime( $_SESSION["loggedInTime"]);
                             $query3 = '';
                             if(self::isExistInDb("memberlog", "memberId", $userID_extracted)){
-                                $t_sql = "UPDATE memberlog SET loginDate = '$temp_login_time', logoutDate='$temp_logout_time' , duration = '$temp_duration' WHERE memberId = '$userID_extracted'";
+                                $query3 = "UPDATE memberlog SET loginDate = '$temp_login_time', logoutDate='$temp_logout_time' , duration = '$temp_duration' WHERE memberId = '$userID_extracted'";
                             }else{
                                 $query3 = "INSERT INTO memberlog (memberId, loginDate, logoutDate, duration) VALUE ('$userID_extracted', '$temp_login_time', '$temp_logout_time','$temp_duration')";
                             }
