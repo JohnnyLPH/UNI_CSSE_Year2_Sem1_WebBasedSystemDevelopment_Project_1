@@ -143,7 +143,8 @@
     </main>'.HTML_FOOTER;
     }
 
-    if(!$memberId && !$post) {
+    if(!$memberId && (!$post || $requestedStage === 1)) {
+        $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
         redirect(RELATIVE_LOGIN_URL);
     }
 

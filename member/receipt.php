@@ -5,8 +5,9 @@
     function getHTMLReceipt($browserView = false) {
         global $db, $transactionId;
 
-        $memberId = $_SESSION['memberId'];
+        $memberId = $_SESSION['memberId'] ?? '';
         if(!$memberId) {
+            $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
             redirect(RELATIVE_LOGIN_URL);
         }
 

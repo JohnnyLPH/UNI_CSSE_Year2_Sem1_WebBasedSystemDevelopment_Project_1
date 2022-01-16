@@ -149,7 +149,13 @@ class Members{
                             $temp_logout_time = $time->format('Y-m-d H:i:s');
 
                             $temp_duration = $time->format('U') - strtotime( $_SESSION["loggedInTime"]);
-                            $query3 = "INSERT INTO memberlog (memberId, loginDate, logoutDate, duration) VALUE ('$userID_extracted', '$temp_login_time', '$temp_logout_time','$temp_duration')";
+                            $query3 = '';
+                            if(self::isExistInDb("memberlog", "memberId", $userID_extracted)){
+                                $query3 = "UPDATE memberlog SET loginDate = '$temp_login_time', logoutDate='$temp_logout_time' , duration = '$temp_duration' WHERE memberId = '$userID_extracted'";
+                            }else{
+                                $query3 = "INSERT INTO memberlog (memberId, loginDate, logoutDate, duration) VALUE ('$userID_extracted', '$temp_login_time', '$temp_logout_time','$temp_duration')";
+                            }
+                           
                             if(self::execQuery($query3, $rs)){
                                 /* echo 'insert into myUserLog login date time success<br/>'; */
                                 return true;
@@ -184,6 +190,20 @@ class Members{
         $minutes_to_add = 5;
         $time = new DateTime();
         $time->add(new DateInterval('PT' . $minutes_to_add . 'M'));
+
+        $logout_dateTime_save = $time->format('Y-m-d H:i:s');
+
+        $duration_save = $time->format('U') - strtotime($login_dateTime_save);
+        /* echo $duration_save; */
+        $t_sql = "UPDATE memberlog SET logoutDate='$logout_dateTime_save' , duration = '$duration_save' WHERE memberId = '$user_id_login' AND loginDate = '$login_dateTime_save'";
+        mysqli_query($this->db_connector,$t_sql);
+    }
+
+    function updateCurrentLogoutDT(){
+        $user_id_login = $_SESSION['memberId'];
+        $login_dateTime_save = $_SESSION['loggedInTime'];
+        /*echo $logout_dateTime_save.'<br/>'; */
+        $time = new DateTime();
 
         $logout_dateTime_save = $time->format('Y-m-d H:i:s');
 
