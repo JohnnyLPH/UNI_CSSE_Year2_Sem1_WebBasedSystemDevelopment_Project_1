@@ -70,8 +70,10 @@
             <h1 style="display: inline-block;">Proposal Submitted</h1>
             <hr>
             <h2>Thank You</h2>
-            <p>It will be reviewed shortly.</p>            
+            <p>It will be reviewed shortly.</p>    
+            <a class="button" href="./orders.php">View All Proposals / Orders</a>        
         </div>
+        <a>
     </main>
 </body>';
                         die();

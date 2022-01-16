@@ -1,0 +1,14 @@
+@media print {
+    header, nav, footer, .hidden {
+        display: none !important;
+    }
+
+    body {
+        background-color: initial;
+    }
+
+    main {
+        box-shadow: initial;
+        max-width: initial;
+    }
+}

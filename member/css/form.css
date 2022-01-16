@@ -1,6 +1,5 @@
 :root {
     --green-color: rgb(0, 176, 80);
-    --warning-background-color: #fff0f0;
 }
 
 nav.fixed_nav_bar {
@@ -43,6 +42,18 @@ nav.fixed_nav_bar {
 }
 .progress-line ul li.current a {
     color: var(--medium-dark-shade-of-cyan-);
+}
+.progress-line ul li.problem {
+    font-weight: bold;
+}
+.progress-line ul li.problem p {
+    color: white;
+    font-size: xx-large;
+    background-color: orangered;
+    border-color: orangered;
+}
+.progress-line ul li.problem a {
+    color: orangered;    
 }
 .progress-line ul li.completed {
     font-weight: bold;
@@ -107,26 +118,7 @@ main .banner img {
     max-height: 80px;
     max-width: 80px;
 }
-main .warning-banner {
-    background-color: var(--warning-background-color);
-    color: red;
-    margin: 0 -0.67rem;
-    padding: 0.83rem 0;
-    text-align: center;
-}
-main .warning-banner svg {
-    fill: red;
-    vertical-align: middle;
-}
-main .warning-banner h1 {
-    display: inline-block;
-    margin-top: 0;
-    margin-bottom: 0;
-    vertical-align: middle;
-}
-main .warning-banner h2 {
-    margin-bottom: 0;
-}
+
 form fieldset {
     border-style: none;
     display: flex;

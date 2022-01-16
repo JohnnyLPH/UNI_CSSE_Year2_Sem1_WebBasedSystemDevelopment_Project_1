@@ -5,11 +5,17 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="../source/favicon.ico">
         <title>Member Change Password | LINGsCARS</title>
+        <link rel="stylesheet" href="./css/member.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../css/loginPage.css" />
         <script src="../js/changePsd.js" defer></script>
 
         <?php
             session_start();
+            include_once './inc/member.php';
+            include_once './inc/postHead.php';
+            printNavBar();
+
             include_once '../account/dbConnection.php';
             include_once '../assistanceTool.php';
 
@@ -120,9 +126,9 @@
                 }else{
                     echo '
                         <div style="text-align: center;">
-                            <img src="./source/images/registrationPage/man_girl.png" style="max-width: 200px; vertical-align: middle;">
-                            <h2 style="display: inline-block;">Password Change Success</h2>
-                            <img src="./source/images/registrationPage/check-mark-verified.gif" style="max-width: 100px; vertical-align: middle;">
+                            <img src="../source/images/registrationPage/man_girl.png" style="max-width: 200px; vertical-align: middle;">
+                            <h2 style="display: inline-block;">Password Changed Successfully</h2>
+                            <img src="../source/images/registrationPage/check-mark-verified.gif" style="max-width: 100px; vertical-align: middle;">
                         </div>';
                         //unset all unneeded session
                         if(isset($_SESSION['CHANGE_PASSWORD_EMAIL'])){
@@ -135,8 +141,8 @@
                 
             ?>
         </main>
-        <a id="return-to-main" href="memberProfile.php" >Back to Member Profile</a>
-           
-    </body>
-</html>
+        <a id="return-to-main" href="./memberProfile.php" >Back to Member Profile</a>
+<?php
+    echo HTML_FOOTER;
+?>
 

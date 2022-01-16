@@ -1,6 +1,14 @@
 <?php
-    require_once './inc/dbConnection.php';
+
+    include_once './inc/member.php';
+
     session_start();
+    $memberId = $_SESSION['memberId'] ?? '';
+    if(!$memberId) {
+        redirect(RELATIVE_LOGIN_URL);
+    }
+
+    require_once './inc/dbConnection.php';
     include_once './inc/preHead.php';
 ?>    
     <link rel="stylesheet" href="./css/overview.css">
@@ -9,7 +17,8 @@
     <script src="./js/Chart.js/3.7.0/chart.min.js"></script>
     <script src="./js/overview.js" defer></script>
     
-<?php include_once './inc/postHead.php';
+<?php
+    include_once './inc/postHead.php';
     printNavBar(4);
 ?>    
     <main>
@@ -38,7 +47,7 @@
                     </tbody>
                 </table>
                 <div style="text-align: center;">
-                    <a class="button">View All</a>
+                    <a class="button" href="./orders.php">View All</a>
                 </div>
             </div>
         </section>
@@ -76,5 +85,6 @@
             config
         );
     </script>
-</body>
-</html>
+<?php
+    echo HTML_FOOTER;
+?>

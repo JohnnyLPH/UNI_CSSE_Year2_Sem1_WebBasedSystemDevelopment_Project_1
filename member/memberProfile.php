@@ -5,25 +5,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="../source/favicon.ico">
         <title>Member Profile | LINGsCARS</title>
+        <link rel="stylesheet" href="./css/member.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../css/registrationPage.css" />
         <script src="../js/memberProfile.js" defer></script>
         <?php
             session_start();
+            include_once './inc/member.php';
+            include_once './inc/postHead.php';
+            printNavBar();
+            
             include_once '../account/dbConnection.php';
             include_once '../assistanceTool.php';
 
             if(!checkIdleDuration()){
-                header('Location: '.getURIDirname().'/../loginPage.php');
-                exit;
+                redirect('../loginPage.php');
+                die();
             }
 
             //update current page as previous page
             updatePreviousPageRedirected();
 
-
             echo '<script type="text/javascript">
                 function resetForm() {
-                    if(window.confirm("Remove the change made?")) {
+                    if(window.confirm("Remove the changes made?")) {
                         return true;
                     } else {
                         return false;                
@@ -31,7 +36,6 @@
                 }
             </script>';
 
-            include_once './account/dbConnection.php';
             define('HIDDEN_WARNING_HTML', ' hidden">');
             define('NO_HIDDEN_WARNING_HTML', '">');
             define('HTML_WARNING_CLASS', ' class="warning"');
@@ -69,7 +73,7 @@
                     $firstNameError = 'All characters after the first character must be lowercase characters';
                 } else if(strlen($firstName) < 2) {
                     $firstNameError = 'First name must have at least 2 characters';
-                }        
+                }
 
                 $lastName = $_POST['lastName'] ?? '';
                 if($lastName === '') {
@@ -136,6 +140,7 @@
                 }
                 
                 if(!(isset($firstNameError) || isset($lastNameError) || isset($emailError) || isset($phoneError) || isset($genderError) || isset($stateError) || isset($dobError))){
+                    $_SESSION['memberFirstName'] = $firstName;
                     //if no error, means we can save then in database
                     //write in database through MYSQL
                     $member = new Members();
@@ -146,6 +151,8 @@
                     if($member->updateExistedRecord($firstName, $lastName, $email, $phone, $genderSymbol, $state, $dob)){
                        
                     }
+                    redirect('memberProfile.php');
+                    die();
                 }
                 
 
@@ -177,7 +184,7 @@
                 </noscript>
                 <form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'" method="post" name="registrationForm" onsubmit="return(validateForm());" novalidate>            
                     <div style="text-align: center;">
-                        <img src="./source/images/registrationPage/form-icon-png-15.jpg" style="max-width: 100px; vertical-align: middle;">
+                        <img src="../source/images/registrationPage/form-icon-png-15.jpg" style="max-width: 100px; vertical-align: middle;">
                         <h1 style="display: inline-block;">Member Profile</h1>
                     </div>
         
@@ -272,9 +279,7 @@
                         <a href="./memberProfile.php" onclick="return(resetForm());" id="reset" class="button-flex">Remove Change</a>
                     </fieldset>
                 </form>
-                <h3> Do you want to change password? <a href="memberVerifyEmailForPassword.php">Change Password</a></h3>';
-            ?>
-        </main>
-        
-    </body>
-</html>
+                <h3> Do you want to change password? <a href="memberVerifyEmailForPassword.php">Change Password</a></h3>
+        </main>';
+
+                echo HTML_FOOTER;

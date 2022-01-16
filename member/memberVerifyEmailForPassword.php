@@ -5,13 +5,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="../source/favicon.ico">
         <title>User Verification | LINGsCARS</title>
+        <link rel="stylesheet" href="./css/member.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="../css/loginPage.css" />
         
-
         <?php
             session_start();
+            include_once './inc/member.php';
+            include_once './inc/postHead.php';
+            printNavBar();
+
             include '../account/dbConnection.php';
-            include '../sendEmail.php';
+            require_once '../sendEmail.php';
             include '../assistanceTool.php';
 
             if(!checkIdleDuration()){
@@ -67,7 +72,7 @@
                                 $mail->Password = 'piicqkofqhuyzrad'; // password
                                 $mail->setFrom('LingsCar@siswa.unimas.my', 'LingsCar.com'); // From email and name  //set sender name   *
                                 $mail->addAddress($verifiedEmail, 'Mr. '.$array_user['firstName']); // to email and name  //set receiver's email and name   *
-                                $mail->Subject =     'LingsCar\'s OTP for forgotten account password';   //set subject   *
+                                $mail->Subject = 'LINGsCARS OTP for Change of Account Password';   //set subject   *
                                 $mail->msgHTML("Verified OTP: ".$otp); //*$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,*
                                 $mail->AltBody = 'HTML messaging not supported'; // If html emails is not supported by the receiver, show this body
                                 // $mail->addAttachment('images/phpmailer_mini.png'); //Attach an image file
@@ -80,10 +85,10 @@
                                                 );
                                 $mail->send();
                                      //email is send 
-                                echo '<script>var msg = "OTP is sent to the email inputted. Please check back to your email and enter the OTP to the column privoded.\n\n";
-                                msg += "Note: If you do not received the email from us, please check back you email inputted\n";
-                                msg += "1. Guarantee that you have enter a correct valid email in the column provided.\n";
-                                msg += "2. Guarantee that you have enter a correct valid email during the registration.";
+                                echo '<script>var msg = "OTP is sent to the your email address. Please check your email inbox and enter the OTP to the field provided.\n\n";
+                                msg += "Note: If you do not received the email from us, please check back you SPAM / JUNK folder\n";
+                                msg += "Ensure you have provided the correct email address during registration.\n";
+                                msg += "Otherwise, please contact support.";
                                 alert(msg);</script>';
                                 
                                 
@@ -129,8 +134,8 @@
         <section class="guidance-container">
             <h3>Guidance</h3>
             <p> 1.  Click 'Get Verified Email' button.<br/>
-                2.  Go copying the OTP from your email and paste the OTP to the OTP column<br/>
-                3.  (optional) if no received email, please click the 'Get Verified Email' button again<br/>
+                2.  Copy the OTP from your email and paste the OTP to the OTP field. Remember to check your SPAM or JUNK folder as well.<br/>
+                3.  If you do not receive the email, please click the 'Get Verified Email' button again<br/>
                 4.  Click Submit button</p>
         </section>
 
@@ -152,10 +157,8 @@
                     <input type="submit" name="getOTP" value="Get Verified OTP" class="button-flex-OTP">
                 </fieldset>
             </form>
-        </main>
-        
-        
-        <a id="return-to-main" href="memberProfile.php" >Back to Member Profile</a>
-    </body>
-</html>
-
+        </main>       
+        <a id="return-to-main" href="./memberProfile.php" >Back to Member Profile</a>
+<?php
+    echo HTML_FOOTER;
+?>

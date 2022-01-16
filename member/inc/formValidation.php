@@ -1,32 +1,17 @@
 <?php
     require_once './inc/dbConnection.php';
 
-    function redirect($page) {
-        if (!empty($_SERVER['HTTPS']) && ('on' == $_SERVER['HTTPS'])) {
-            $uri = 'https://';
-        } else {
-            $uri = 'http://';
-        }
-        $uri .= $_SERVER['HTTP_HOST'];
-        $dirname = dirname($_SERVER['SCRIPT_NAME']);
-        if(strlen($dirname) === 1) {
-            $dirname = '';
-        }
-
-        if($page[0] === '/') {
-            $page = substr($page, 1);
-        }
-        
-        header('Location: '.$uri.$dirname.'/'.$page);
-        die();
-    }
-
     function printHeader() {
+        global $requestedStage;
         include_once './inc/preHead.php';
         echo
         '
     <link rel="stylesheet" href="./css/form.css">
     <script src="./js/formValidation.js" defer></script>';
+    
+        if($requestedStage && $requestedStage === 1) {
+            echo '<link rel="stylesheet" href="./css/table.css">';
+        }
         include_once './inc/postHead.php';
     }
 
@@ -41,8 +26,7 @@
         }
     }
 
-    define('PROBLEM_STAGE', -2);
-    define('WARNING_STAGE', -1);
+    define('PROBLEM_STAGE', -1);
     define('INCOMPLETE_STAGE', 0);
     define('CURRENT_STAGE', 1);
     define('COMPLETED_STAGE', 2);    
@@ -55,6 +39,9 @@
         for($i = 0; $i < $stageCount; $i++) {
             echo '<li';
             switch($stage[$i][1]) {
+                case PROBLEM_STAGE:
+                    echo ' class="problem"';
+                    break;
                 case CURRENT_STAGE:
                     echo ' class="current"';
                     break;
@@ -65,6 +52,9 @@
             echo '>
                     <div class="process">'.(($i !== 0) ? '<div></div>' : '').'<p>';
             switch($stage[$i][1]) {
+                case PROBLEM_STAGE:
+                    echo '!';
+                    break;
                 case COMPLETED_STAGE:
                     echo '✓';
                     break;
@@ -77,18 +67,6 @@
         }
         echo '</ul>
         </article>';
-    }       
-
-    function printFormHeader1() {
-        echo
-        '<main>
-        <div style="text-align: center;">
-            <img src="./img/car-dealer.png" style="display: inline-block; max-height:80px; vertical-align:middle;"><h1 style="display:inline-block;">Car Proposal</h1>
-        </div>';
-     
-        printProgressLine(array(array('Car Proposal', CURRENT_STAGE), array('Wait for Review', INCOMPLETE_STAGE), array('Confirmation', INCOMPLETE_STAGE), array('Delivery', INCOMPLETE_STAGE)));
-
-        printProgressLine(array(array('Car Details', COMPLETED_STAGE), array('Personal Info', CURRENT_STAGE), array('Current Address', INCOMPLETE_STAGE), array('Job Info', INCOMPLETE_STAGE), array('Bank Details', INCOMPLETE_STAGE), array('Submission', INCOMPLETE_STAGE)));
     }
 
     function printHTMLFormHeader($actionURL) {
@@ -98,6 +76,7 @@
     }
 
     function trimExtraSpaces($string) {
+        // remove duplicated or consecutive blank spaces
         $trimmedStr = preg_replace('/ +/', ' ', trim($string));
         return $trimmedStr;
     }
@@ -116,14 +95,13 @@
             $inputError[$key] = ucfirst($title).' too short. '.ucfirst($title).' must have at least 3 characters';
         } else if(strlen($input) > 50) {
             $inputError[$key] = ucfirst($title).' too long. '.ucfirst($title).' can only have a maximum of up to 50 number of characters.';
-        } else {
-            $input = ucwords(strtolower(trimExtraSpaces($input)));
-            $JSON[$key] = $input;
         }
+        $input = ucwords(strtolower(trimExtraSpaces($input)));
+        $JSON[$key] = $input;
     }
 
-    define('HTML_HIDDEN_WARNING', ' hidden">');
-    define('HTML_NO_HIDDEN_WARNING', '">');
+    define('HTML_HIDE_WARNING', ' hidden">');
+    define('HTML_SHOW_WARNING', '">');
     define('HTML_WARNING_CLASS', ' class="warning"');
     define('HTML_WARNING_BANNER',
     '<div class="warning-banner">
