@@ -16,8 +16,11 @@
             include_once './account/dbConnection.php';
             include_once './assistanceTool.php';
             //get server address
-            
-            if(!checkIdleDuration()){
+            $hadLogin = false;
+
+
+            if(checkIdleDuration()){
+                $hadLogin = true;
                 if(isset($_SESSION["loggedIn"])){
                     unset($_SESSION["loggedIn"]);
                 }
@@ -45,13 +48,23 @@
         ?>
         <main>
             <?php
-                echo '
-                <div style="text-align: center;">
-                    <img src="./source/images/registrationPage/man_girl.png" style="max-width: 200px; vertical-align: middle;">
-                    <h2 style="display: inline-block;">Logged Out Successfully<p>Have a nice day!</p></h2>
-                    
-                    <img src="./source/images/registrationPage/check-mark-verified.gif" style="max-width: 100px; vertical-align: middle;">
-                </div>';
+                if($hadLogin){
+                    echo '
+                    <div style="text-align: center;">
+                        <img src="./source/images/registrationPage/man_girl.png" style="max-width: 200px; vertical-align: middle;">
+                        <h2 style="display: inline-block;">Logged Out Successfully<p>Have a nice day!</p></h2>
+                        
+                        <img src="./source/images/registrationPage/check-mark-verified.gif" style="max-width: 100px; vertical-align: middle;">
+                    </div>';
+                }else{
+                    echo '
+                    <div style="text-align: center;height: 250px;">
+                        <h2 style="display: block;">You have not log in yet?<p><a href="loginPage.php">Log in</a></p></h2>
+                        
+                        <img src="./source/images/logout/smile.jpg" style="max-width: 100px; vertical-align: middle;">
+                    </div>';
+                }
+                
             ?>
         </main>
 
