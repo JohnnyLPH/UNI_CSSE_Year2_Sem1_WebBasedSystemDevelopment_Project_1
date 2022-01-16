@@ -20,6 +20,21 @@
             define('HIDDEN_WARNING_HTML', ' hidden">');
             define('NO_HIDDEN_WARNING_HTML', '">');
             define('HTML_WARNING_CLASS', ' class="warning"');
+
+            $loginEmail = '';
+            $loginPassword = '';
+
+            // returns the index of the first match between the regular expression $pattern and the $subject string, or -1 if no match was found
+            function search($pattern, $subject) {
+                preg_match($pattern, $subject, $matches, PREG_OFFSET_CAPTURE);
+
+                if($matches) {
+                    return $matches[0][1];
+                } else {
+                    return -1;
+                }
+            }
+
             
             if($_SERVER["REQUEST_METHOD"] === "POST"){
                 
@@ -110,7 +125,7 @@
                         <!-- password -->
                         <label for="userPassword">Password</label>
                         <span><a href="forgotPsd.php">Forgot password?</a></span>
-                        <input type="password" name="userPassword" id="userPassword"'.(isset($passwordError) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($password).'">
+                        <input type="password" name="userPassword" id="userPassword"'.(isset($passwordError) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($loginPassword).'">
                         <p class="warning-text'.(isset($passwordError) ? (NO_HIDDEN_WARNING_HTML.$passwordError) : (HIDDEN_WARNING_HTML.'Error')).'</p>
                     </fieldset>
                     <fieldset>

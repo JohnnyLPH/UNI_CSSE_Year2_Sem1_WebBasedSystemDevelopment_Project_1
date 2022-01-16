@@ -3,6 +3,7 @@
     if (session_id() == "") {
         session_start();
     }
+    
     require_once($_SERVER['DOCUMENT_ROOT'] . "/dbConnection.php");
 
     function testInput($data) {
