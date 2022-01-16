@@ -138,8 +138,8 @@
             $passwordError = 'Password cannot contain any whitespace character (spaces, tabs, line breaks)';
         } else if(search('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\W)(?=.*\d).{1,}$/', $password) !== 0) {
             $passwordError = 'Password must contain at least 1 uppercase character (A-Z), 1 lowercase character (a-z), 1 special character (!, @, #, $, %, ^, &, *) and 1 number (0-9)';
-        } else if(strlen($password) < 6) {
-            $passwordError = 'Password must have at least 6 characters';
+        } else if(strlen($password) != 6) {
+            $passwordError = 'Password must have exact 6 characters';
         }
 
         $confirmPassword = $_POST['confirmPassword'] ?? '';
