@@ -67,9 +67,9 @@ const userPassword = new FormElement(form.newPassword, function() {
 
 const userConfirmPassword = new FormElement(form.newConfirmPassword, function() {
     if(this.inputElement.value == '') {
-        this.showWarning('Enter your OTP');
-    } else if (this.inputElement.value.length != 6) {
-        this.showWarning('OTP must have  6 digits');
+        this.showWarning('Enter your password');
+    } else if (this.inputElement.value !== form.password.value) {
+        this.showWarning('Passwords do not match. Confirm Password must be the same as Password.');
     } else {
         this.hideWarning();
         return true;
