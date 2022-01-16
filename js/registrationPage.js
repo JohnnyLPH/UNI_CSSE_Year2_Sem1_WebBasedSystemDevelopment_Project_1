@@ -144,8 +144,8 @@ const password = new FormElement(form.password, function() {
         this.showWarning('Password cannot contain any whitespace character (spaces, tabs, line breaks)');
     } else if (this.inputElement.value.search(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\W)(?=.*\d).{1,}$/) !== 0) {
         this.showWarning('Password must contain at least 1 uppercase character (A-Z), 1 lowercase character (a-z), 1 special character (!, @, #, $, %, ^, &, *) and 1 number (0-9)');
-    } else if (this.inputElement.value.length < 6) {
-        this.showWarning('Password must have at least 6 characters');
+    } else if (this.inputElement.value.length != 6) {
+        this.showWarning('Password must have exact 6 characters');
     } else {
         this.hideWarning();
         return true;
