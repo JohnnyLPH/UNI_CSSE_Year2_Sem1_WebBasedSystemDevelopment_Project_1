@@ -21,21 +21,21 @@
 
             if(checkIfLogin()){
                 $member = new Members();
-                if($member->updateCurrentLogoutDT()){
-                    $hadLogin = true;
-                    if(isset($_SESSION["loggedIn"])){
-                        unset($_SESSION["loggedIn"]);
-                    }
-                    if(isset($_SESSION['memberId'])){
-                        unset($_SESSION['memberId']);
-                    }
-                    if(isset($_SESSION['loggedInTime'])){
-                        unset($_SESSION['loggedInTime']);
-                    }
-                    if(isset($_SESSION["memberFirstName"])){
-                        unset($_SESSION["memberFirstName"]);
-                    }
+                $member->updateCurrentLogoutDT();
+                $hadLogin = true;
+                if(isset($_SESSION["loggedIn"])){
+                    unset($_SESSION["loggedIn"]);
                 }
+                if(isset($_SESSION['memberId'])){
+                    unset($_SESSION['memberId']);
+                }
+                if(isset($_SESSION['loggedInTime'])){
+                    unset($_SESSION['loggedInTime']);
+                }
+                if(isset($_SESSION["memberFirstName"])){
+                    unset($_SESSION["memberFirstName"]);
+                }
+                
             }
             
 
