@@ -19,20 +19,21 @@
                     Profile
                     <div class="dropdown_menu">
                         <a href="#">Manage Profile</a>
-                        <a href="logoutPage.php">Log Out</a>
+                        <a href="./member/payment.php">Payment Details</a>
+                        <a href="/logoutPage.php">Log Out</a>
                     </div>
                 </li>
 
                 <li>
-                    <a href="/about.html">About Ling</a>
+                    <a href="./about.html">About Ling</a>
                 </li>
 
                 <li>
-                    <a href="/cart.php">Cart</a>
+                    <a href="./cart.php">Cart</a>
                 </li>
 
                 <li>
-                    <a href="#">Order History</a>
+                    <a href="./member/orders.php">Order History</a>
                 </li>
 
                 <li>
