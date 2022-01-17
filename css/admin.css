@@ -10,8 +10,8 @@ body {
     margin: 0;
     background-color: var(--main-body-color);
     font-size: 17px;
-    height: 100vh;
-    min-height: fit-content;
+    min-height: 100vh;
+    /* min-height: fit-content; */
 }
 
 @media (max-width: 1000px) {
@@ -61,8 +61,8 @@ main {
     display: block;
     margin: auto;
     /* max-width: 1200px; */
-    min-height: 85%;
-    max-height: fit-content;
+    min-height: 85vh;
+    /* max-height: fit-content; */
     overflow-x: auto;
 }
 

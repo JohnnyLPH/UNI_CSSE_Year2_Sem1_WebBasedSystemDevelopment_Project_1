@@ -555,7 +555,6 @@
                     <?php endif; ?>
                 </div>
             </div>
-            
         </main>
         
         <footer>
