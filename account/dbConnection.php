@@ -30,7 +30,7 @@ class Members{
             echo 'Could not connect to server<br/>';
             trigger_error(mysqli_error(), E_USER_ERROR);
         }else{
-           /* echo 'connection established<br/>'; */
+            mysqli_query($db, 'SET GLOBAL time_zone = "+0:00"');
         }
         
     }
