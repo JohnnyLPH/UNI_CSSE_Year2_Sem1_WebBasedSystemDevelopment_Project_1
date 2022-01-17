@@ -30,7 +30,7 @@ class Members{
             echo 'Could not connect to server<br/>';
             trigger_error(mysqli_error(), E_USER_ERROR);
         }else{
-            mysqli_query($db_connector, 'SET GLOBAL time_zone = "+0:00"');
+            mysqli_query($this->db_connector, 'SET GLOBAL time_zone = "+0:00"');
         }
         
     }
@@ -163,8 +163,6 @@ class Members{
                             
                         } else{
                             // Password is not valid, display a generic error message
-                            $login_err = "Invalid password.";
-                            echo '<br/>'.$login_err;
                             return false;
                         }
                     }
