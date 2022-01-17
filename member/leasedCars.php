@@ -10,7 +10,6 @@
     }
     
     require_once './inc/dbConnection.php';
-    include_once './inc/leasedCars.php';
 
     include_once './inc/preHead.php';
 ?>    
