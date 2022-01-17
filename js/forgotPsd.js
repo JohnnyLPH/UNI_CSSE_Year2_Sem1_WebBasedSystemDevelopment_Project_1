@@ -63,18 +63,6 @@ const userEmail = new FormElement(form.verifiedPasswordEmail, function() {
     return false;
 });
 
-/* const userOTP = new FormElement(form.OTPInput, function() {
-    if(this.inputElement.value == '') {
-        this.showWarning('Enter your OTP');
-    } else if (this.inputElement.value.length != 6) {
-        this.showWarning('OTP must have  6 digits');
-    } else {
-        this.hideWarning();
-        return true;
-    }
-    return false;
-}); */
-
 function validateForm() {
     // first invalid form element, of which will be focused upon submission of form (when user clicks REGISTER)
     let invalidFormElementToFocus;
@@ -83,9 +71,6 @@ function validateForm() {
         invalidFormElementToFocus = userEmail;
     }
    
-    /* if(!userOTP.validate() && !invalidFormElementToFocus) {
-        invalidFormElementToFocus = userOTP;
-    } */
  
     if(invalidFormElementToFocus) {
         invalidFormElementToFocus.inputElement.focus();
@@ -97,13 +82,10 @@ function validateForm() {
 
 window.addEventListener('load', function() {
     
-    /* form.verifiedPasswordEmail.addEventListener('blur', () => {
+    form.verifiedPasswordEmail.addEventListener('blur', () => {
         userEmail.validate();
-    }); */
+    }); 
     
-    /* form.OTPInput.addEventListener('blur', () => {
-        userOTP.validate();
-    }); */
     
 });
 
