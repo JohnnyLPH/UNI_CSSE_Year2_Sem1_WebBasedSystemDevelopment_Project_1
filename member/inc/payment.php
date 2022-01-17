@@ -5,23 +5,7 @@
 
     function getHTMLPaymentTableAndLeasedCars($carsOrLeasedCars, $type, &$leasedCars = false) {
         $htmlTable =
-       '<style>
-            table {
-                margin: auto;
-                text-align: center;
-            }
-
-            table, th, td {
-                border-color: black;
-                border-style: solid;
-                border-collapse: collapse;
-            }
-
-            th, td {
-                padding: 0.67rem;
-            }
-        </style>        
-        <div style="overflow-x:auto;">
+       '<div style="overflow-x:auto;">
             <table>
                 <thead>
                     <tr>
@@ -79,7 +63,7 @@
 
             $car = $carsCatalogue[$carId];
 
-            $tableCol[1] = '<img src="..'.$car['imagePath'].$car['carImage'].'" style="max-height:30px;">
+            $tableCol[1] = '<img src="data:image/png;base64, '.base64_encode(file_get_contents('..'.$car['imagePath'].$car['carImage'])).'" style="max-height:30px;">
                 <p style="display:inline-block; margin:0px;"><strong>'.$car['brandName'].' '.$car['carModel'].'</strong><br>
                 <strong>Car ID: </strong>'.$car['id'].'</p>';
             $tableCol[2] = $car['monthPrice'];

@@ -1,4 +1,7 @@
 <?php
+
+    $payment = true;
+    
     include_once './inc/member.php';
     require_once './inc/formValidation.php';
     require_once './inc/payment.php';
@@ -137,7 +140,7 @@
                 // all inputs valid, save to database
                 if(orderExists()) {
                     $leasedCars;
-                    $htmlPaymentTable = getHTMLPaymentTableAndLeasedCars($leaseIdsOrCars, $orderStatus == 6 ? CAR_ID : LEASE_ID, $leasedCars);
+                    getHTMLPaymentTableAndLeasedCars($leaseIdsOrCars, $orderStatus == 6 ? CAR_ID : LEASE_ID, $leasedCars);
                     $grandTotal = $leasedCars['total'];
                     unset($leasedCars['total']);
                     if($orderStatus == 6) {
@@ -146,6 +149,7 @@
                         $leasedCars = $leaseIdsOrCars;
                         payExistingOrder($orderId, $leasedCars);
                     }
+                    $htmlPaymentTable = getHTMLPaymentTableAndLeasedCars($leasedCars, LEASE_ID);
                     $transactionId = newTrans($leasedCars, $creditCard, $grandTotal);
                     if(!$transactionId) {
                         printHeader();

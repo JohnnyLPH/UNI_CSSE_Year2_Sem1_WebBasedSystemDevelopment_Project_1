@@ -158,7 +158,7 @@
             
             $stmt = 'INSERT INTO leasedCars (memberId, orderId, carId, paymentMthsCompleted) VALUES ';
             for($i = 0; $i < $numOfCars; $i++) {
-                $stmt .= '('.$memberId.', '.$orderId.', '.$cars[$i]['carId'].', '.$cars[$i]['MthsPaid'];
+                $stmt .= '('.$memberId.', '.$orderId.', '.$cars[$i]['carId'].', '.$cars[$i]['MthsPaid'].')';
                 if($i < $numOfCars - 1) {
                     $stmt .= ', ';
                 }
