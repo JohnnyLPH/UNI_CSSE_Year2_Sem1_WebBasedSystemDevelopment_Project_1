@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 16, 2022 at 08:42 AM
+-- Generation Time: Jan 17, 2022 at 02:12 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -40,7 +40,7 @@ CREATE TABLE `admins` (
 
 INSERT INTO `admins` (`id`, `adminName`, `adminPassword`, `lastLogin`) VALUES
 (1, 'admin', '$2y$10$YVeg46P7ezx1SQB8TcrFBexLFiQ6P7pxxTejduyk0d9jxRl6.7VPK', '2022-01-13 15:39:45'),
-(2, 'LPH', '$2y$10$yct3q9I2MQtR0d6PcGuo3uqXcclzX.rWufQoPyPNAqMp/N559fWli', '2022-01-16 07:30:30'),
+(2, 'LPH', '$2y$10$yct3q9I2MQtR0d6PcGuo3uqXcclzX.rWufQoPyPNAqMp/N559fWli', '2022-01-16 12:33:58'),
 (9, 'Yuki', '$2y$10$imUkUkgDE2Tw7/LvblSa6eh7NimHKQJPXqsuMBZyfBoQeQP0EjLDi', '2022-01-13 13:47:45'),
 (10, 'James', '$2y$10$L83B22yVT0qUuHojH7yc0.nQ1EpoUnSChAPXo/6qL40eeaEirLEOe', '2022-01-13 12:59:15'),
 (16, 'anotherAdmin', '$2y$10$EFo/GGgKKW9nugzBLQbUVuBdK0Br5diKBBSGBIj8TgfYIBUt7E81K', NULL),
@@ -146,7 +146,7 @@ INSERT INTO `memberlog` (`id`, `memberId`, `loginDate`, `logoutDate`, `duration`
 (3, 2, '2021-12-28 21:55:48', '2021-12-28 21:56:16', 28),
 (5, 5, '2021-12-28 21:49:24', '2021-12-28 21:51:14', 110),
 (6, 6, '2021-12-28 21:54:23', '2021-12-28 21:54:41', 18),
-(7, 11, '2022-01-14 11:11:14', '2022-01-14 11:16:59', 345);
+(7, 11, '2022-01-16 11:01:08', '2022-01-16 11:06:08', 300);
 
 -- --------------------------------------------------------
 
@@ -225,7 +225,7 @@ INSERT INTO `orders` (`id`, `memberId`, `stages`, `editable`, `type`, `fullName`
 CREATE TABLE `transactions` (
   `id` int(11) NOT NULL,
   `memberId` int(11) NOT NULL,
-  `carId` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`carId`)),
+  `leasedCars` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '[]' CHECK (json_valid(`leasedCars`)),
   `orderId` int(11) NOT NULL,
   `transactionDate` datetime NOT NULL DEFAULT current_timestamp(),
   `creditCard` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}',
@@ -236,7 +236,7 @@ CREATE TABLE `transactions` (
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`id`, `memberId`, `carId`, `orderId`, `transactionDate`, `creditCard`, `amount`) VALUES
+INSERT INTO `transactions` (`id`, `memberId`, `leasedCars`, `orderId`, `transactionDate`, `creditCard`, `amount`) VALUES
 (1, 1, '{\"2\": 1, \"6\": 1}', 1, '2021-09-10 10:13:11', '{\"cardNo\":\"1234123412341234\", \"paymentAmount\":\"2052\"}', 2052),
 (2, 3, '{\"4\": 1, \"9\": 1}', 2, '2022-01-14 13:50:25', '{}', 3099),
 (5, 11, '{\"9\":2,\"19\":3}', 5, '2022-01-16 13:17:40', '{\"name\":\"Dwayne Johnson\",\"number\":\"12345678\",\"expiry\":\"12\\/23\",\"cvv\":3432}', 10);
@@ -345,7 +345,7 @@ ALTER TABLE `transactions`
 -- Constraints for table `cars`
 --
 ALTER TABLE `cars`
-  ADD CONSTRAINT `Car Brand` FOREIGN KEY (`brandId`) REFERENCES `cars` (`id`);
+  ADD CONSTRAINT `Car Brand` FOREIGN KEY (`brandId`) REFERENCES `brands` (`id`);
 
 --
 -- Constraints for table `memberlog`
