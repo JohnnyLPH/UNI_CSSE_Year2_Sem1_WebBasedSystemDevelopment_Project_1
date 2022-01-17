@@ -99,53 +99,10 @@
     </head>
 
     <body>
-        <header>
-            <p id="header_p1">
-                &#128678;<b>LINGsCARS.com</b>&#128678;
-            </p>
-            <p id="header_p2">
-                Leader of the Pack - The UK's favorite car leasing website!&#128168;&#128168;
-            </p>
-            
-        </header>
-
-        <nav class="fixed_nav_bar">
-            <input type="checkbox" id="car-list">
-            <ul>
-                <li>
-                    <a href="./index.php">Home</a>
-                </li>
-
-                <li class="dropdown_list">
-                    Profile
-                    <div class="dropdown_menu">
-                        <a href="./member/memberProfile.php">Manage Profile</a>
-                        <a href="./member/payment.php">Payment Details</a>
-                        <a href="/logoutPage.php">Log Out</a>
-                    </div>
-                </li>
-
-                <li>
-                    <a href="./member/">Member Dashboard</a>
-                </li>
-
-                <li>
-                    <a href="/about.html">About Ling</a>
-                </li>
-
-                <li>
-                    <a href="/cart.php" class="active">&#128305; <b>Cart</b> &#128305;</a>
-                </li>
-
-                <li >
-                    <a href="./member/orders.php">Order</a>
-                </li>
-
-                <li>
-                    <a href="/loginPage.php">Log In</a>
-                </li>
-            </ul>
-        </nav>
+<?php
+    include_once './templateHeaderFooter.php';
+    echo header_template;
+?>
 
         <main>
             <h1 style="text-align: center;">&#128722; <span style="display: inline-block;">SHOPPING CART</span> &#128722;</h1>

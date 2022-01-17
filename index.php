@@ -126,53 +126,10 @@
     </head>
 
     <body>
-        <header>
-            <p id="header_p1">
-                &#128678;<b>LINGsCARS.com</b>&#128678;
-            </p>
-            <p id="header_p2">
-                Leader of the Pack - The UK's favorite car leasing website!&#128168;&#128168;
-            </p>
-            
-        </header>
-
-        <nav class="fixed_nav_bar">
-            <input type="checkbox" id="car-list">
-            <ul>
-                <li>
-                    <a href="./index.php" class="active">&#127984; <b>Home</b> &#127984;</a>
-                </li>
-
-                <li class="dropdown_list">
-                    Profile
-                    <div class="dropdown_menu">
-                        <a href="./member/memberProfile.php">Manage Profile</a>
-                        <a href="./member/payment.php">Payment Details</a>
-                        <a href="/logoutPage.php">Log Out</a>
-                    </div>
-                </li>
-
-                <li>
-                    <a href="./member/">Dashboard</a>
-                </li>
-
-                <li>
-                    <a href="/about.html">About Ling</a>
-                </li>
-
-                <li>
-                    <a href="/cart.php">Cart</a>
-                </li>
-
-                <li>
-                    <a href="./member/orders.php">Order</a>
-                </li>
-
-                <li>
-                    <a href="/loginPage.php">Log In</a>
-                </li>
-            </ul>
-        </nav>
+<?php
+    include_once './templateHeaderFooter.php';
+    echo header_template;
+?>
         
         <main>
             <div class="video-container">

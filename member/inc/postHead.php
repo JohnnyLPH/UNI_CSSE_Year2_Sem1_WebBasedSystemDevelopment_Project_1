@@ -46,7 +46,7 @@ function printNavBar() {
             <li class="dropdown_list">
                 Help
                 <div class="dropdown_menu">
-                    <a href="../about.html">About Ling</a>
+                    <a href="../about.php">About Ling</a>
                 </div>
             </li>
         </ul>';
@@ -57,7 +57,7 @@ function printNavBar() {
             <li class="dropdown_list">
                 '.$memberFirstName.' ▼
                 <div class="dropdown_menu" style="right: 0;">
-                    <a href="./memberProfile.php">Profile</a>
+                    <a href="./memberProfile.php">My Profile</a>
                     <a href="./memberVerifyEmailForPassword.php">Change Account Password</a>
                     <a href="../logoutPage.php">Log Out</a>
                 </div>

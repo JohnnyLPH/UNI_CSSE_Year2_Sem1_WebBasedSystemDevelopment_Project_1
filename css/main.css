@@ -126,7 +126,7 @@ nav.fixed_nav_bar {
     /* height: 46px; */
     
     /* border:1px solid #264861; */
-
+    display: flex;
 }
 
 nav.fixed_nav_bar ul {
@@ -143,17 +143,7 @@ nav.fixed_nav_bar ul {
 nav.fixed_nav_bar li {
     /* float: left; */
     display: inline-block;
-    min-width: 11%;
     /* min-height: 18px; */
-}
-
-nav.fixed_nav_bar li:last-child {
-    float: right;
-    margin-right: 20px;
-    padding: 0px;
-    min-width: 11%;
-    min-height: 18px;
-    margin-top: 3px;
 }
 
 nav.fixed_nav_bar li a {

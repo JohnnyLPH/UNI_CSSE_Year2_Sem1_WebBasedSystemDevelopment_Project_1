@@ -1,4 +1,7 @@
 <?php 
+
+    $scriptName = basename($_SERVER['SCRIPT_NAME']);
+
     define('header_template','
         <header>
         <p id="header_p1">
@@ -9,39 +12,54 @@
         </p>
         </header>
         <nav class="fixed_nav_bar">
-            <input type="checkbox" id="car-list">
             <ul>
                 <li>
-                    <a href="./index.php" class="active">&#127984; <b>Home</b> &#127984;</a>
+                    <a href="./index.php"'.($scriptName === 'index.php' ? ' class="active">&#127984; <b>Home</b> &#127984;' : '>Home').'</a>
                 </li>
 
-                <li class="dropdown_list">
-                    Profile
+                '.(isset($_SESSION['memberId']) ? '
+                <li>
+                    <a href="/member/">Members Overview</a>
+                </li>
+
+                <li>
+                    <a href="/member/leasedCars.php">Leased Cars/Vans</a>
+                </li>
+            
+                <li>
+                    <a href="/member/orders.php">Proposal/Orders</a>
+                </li>' : '
+
+                <li>
+                    <a href="/member/">Members Dashboard</a>
+                </li>').'
+
+                <li>
+                    <a href="/cart.php"'.($scriptName === 'cart.php' ? ' class="active">&#128305; <b>Cart</b> &#128305;' : '>Cart').'</a>
+                </li>
+
+                <li class="dropdown_list'.($scriptName === 'about.php' ? ' active">&#128276; <b>Help</b>' : '">Help').'
                     <div class="dropdown_menu">
-                        <a href="#">Manage Profile</a>
-                        <a href="./member/payment.php">Payment Details</a>
+                        <a href="/about.php">About Ling</a>
+                    </div>
+                </li>
+            </ul>
+
+            '.(isset($_SESSION['memberId']) ? '
+            <ul>
+                <li class="dropdown_list">
+                    '.(isset($_SESSION['memberFirstName']) ? $_SESSION['memberFirstName'] : 'Member').' ▼
+                    <div class="dropdown_menu" style="right: 0;">
+                        <a href="/member/memberProfile.php">My Profile</a>
+                        <a href="/member/memberVerifyEmailForPassword.php">Change Account Password</a>
                         <a href="/logoutPage.php">Log Out</a>
                     </div>
                 </li>
-
-                <li>
-                    <a href="./about.html">About Ling</a>
-                </li>
-
-                <li>
-                    <a href="./cart.php">Cart</a>
-                </li>
-
-                <li>
-                    <a href="./member/orders.php">Order History</a>
-                </li>
-
-                <li>
-                    <a href="./loginPage.php" style="margin-top:3px;">Log In</a>
-                </li>
-            </ul>
-        </nav>   
-    ');
+            </ul>' : '
+                    <li>
+                        <a href="/loginPage.php">Log In</a>
+                    </li>').
+   '</nav>');
 
     define('footer_template','
             <footer>
