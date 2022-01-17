@@ -146,7 +146,7 @@
                     
                 </fieldset>
                 <fieldset>
-                    <!-- password -->
+                    <!-- OTP -->
                     <label for="OTPInput">Verified OTP</label>
                     <input type="text" name="OTPInput" id="OTPInput" >
                     <?php echo '<p class="warning-text'.(isset($OTPError) ? (NO_HIDDEN_WARNING_HTML.$OTPError) : (HIDDEN_WARNING_HTML.'Error')).'</p>'; ?>
