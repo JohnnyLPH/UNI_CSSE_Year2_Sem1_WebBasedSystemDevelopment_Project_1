@@ -436,7 +436,7 @@
                         ?>
 
                         <form method='get' action='<?php
-                            echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageVehicle.php");
+                            echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageTransaction.php");
                         ?>'>
                             <button>Return Previous Page</button>
                         </form>
@@ -507,7 +507,14 @@
                                                             $arrJson = json_decode($record["leasedCars"], true);
 
                                                             foreach ($arrJson as $key=>$value) {
-                                                                echo("<a href='/admin/manageVehicle.php?manage-mode=view-car&car-id=$key'>\"$key\"</a> x $value<br>");
+                                                                echo("<a href='/admin/manageOrder.php?manage-mode=view-leased-car&leased-car-id=$key'>\"$key\"</a>");
+                                                                
+                                                                if (is_array($value)) {
+                                                                    echo(" = " . json_encode($value) . "<br>");
+                                                                }
+                                                                else {
+                                                                    echo(" = " . $value . "<br>");
+                                                                }
                                                             }
                                                         }
                                                         else {
@@ -627,7 +634,7 @@
                                     ?>
 
                                     <form method='get' action='<?php
-                                        echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageVehicle.php");
+                                        echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageTransaction.php");
                                     ?>'>
                                         <button>Return Previous Page</button>
                                     </form>
@@ -920,9 +927,23 @@
                                             <?php
                                                 if (isset($transac["leasedCars"])) {
                                                     $arrJson = json_decode($transac["leasedCars"], true);
+                                                    $firstKey = true;
+                                                    $keyCount = 0;
 
                                                     foreach ($arrJson as $key=>$value) {
-                                                        echo("\"". $key . "\" x " . $value . "<br>");
+                                                        if ($firstKey) {
+                                                            $firstKey = false;
+                                                            echo("\"". $key . "\"");
+                                                        }
+                                                        else {
+                                                            if (($keyCount % 5) == 0) {
+                                                                echo(",<br>\"". $key . "\"");
+                                                            }
+                                                            else {
+                                                                echo(", \"". $key . "\"");
+                                                            }
+                                                        }
+                                                        $keyCount++;
                                                     }
                                                 }
                                                 else {

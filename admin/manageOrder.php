@@ -50,6 +50,9 @@
 
     $editOrderMsg = "";
     $allowEditOrder = false;
+
+    $viewLeasedCarMsg = "";
+    $allowViewLeasedCar = false;
     
     if (!empty($manageMode)) {
         // Search Order
@@ -175,6 +178,27 @@
             }
 
         }
+        // View Leased Car
+        else if ($manageMode == "view-leased-car") {
+            $leasedCarId = (isset($queryString['leased-car-id'])) ? testInput($queryString['leased-car-id']): "";
+            
+            // Check if the leased car is allowed to be viewed.
+            if (!empty($leasedCarId) && is_numeric($leasedCarId)) {
+                $query = "SELECT id FROM leasedCars WHERE id=$leasedCarId;";
+                $rs = mysqli_query($serverConnect, $query);
+
+                if ($rs) {
+                    if ($record = mysqli_fetch_assoc($rs)) {
+                        // Allow to view.
+                        $allowViewLeasedCar = true;
+                    }
+                }
+            }
+
+            if (!$allowViewLeasedCar) {
+                $viewLeasedCarMsg = "* You are not allowed to view this Leased Car!";
+            }
+        }
         // Invalid Mode
         else {
             $manageMode = "";
@@ -251,7 +275,7 @@
 
                         <?php if ($allowViewOrder): ?>
                             <?php
-                                $query = "SELECT orders.id, orders.memberId, orders.stages, orders.editable, orders.type, orders.fullName, orders.carsId, orders.personal, orders.residentialAddress, orders.job, orders.company, orders.bank, orders.preferredDelivery, orders.orderStatus, orders.orderStatusMessage, orders.proposalDate, orders.reviewDate, orders.confirmDate
+                                $query = "SELECT orders.id, orders.memberId, orders.stages, orders.editable, orders.type, orders.fullName, orders.carsId, orders.leasedCarsId, orders.personal, orders.residentialAddress, orders.job, orders.company, orders.bank, orders.preferredDelivery, orders.orderStatus, orders.orderStatusMessage, orders.proposalDate, orders.reviewDate, orders.confirmDate
                                 FROM orders
                                 WHERE orders.id=$orderId;";
 
@@ -373,6 +397,31 @@
 
                                                             foreach ($arrJson as $key=>$value) {
                                                                 echo("<a href='/admin/manageVehicle.php?manage-mode=view-car&car-id=$key'>\"$key\"</a> x $value<br>");
+                                                            }
+                                                        }
+                                                        else {
+                                                            echo("-");
+                                                        }
+                                                    ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Leased Car ID</td>
+                                                <td>
+                                                    <?php
+                                                        if (isset($record["leasedCarsId"])) {
+                                                            $arrJson = json_decode($record["leasedCarsId"], true);
+
+                                                            foreach ($arrJson as $key=>$value) {
+                                                                echo("<a href='/admin/manageOrder.php?manage-mode=view-leased-car&leased-car-id=$key'>\"$key\"</a> =");
+                                                                
+                                                                if (is_array($value)) {
+                                                                    echo(" " . json_encode($value) . "<br>");
+                                                                }
+                                                                else {
+                                                                    echo(" $value<br>");
+                                                                }
                                                             }
                                                         }
                                                         else {
@@ -607,7 +656,7 @@
                                     ?>
 
                                     <form method='get' action='<?php
-                                        echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageVehicle.php");
+                                        echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageOrder.php");
                                     ?>'>
                                         <button>Return Previous Page</button>
                                     </form>
@@ -650,25 +699,25 @@
 
                                     <select id="order-status" name="order-status">
                                         <option value="none"<?php
-                                            if ($orderStatus != 1 && $orderStatus != 0 && $orderStatus != 6) {
+                                            if ($orderStatus != '1' && $orderStatus != '0' && $orderStatus != '6') {
                                                 echo(" selected");
                                             }
                                         ?>>-Select Status-</option>
 
                                         <option value="6"<?php
-                                            if ($orderStatus == 6) {
+                                            if ($orderStatus == '6') {
                                                 echo(" selected");
                                             }
                                         ?>>Approve</option>
 
                                         <option value="0"<?php
-                                            if ($orderStatus == 0) {
+                                            if ($orderStatus == '0') {
                                                 echo(" selected");
                                             }
                                         ?>>Ineligible</option>
 
                                         <option value="1"<?php
-                                            if ($orderStatus == 1) {
+                                            if ($orderStatus == '1') {
                                                 echo(" selected");
                                             }
                                         ?>>Need Changes</option>
@@ -711,6 +760,149 @@
                                 </button>
                             </div>
                         <?php endif; ?>
+                    <!-- View Leased Car -->
+                    <?php elseif ($manageMode == "view-leased-car"): ?>
+                        <h3>View <i>Leased Car ID <?php
+                            echo((isset($leasedCarId)) ? testInput($leasedCarId): "");
+                        ?></i>:</h3>
+
+                        <?php if (isset($viewLeasedCarMsg) && !empty($viewLeasedCarMsg)): ?>
+                            <?php if (!$allowViewLeasedCar): ?>
+                                <span class='error-message'>
+                                    <?php echo($viewLeasedCarMsg); ?>
+                                </span>
+                            <?php endif; ?>
+                        <?php endif; ?>
+
+                        <?php if ($allowViewLeasedCar): ?>
+                            <?php
+                                $query = "SELECT leasedCars.id, leasedCars.memberId, leasedCars.orderId, leasedCars.carId, leasedCars.paymentMthsCompleted, leasedCars.status, leasedCars.statusMessage, leasedCars.leaseDate, leasedCars.returnDate
+                                FROM leasedCars
+                                WHERE leasedCars.id=$leasedCarId;";
+
+                                $rs = mysqli_query($serverConnect, $query);
+                            ?>
+
+                            <?php if ($rs): ?>
+                                <?php if ($record = mysqli_fetch_assoc($rs)): ?>
+                                    <div class='view-content'>
+                                        <table>
+                                            <tr>
+                                                <td>Leased Car ID</td>
+                                                <td>
+                                                    <?php echo((isset($record["id"])) ? $record["id"]: "-"); ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Member ID</td>
+                                                <td>
+                                                    <form method='get' action='/admin/manageMember.php'>
+                                                        <input type='hidden' name='manage-mode' value='view-member'>
+                                                        <input type='hidden' name='member-id' value='<?php
+                                                            echo((isset($record["memberId"])) ? $record["memberId"]: "");
+                                                        ?>'>
+
+                                                        <button><?php
+                                                            echo((isset($record["memberId"])) ? $record["memberId"]: "-");
+                                                        ?></button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Order ID</td>
+                                                <td>
+                                                    <form method='get' action='/admin/manageOrder.php'>
+                                                        <input type='hidden' name='manage-mode' value='view-order'>
+                                                        <input type='hidden' name='order-id' value='<?php
+                                                            echo((isset($record["orderId"])) ? $record["orderId"]: "");
+                                                        ?>'>
+
+                                                        <button><?php
+                                                            echo((isset($record["orderId"])) ? $record["orderId"]: "-");
+                                                        ?></button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Car ID</td>
+                                                <td>
+                                                    <form method='get' action='/admin/manageVehicle.php'>
+                                                        <input type='hidden' name='manage-mode' value='view-car'>
+                                                        <input type='hidden' name='car-id' value='<?php
+                                                            echo((isset($record["carId"])) ? $record["carId"]: "");
+                                                        ?>'>
+
+                                                        <button><?php
+                                                            echo((isset($record["carId"])) ? $record["carId"]: "-");
+                                                        ?></button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            
+                                            <tr>
+                                                <td>Months Paid</td>
+                                                <td>
+                                                    <?php echo((isset($record["paymentMthsCompleted"])) ? $record["paymentMthsCompleted"]: "-"); ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Lease Status</td>
+                                                <td>
+                                                    <?php
+                                                        $allLeaseStatus = array(
+                                                            'Cancelled or Returned.',
+                                                            'To be Delivered.',
+                                                            'Leased.',
+                                                            'Under Maintenance.'
+                                                        );
+
+                                                        echo((isset($record["status"]) && isset($allLeaseStatus[$record["status"]])) ? $allLeaseStatus[$record["status"]]: "-");
+                                                    ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Lease Status Message</td>
+                                                <td class='multiline-text'><?php
+                                                    echo((isset($record["statusMessage"])) ? $record["statusMessage"]: "-");
+                                                ?></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Lease Date</td>
+                                                <td>
+                                                    <?php echo((isset($record["leaseDate"])) ? $record["leaseDate"]: "-"); ?>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Return Date</td>
+                                                <td>
+                                                    <?php echo((isset($record["returnDate"])) ? $record["returnDate"]: "-"); ?>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <?php
+                                        $lastPage = "javascript:history.go(-1)";
+                                        if (isset($_SERVER['HTTP_REFERER'])) {
+                                            $lastPage = $_SERVER['HTTP_REFERER'];
+                                        }
+                                    ?>
+
+                                    <form method='get' action='<?php
+                                        echo((isset($lastPage) && !empty($lastPage)) ? $lastPage: "/admin/manageOrder.php");
+                                    ?>'>
+                                        <button>Return Previous Page</button>
+                                    </form>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        <?php endif; ?>
                     <?php endif; ?>
                 <?php endif; ?>
                 
@@ -719,7 +911,8 @@
                     $passChecking ||
                     (isset($manageMode) && $manageMode == "search-order") ||
                     (isset($manageMode) && $manageMode == "view-order" && !$allowViewOrder) ||
-                    (isset($manageMode) && $manageMode == "edit-order" && !$allowEditOrder)
+                    (isset($manageMode) && $manageMode == "edit-order" && !$allowEditOrder) ||
+                    (isset($manageMode) && $manageMode == "view-leased-car" && !$allowViewLeasedCar)
                 ): ?>
                     <form id='cancel-search-form' method='get' action='/admin/manageOrder.php'></form>
 
@@ -964,11 +1157,11 @@
                                         $query .= " orders.confirmDate DESC";
                                     }
                                     else {
-                                        $query .= " CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 5 THEN 2 WHEN orders.orderStatus > 3 THEN 3 ELSE 4 END";
+                                        $query .= " CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 6 THEN 2 WHEN orders.orderStatus > 3 THEN 3 ELSE 4 END";
                                     }
                                 }
                                 else {
-                                    $query .= " CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 5 THEN 2 WHEN orders.orderStatus > 3 THEN 3 ELSE 4 END";
+                                    $query .= " CASE WHEN orders.orderStatus=5 THEN 1 WHEN orders.orderStatus > 6 THEN 2 WHEN orders.orderStatus > 3 THEN 3 ELSE 4 END";
                                 }
                                 $query .= " LIMIT 25;";
                                 
