@@ -2,14 +2,14 @@
     require_once './inc/dbConnection.php';
 
     function printHeader() {
-        global $requestedStage;
+        global $requestedStage, $payment;
         include_once './inc/preHead.php';
         echo
         '
     <link rel="stylesheet" href="./css/form.css">
     <script src="./js/formValidation.js" defer></script>';
     
-        if($requestedStage && $requestedStage === 1) {
+        if(($requestedStage && $requestedStage === 1) || isset($payment)) {
             echo '<link rel="stylesheet" href="./css/table.css">';
         }
         include_once './inc/postHead.php';
@@ -98,6 +98,13 @@
         }
         $input = ucwords(strtolower(trimExtraSpaces($input)));
         $JSON[$key] = $input;
+    }
+
+    function showProposalNotFoundError() {
+        global $orderId;
+        printHeader();
+        printNavBar();
+        showError('404 Error: Proposal Not Found or Cancelled', 'Your account does not have proposal ID '.$orderId.' or it has been cancelled.');
     }
 
     define('HTML_HIDE_WARNING', ' hidden">');

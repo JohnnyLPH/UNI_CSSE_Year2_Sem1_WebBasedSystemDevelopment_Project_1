@@ -7,9 +7,10 @@
             if($cars) {
                 $carsResult = getMultipleCars(array_keys($cars));
                 if($carsResult) {
-                    while ($carRow = mysqli_fetch_assoc($carsResult)) {
+                    foreach($carsResult as &$carRow) {
                         $htmlCars.= $carRow['carModel'].' x'.$cars[$carRow['id']].'<br>';
                     }
+                    unset($carRow);
                 }
             }
         }

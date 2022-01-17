@@ -86,4 +86,12 @@
             <h2>'.$message.'</h2>
         </div>';
     }
+
+    function reformatDate(&$datetime) {
+        if($datetime) {
+            $datetime = date_format(date_create($datetime), 'j M y');
+        } else {
+            $datetime = '-';
+        }
+    }
 ?>

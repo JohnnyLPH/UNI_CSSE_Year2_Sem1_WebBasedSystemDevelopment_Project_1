@@ -9,7 +9,7 @@ table, th, td {
     border-collapse: collapse;
 }
 
-th, td {
+table th, table td {
     padding: 0.67rem;
 }
 

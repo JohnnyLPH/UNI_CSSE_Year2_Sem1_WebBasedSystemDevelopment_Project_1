@@ -1,6 +1,10 @@
 <?php
+
+    $payment = true;
+    
     include_once './inc/member.php';
     require_once './inc/formValidation.php';
+    require_once './inc/payment.php';
 
     function printFormHeader1() {
         echo
@@ -9,18 +13,21 @@
             <img src="./img/car-dealer.png" style="display: inline-block; max-height:80px; vertical-align:middle;"><h1 style="display:inline-block;">Car Proposal</h1>
         </div>';
      
-        printProgressLine(array(array('Car Proposal', COMPLETED_STAGE), array('Wait for Review', COMPLETED_STAGE), array('Confirmation', CURRENT_STAGE), array('Delivery', INCOMPLETE_STAGE)));
+        printProgressLine(array(array('Car Proposal', COMPLETED_STAGE), array('Wait for Approval', COMPLETED_STAGE), array('Confirmation', CURRENT_STAGE), array('Delivery', INCOMPLETE_STAGE)));
     }
 
     function printFormHeader2() {
-        global $orderId;
+        global $orderId, $leaseIdsOrCars, $orderStatus;
         echo '<h2 style="text-align:center;">Payment</h2>';
+
+        echo getHTMLPaymentTableAndLeasedCars($leaseIdsOrCars, $orderStatus == 6 ? CAR_ID : LEASE_ID);
+        
         printHTMLFormHeader(basename($_SERVER['SCRIPT_NAME']).'?orderId='.$orderId);       
     }
 
-    function validateCars() {
-        global $cars, $orderId;
-        if(!$cars) {
+    function validateCars($leaseIdsOrCars) {
+        global $orderId;
+        if(!$leaseIdsOrCars) {
             printHeader();
             printNavBar();
             showError('500 Error: No cars in order ID '.$orderId, 'Please try again or contact support.');
@@ -35,12 +42,43 @@
         showError('405 Error: Missing Proposal / Order ID in URL', 'Please try again or contact support.');
         die();
     }
-    
-    $cars = getOrderCol('carsId');
-    validateCars();
-    $cars = json_decode($cars['carsId'], true);
-    validateCars();
 
+    if(!$post && !$memberId) {
+        $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
+        redirect(RELATIVE_LOGIN_URL);
+    }
+       
+    $result = getOrderCol('carsId, leasedCarsId');    
+    if(!$result) {
+        showProposalNotFoundError();
+        die;
+    }
+
+    $orderStatus = $result['orderStatus'] ?? '';
+
+    if($orderStatus == 6) {
+        // get cars with quantity
+        $leaseIdsOrCars = $result['carsId'];
+    } else if($orderStatus == 7) {
+        // get lease Ids
+        $leaseIdsOrCars = $result['leasedCarsId'];
+    } else {  
+        printHeader();
+        printNavBar();
+        showError('500 Error: Payment Ineligible for this Proposal/Order', 'Please try again or contact support.');
+        die();
+    }
+
+    $leaseIdsOrCars = json_decode($leaseIdsOrCars, true);  
+    validateCars($leaseIdsOrCars);
+
+    if ($orderStatus == 7) {
+        foreach($leaseIdsOrCars as $leaseId => $carId) {
+            $leaseIdsOrCars[$leaseId] = array('carId' => $carId, 'MthsPaid' => 1);
+        }
+        unset($leaseId, $carId);
+    }
+    
     if($post) {
         $name = $_POST['name'] ?? '';
         $number = $_POST['number'] ?? '';
@@ -51,10 +89,14 @@
         $number = '';
         $expiry = '';
         $cvv = '';
-
+        
         printHeader();
         printNavBar();
-        printFormHeader1();
+        if($orderStatus == 6) {
+            printFormHeader1();
+        } else {
+            echo '<main>';
+        }
         printFormHeader2();
     }
     
@@ -90,7 +132,6 @@
         }
 
         if($post) {
-            $amount = 10;
             if(!$memberId) {
                 // session expired
                 showSessionExpiredError();
@@ -98,7 +139,18 @@
             } else if(empty($inputError)) {
                 // all inputs valid, save to database
                 if(orderExists()) {
-                    $transactionId = newTrans($cars, $creditCard, $amount);
+                    $leasedCars;
+                    getHTMLPaymentTableAndLeasedCars($leaseIdsOrCars, $orderStatus == 6 ? CAR_ID : LEASE_ID, $leasedCars);
+                    $grandTotal = $leasedCars['total'];
+                    unset($leasedCars['total']);
+                    if($orderStatus == 6) {
+                        $leasedCars = confirmOrder($orderId, $leasedCars);
+                    } else if($orderStatus == 7) {
+                        $leasedCars = $leaseIdsOrCars;
+                        payExistingOrder($orderId, $leasedCars);
+                    }
+                    $htmlPaymentTable = getHTMLPaymentTableAndLeasedCars($leasedCars, LEASE_ID);
+                    $transactionId = newTrans($leasedCars, $creditCard, $grandTotal);
                     if(!$transactionId) {
                         printHeader();
                         printNavBar();
@@ -108,9 +160,11 @@
 
                     require_once './receipt.php';
 
-                    require_once '../sendEmail.php';
+                    require_once '../mail/Exception.php';
+                    require_once '../mail/PHPMailer.php';
+                    require_once '../mail/SMTP.php';
                     $email = getMemberEmail();
-                    $receiptHTML = getHTMLReceipt();
+                    $receiptHTML = getHTMLReceipt($htmlPaymentTable);
 
                     if(!$receiptHTML) {
                         printHeader();
@@ -154,7 +208,11 @@
                 // 1 or more invalid inputs, show warning
                 printHeader();
                 printNavBar();
-                printFormHeader1();
+                if($orderStatus == 6) {
+                    printFormHeader1();
+                } else {
+                    echo '<main>';
+                }
                 printFormHeader2();
                 echo HTML_WARNING_BANNER;
             }
@@ -212,4 +270,6 @@
         </form>
         <div>Attribution: Some icons made by <a href="https://www.flaticon.com/authors/monkik" target="_blank" rel="noopener noreferrer" title="monkik">monkik</a>, <a href="https://www.flaticon.com/authors/srip" target="_blank" rel="noopener noreferrer" title="srip">srip</a>, <a href="https://www.freepik.com" target="_blank" rel="noopener noreferrer" title="Freepik">Freepik</a> and <a href="https://www.flaticon.com/authors/smashicons" target="_blank" rel="noopener noreferrer" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" target="_blank" rel="noopener noreferrer" title="Flaticon">www.flaticon.com</a></div>
     </main>';
+
+    echo HTML_FOOTER;
 ?>
