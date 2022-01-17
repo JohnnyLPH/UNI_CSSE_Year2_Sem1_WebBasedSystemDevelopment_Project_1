@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 4.9.5
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jan 17, 2022 at 02:12 AM
--- Server version: 10.4.21-MariaDB
--- PHP Version: 8.0.12
+-- Host: localhost:3306
+-- Generation Time: Jan 17, 2022 at 01:58 PM
+-- Server version: 10.5.12-MariaDB
+-- PHP Version: 7.3.32
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -39,9 +40,9 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `adminName`, `adminPassword`, `lastLogin`) VALUES
-(1, 'admin', '$2y$10$YVeg46P7ezx1SQB8TcrFBexLFiQ6P7pxxTejduyk0d9jxRl6.7VPK', '2022-01-13 15:39:45'),
-(2, 'LPH', '$2y$10$yct3q9I2MQtR0d6PcGuo3uqXcclzX.rWufQoPyPNAqMp/N559fWli', '2022-01-16 12:33:58'),
-(9, 'Yuki', '$2y$10$imUkUkgDE2Tw7/LvblSa6eh7NimHKQJPXqsuMBZyfBoQeQP0EjLDi', '2022-01-13 13:47:45'),
+(1, 'admin', '$2y$10$YVeg46P7ezx1SQB8TcrFBexLFiQ6P7pxxTejduyk0d9jxRl6.7VPK', '2022-01-16 09:07:07'),
+(2, 'LPH', '$2y$10$VZr8bW7ALTsfMTT7d4cvpuaMhEJG74NiuihY92II4aOHlY64wN6qC', '2022-01-17 13:37:19'),
+(9, 'Yuki', '$2y$10$1If4/Vcdi/gmNCK3Gf4y/eEzx6Y0Gj2l3uOxYhczXcW5A4qGEhcJe', '2022-01-17 13:40:03'),
 (10, 'James', '$2y$10$L83B22yVT0qUuHojH7yc0.nQ1EpoUnSChAPXo/6qL40eeaEirLEOe', '2022-01-13 12:59:15'),
 (16, 'anotherAdmin', '$2y$10$EFo/GGgKKW9nugzBLQbUVuBdK0Br5diKBBSGBIj8TgfYIBUt7E81K', NULL),
 (21, 'WBSD', '$2y$10$EFo/GGgKKW9nugzBLQbUVuBdK0Br5diKBBSGBIj8TgfYIBUt7E81K', NULL),
@@ -126,6 +127,32 @@ INSERT INTO `cars` (`id`, `brandId`, `carModel`, `monthPrice`, `leaseTime`, `ini
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `leasedCars`
+--
+
+CREATE TABLE `leasedCars` (
+  `id` int(11) NOT NULL,
+  `memberId` int(11) NOT NULL,
+  `orderId` int(11) NOT NULL,
+  `carId` int(11) NOT NULL,
+  `paymentMthsCompleted` int(11) NOT NULL DEFAULT 0,
+  `status` int(11) NOT NULL DEFAULT 1,
+  `statusMessage` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `leaseDate` datetime NOT NULL DEFAULT current_timestamp(),
+  `returnDate` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `leasedCars`
+--
+
+INSERT INTO `leasedCars` (`id`, `memberId`, `orderId`, `carId`, `paymentMthsCompleted`, `status`, `statusMessage`, `leaseDate`, `returnDate`) VALUES
+(1, 18, 5, 9, 9, 1, NULL, '2022-01-17 13:38:52', NULL),
+(2, 18, 5, 7, 9, 1, NULL, '2022-01-17 13:38:52', NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `memberlog`
 --
 
@@ -142,11 +169,11 @@ CREATE TABLE `memberlog` (
 --
 
 INSERT INTO `memberlog` (`id`, `memberId`, `loginDate`, `logoutDate`, `duration`) VALUES
-(1, 1, '2021-12-28 21:54:56', '2021-12-28 21:55:36', 40),
-(3, 2, '2021-12-28 21:55:48', '2021-12-28 21:56:16', 28),
-(5, 5, '2021-12-28 21:49:24', '2021-12-28 21:51:14', 110),
-(6, 6, '2021-12-28 21:54:23', '2021-12-28 21:54:41', 18),
-(7, 11, '2022-01-16 11:01:08', '2022-01-16 11:06:08', 300);
+(7, 12, '2022-01-14 14:09:17', '2022-01-14 14:14:17', 300),
+(8, 16, '2022-01-15 07:42:17', '2022-01-15 07:50:09', 472),
+(9, 17, '2022-01-17 13:25:20', '2022-01-17 13:30:20', 300),
+(12, 14, '2022-01-17 09:51:15', '2022-01-17 09:56:15', 300),
+(13, 18, '2022-01-17 13:38:24', '2022-01-17 13:43:24', 300);
 
 -- --------------------------------------------------------
 
@@ -173,13 +200,13 @@ CREATE TABLE `members` (
 --
 
 INSERT INTO `members` (`id`, `firstName`, `lastName`, `email`, `countryCode`, `phone`, `password`, `gender`, `state`, `registerDate`, `dob`) VALUES
-(1, 'Pikk Heang', 'Lau', '75359@siswa.unimas.my', '+44', '168966984', 'aB#123', '1', 'Some UK State', '2021-09-04 11:35:52', NULL),
-(2, 'Pei Ying', 'Chung', '77237@siswa.unimas.my', '+44', '109628509', '#Ba123', '2', 'Some State in UK', '2022-01-04 11:35:52', NULL),
-(5, 'Nice', 'Ara', 'asnice@email.com', '+44', '147397412', 'aB#123', '1', 'County', '2022-01-04 11:35:52', NULL),
-(6, 'Dwayne', 'Johnson', 'dj@email.com', '+44', '166668866', 'aB#123', '1', 'County', '2022-01-04 11:35:52', NULL),
-(9, 'Dave', 'Jobs', 'daveJ@email.com', '+44', '169283926', 'aB#123', '1', 'Some UK State', '2022-01-10 15:36:38', NULL),
-(10, 'First', 'Last', 'firstAndLast@email.com', '+44', '1298371923', '', '1', NULL, '2022-01-13 13:35:08', NULL),
-(11, 'Dwayne', 'Johnson', 'johnnyl516@hotmail.com', '+44', '123456789', '$2y$10$Tp/Yponpiutay8NJGYTuBOginQZ66vcq4ojKDYrkf7o5ukUoZNziK', '1', 'UK-01', '2022-01-14 19:10:56', '0001-01-01');
+(12, 'Yuki', 'Chung', 'yuki@email.com', '+44', '1234512345', '$2y$10$KQeZ04rqq7u0epVDqBQV5Ov0E9PrJdUxt5.hceBl508rGQsvp2JWO', '2', 'UK-04', '2022-01-14 12:27:51', '2000-08-01'),
+(13, 'Leong', 'Weehong', '75405@siswa.unimas.my', '+44', '123456789', '$2y$10$HbZUhAnY8tofY01wU9gAnOoypIa5EzdnqxEc3FNmBtaEpRreajz5q', '1', 'UK-01', '2022-01-15 06:23:54', '2021-12-10'),
+(14, 'Leong', 'Weehong', 'lweehong99@gmail.com', '+44', '123456789', '$2y$10$9OasH9rZ4PFGJHUp8HbrG.A87HmCvB1lYb8byFx3awwUir4HVvRcy', '1', 'UK-03', '2022-01-15 06:26:42', '2021-12-30'),
+(15, 'Leong', 'Weehong', 'jzleong@outlook.com', '+44', '123456789', '$2y$10$Zf.jAAFAdKrWRcVKXaazEek2EP3Qv2PUGTn2CS2i1gvJ20Dz8B2hm', '1', 'UK-02', '2022-01-15 06:42:01', '2022-01-06'),
+(16, 'Johnny', 'Lau', 'johnnyl516@hotmail.com', '+44', '123456789', '$2y$10$aMYmfhK8t72bISIuYWHazePVlR.quqJxlR81DeuxlUwIyzPUHFxpu', '1', 'UK-01', '2022-01-15 07:42:02', '2000-05-16'),
+(17, 'Yuki', 'Chung', '77237@siswa.unimas.my', '+44', '111222333', '$2y$10$gayu6XkfwFcCh/hQI1zjgOBcNfKB4M6w8o/CYaBRRVdWSIzrIOkqi', '2', 'UK-02', '2022-01-15 08:38:07', '2021-08-08'),
+(18, 'Test', 'Last', '75359@siswa.unimas.my', '+44', '123412341', '$2y$10$GBgbEV1GKVzsGWRuzmN79uliZy/kDNzkaYLaZNUrZP.BH4rq/5Y9S', '1', 'UK-01', '2022-01-17 12:01:53', '0002-02-02');
 
 -- --------------------------------------------------------
 
@@ -195,6 +222,7 @@ CREATE TABLE `orders` (
   `type` tinyint(4) NOT NULL,
   `fullName` varchar(30) DEFAULT NULL,
   `carsId` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`carsId`)),
+  `leasedCarsId` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '{}' CHECK (json_valid(`leasedCarsId`)),
   `personal` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`personal`)),
   `residentialAddress` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`residentialAddress`)),
   `job` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`job`)),
@@ -212,9 +240,9 @@ CREATE TABLE `orders` (
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `memberId`, `stages`, `editable`, `type`, `fullName`, `carsId`, `personal`, `residentialAddress`, `job`, `company`, `bank`, `preferredDelivery`, `orderStatus`, `orderStatusMessage`, `proposalDate`, `reviewDate`, `confirmDate`) VALUES
-(1, 1, '{\"2\": 1, \"3\": 1, \"4\": 1, \"5\": 1, \"6\": 1}', 1, 1, 'John Doe', '{\"2\": 1, \"6\": 1}', '{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john@doe.com\",\"phone\":\"1234567890\",\"gender\":1,\"dob\":\"1999-01-15\"}', '{\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"status\":1,\"livedYrs\":1,\"livedMths\":3}', '{\"title\":\"Software Engineer\",\"salary\":10000,\"incomeDescription\":\"No additional bonus\",\"workedYrs\":3,\"workedMths\":6}', '{\"name\":\"Computer Solutions\",\"add1\":\"Senate House\",\"add2\":\"Malet St\",\"city\":\"London\",\"postcode\":\"WC1E7HU\",\"email\":\"director@cs.com\",\"telephone\":\"123456789\",\"description\":\"Create Software\",\"type\":3,\"regNum\":\"SC123456\",\"estYr\":2001}', '{\"bankName\":\"HSBC in Covent Garden\",\"add1\":\"16 King Street\",\"add2\":\"Covent Garden\",\"city\":\"London\",\"postcode\":\"WC2E8JF\",\"sortCode\":\"400409\",\"accountName\":\"John Doe\",\"accountNum\":\"31926819\",\"accountYr\":2020}', '2022-11-01', 1, 'You need to change something, I think?\r\nThat\'s it!', '2022-01-13 00:00:00', '2022-01-14 12:39:29', NULL),
-(5, 11, '{\"1\": 1, \"2\": 1, \"3\": 1, \"4\": 1, \"5\": 1, \"6\": 1}', 0, 1, NULL, '{\"9\":2,\"19\":3}', '{\"firstName\":\"Dwayne\",\"lastName\":\"Johnson\",\"email\":\"johnnyl516@hotmail.com\",\"phone\":\"123456789\",\"gender\":1,\"dob\":\"2000-05-16\"}', '{\"add1\":\"No 1234 Lot 1234\",\"add2\":\"Lrg 1234 1234\",\"city\":\"Idk\",\"postcode\":\"12345\",\"status\":4,\"livedYrs\":9,\"livedMths\":0}', '{\"title\":\"Professional F1 Racer\",\"salary\":90000,\"incomeDescription\":\"Not sure\",\"workedYrs\":false,\"workedMths\":false}', '{\"name\":\"Google\",\"add1\":\"Google Street\",\"add2\":\"Google Idk What\",\"city\":\"City Of Google Hq\",\"postcode\":\"12345\",\"email\":\"google@email.com\",\"telephone\":\"9991231239\",\"description\":\"Search yourself\"}', '{\"name\":\"Legit Bank\",\"add1\":\"Legit Bank Street\",\"add2\":\"Legit Bank Street 2\",\"city\":\"Bank Town\",\"postcode\":\"12345\",\"sortCode\":\"341269\",\"accountName\":\"Dwayne Johnson\",\"accountNum\":\"12344321\",\"accountYr\":1900}', '2022-12-01', 6, 'I allow you to lease the car!', '2022-01-16 13:12:54', '2022-01-16 05:14:42', NULL);
+INSERT INTO `orders` (`id`, `memberId`, `stages`, `editable`, `type`, `fullName`, `carsId`, `leasedCarsId`, `personal`, `residentialAddress`, `job`, `company`, `bank`, `preferredDelivery`, `orderStatus`, `orderStatusMessage`, `proposalDate`, `reviewDate`, `confirmDate`) VALUES
+(3, 17, '{\"1\":1}', 1, 2, NULL, '{\"9\":1,\"10\":1}', '{}', '{}', '{}', '{}', '{}', '{}', NULL, 4, NULL, NULL, NULL, NULL),
+(5, 18, '{\"1\": 1, \"2\": 1, \"3\": 1, \"4\": 1, \"5\": 1, \"6\": 1}', 0, 1, NULL, '{\"9\":1,\"7\":1}', '{\"1\":9,\"2\":7}', '{\"firstName\":\"First\",\"lastName\":\"Last\",\"email\":\"75359@siswa.unimas.my\",\"phone\":\"1213412341\",\"gender\":1,\"dob\":\"1946-02-02\"}', '{\"add1\":\"Address 1\",\"add2\":\"Address 2\",\"city\":\"The Town\",\"postcode\":\"12345\",\"status\":1,\"livedYrs\":9,\"livedMths\":0}', '{\"title\":\"Working At The Company\",\"salary\":99999,\"incomeDescription\":\"Nothing to say\",\"workedYrs\":9,\"workedMths\":false}', '{\"name\":\"Company\",\"add1\":\"C Address 1\",\"add2\":\"C Address 2\",\"city\":\"C Town\",\"postcode\":\"12341\",\"email\":\"cEmail@email.com\",\"telephone\":\"123412341\",\"description\":\"A company\"}', '{\"name\":\"Bank Name\",\"add1\":\"Bank A 1\",\"add2\":\"Bank A 2\",\"city\":\"Bank Town\",\"postcode\":\"34123\",\"sortCode\":\"123123\",\"accountName\":\"Test Name\",\"accountNum\":\"1234123\",\"accountYr\":2000}', '2022-12-01', 7, '', '2022-01-17 12:05:02', '2022-01-17 12:07:51', '2022-01-17 13:38:52');
 
 -- --------------------------------------------------------
 
@@ -225,11 +253,11 @@ INSERT INTO `orders` (`id`, `memberId`, `stages`, `editable`, `type`, `fullName`
 CREATE TABLE `transactions` (
   `id` int(11) NOT NULL,
   `memberId` int(11) NOT NULL,
-  `leasedCars` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '[]' CHECK (json_valid(`leasedCars`)),
+  `leasedCars` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`leasedCars`)),
   `orderId` int(11) NOT NULL,
   `transactionDate` datetime NOT NULL DEFAULT current_timestamp(),
   `creditCard` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}',
-  `amount` int(11) NOT NULL
+  `amount` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -237,9 +265,7 @@ CREATE TABLE `transactions` (
 --
 
 INSERT INTO `transactions` (`id`, `memberId`, `leasedCars`, `orderId`, `transactionDate`, `creditCard`, `amount`) VALUES
-(1, 1, '{\"2\": 1, \"6\": 1}', 1, '2021-09-10 10:13:11', '{\"cardNo\":\"1234123412341234\", \"paymentAmount\":\"2052\"}', 2052),
-(2, 3, '{\"4\": 1, \"9\": 1}', 2, '2022-01-14 13:50:25', '{}', 3099),
-(5, 11, '{\"9\":2,\"19\":3}', 5, '2022-01-16 13:17:40', '{\"name\":\"Dwayne Johnson\",\"number\":\"12345678\",\"expiry\":\"12\\/23\",\"cvv\":3432}', 10);
+(4, 18, '{\"1\":{\"carId\":9,\"MthsPaid\":\"9\"},\"2\":{\"carId\":7,\"MthsPaid\":\"9\"}}', 5, '2022-01-17 13:38:52', '{\"name\":\"Dwayne Johnson\",\"number\":\"12345123\",\"expiry\":\"12\\/30\",\"cvv\":1234}', 5265);
 
 --
 -- Indexes for dumped tables
@@ -266,6 +292,14 @@ ALTER TABLE `cars`
   ADD KEY `Car Brand` (`brandId`);
 
 --
+-- Indexes for table `leasedCars`
+--
+ALTER TABLE `leasedCars`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `memberId` (`memberId`),
+  ADD KEY `orderId` (`orderId`);
+
+--
 -- Indexes for table `memberlog`
 --
 ALTER TABLE `memberlog`
@@ -283,7 +317,7 @@ ALTER TABLE `members`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `orders_ibfk_1` (`memberId`);
+  ADD KEY `memberId` (`memberId`);
 
 --
 -- Indexes for table `transactions`
@@ -314,16 +348,22 @@ ALTER TABLE `cars`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
+-- AUTO_INCREMENT for table `leasedCars`
+--
+ALTER TABLE `leasedCars`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `memberlog`
 --
 ALTER TABLE `memberlog`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `members`
 --
 ALTER TABLE `members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -335,7 +375,7 @@ ALTER TABLE `orders`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -348,10 +388,23 @@ ALTER TABLE `cars`
   ADD CONSTRAINT `Car Brand` FOREIGN KEY (`brandId`) REFERENCES `brands` (`id`);
 
 --
+-- Constraints for table `leasedCars`
+--
+ALTER TABLE `leasedCars`
+  ADD CONSTRAINT `leasedCars_ibfk_1` FOREIGN KEY (`memberId`) REFERENCES `members` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `leasedCars_ibfk_2` FOREIGN KEY (`orderId`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `memberlog`
 --
 ALTER TABLE `memberlog`
   ADD CONSTRAINT `Member's Log` FOREIGN KEY (`memberId`) REFERENCES `members` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `orders`
+--
+ALTER TABLE `orders`
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`memberId`) REFERENCES `members` (`id`) ON DELETE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
