@@ -5,6 +5,7 @@
     session_start();
     $memberId = $_SESSION['memberId'] ?? '';
     if(!$memberId) {
+        $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
         redirect(RELATIVE_LOGIN_URL);
     }
     

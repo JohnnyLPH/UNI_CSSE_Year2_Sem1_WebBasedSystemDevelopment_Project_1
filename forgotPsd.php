@@ -26,8 +26,14 @@
                 }
             }
 
+            define('HIDDEN_WARNING_HTML', ' hidden">');
+            define('NO_HIDDEN_WARNING_HTML', '">');
+            define('HTML_WARNING_CLASS', ' class="warning"');
+
+
             $array_user = [];
             $verifiedEmail = "";
+            
             if($_SERVER["REQUEST_METHOD"] === "POST"){
                 //if getOTP
                 if(isset($_POST['getOTP']) && $_POST['getOTP'] === "Get Verified OTP"){
@@ -99,6 +105,8 @@
                             header('Location: '.getURIDirname().'/changePsd.php'); //getURIDirname() from assistanceTool.php
                             exit;
                         }
+                        $OTPError = 'Invalid OTP inputted! Please check back to your email again!';
+                        
                     }
                     //if no click the 'Get Verified OTP' button and directly click 'Submit' button
                     
@@ -133,14 +141,16 @@
                 <fieldset>
                     <!-- login email -->
                     <label for="verifiedPasswordEmail">User Email</label>
-                    <input type="email" name="verifiedPasswordEmail" id="verifiedPasswordEmail" value='<?php echo $verifiedEmail ?>'>
-                    <p class="warning-text hidden">Error</p>
+                    <?php echo '<input type="email" name="verifiedPasswordEmail" id="verifiedPasswordEmail" value="'.$verifiedEmail.'">
+                    <p class="warning-text'.(isset($emailError) ? (NO_HIDDEN_WARNING_HTML.$emailError) : (HIDDEN_WARNING_HTML.'Error')).'</p>';?>
+                    
                 </fieldset>
                 <fieldset>
-                    <!-- password -->
+                    <!-- OTP -->
                     <label for="OTPInput">Verified OTP</label>
                     <input type="text" name="OTPInput" id="OTPInput" >
-                    <p class="warning-text hidden">Error</p>
+                    <?php echo '<p class="warning-text'.(isset($OTPError) ? (NO_HIDDEN_WARNING_HTML.$OTPError) : (HIDDEN_WARNING_HTML.'Error')).'</p>'; ?>
+                    
                 </fieldset>
                 <fieldset>
                     <!-- submit -->

@@ -84,4 +84,12 @@
         return false;
     }
 
+    function checkIfLogin(){
+        if(isset($_SESSION["loggedIn"])){
+            return $_SESSION["loggedIn"];
+        }
+       
+        return false;
+    }
+
 ?>  

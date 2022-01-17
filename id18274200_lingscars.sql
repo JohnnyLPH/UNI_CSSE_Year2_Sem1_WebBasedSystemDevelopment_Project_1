@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 16, 2022 at 07:09 AM
+-- Generation Time: Jan 17, 2022 at 02:12 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.12
 
@@ -40,7 +40,7 @@ CREATE TABLE `admins` (
 
 INSERT INTO `admins` (`id`, `adminName`, `adminPassword`, `lastLogin`) VALUES
 (1, 'admin', '$2y$10$YVeg46P7ezx1SQB8TcrFBexLFiQ6P7pxxTejduyk0d9jxRl6.7VPK', '2022-01-13 15:39:45'),
-(2, 'LPH', '$2y$10$yct3q9I2MQtR0d6PcGuo3uqXcclzX.rWufQoPyPNAqMp/N559fWli', '2022-01-16 05:13:26'),
+(2, 'LPH', '$2y$10$yct3q9I2MQtR0d6PcGuo3uqXcclzX.rWufQoPyPNAqMp/N559fWli', '2022-01-16 12:33:58'),
 (9, 'Yuki', '$2y$10$imUkUkgDE2Tw7/LvblSa6eh7NimHKQJPXqsuMBZyfBoQeQP0EjLDi', '2022-01-13 13:47:45'),
 (10, 'James', '$2y$10$L83B22yVT0qUuHojH7yc0.nQ1EpoUnSChAPXo/6qL40eeaEirLEOe', '2022-01-13 12:59:15'),
 (16, 'anotherAdmin', '$2y$10$EFo/GGgKKW9nugzBLQbUVuBdK0Br5diKBBSGBIj8TgfYIBUt7E81K', NULL),
@@ -146,9 +146,7 @@ INSERT INTO `memberlog` (`id`, `memberId`, `loginDate`, `logoutDate`, `duration`
 (3, 2, '2021-12-28 21:55:48', '2021-12-28 21:56:16', 28),
 (5, 5, '2021-12-28 21:49:24', '2021-12-28 21:51:14', 110),
 (6, 6, '2021-12-28 21:54:23', '2021-12-28 21:54:41', 18),
-(7, 11, '2022-01-14 11:11:14', '2022-01-14 11:16:59', 345),
-(8, 11, '2022-01-15 08:33:32', '2022-01-15 08:38:32', 300),
-(9, 11, '2022-01-16 05:06:32', '2022-01-16 05:26:56', 1224);
+(7, 11, '2022-01-16 11:01:08', '2022-01-16 11:06:08', 300);
 
 -- --------------------------------------------------------
 
@@ -181,7 +179,7 @@ INSERT INTO `members` (`id`, `firstName`, `lastName`, `email`, `countryCode`, `p
 (6, 'Dwayne', 'Johnson', 'dj@email.com', '+44', '166668866', 'aB#123', '1', 'County', '2022-01-04 11:35:52', NULL),
 (9, 'Dave', 'Jobs', 'daveJ@email.com', '+44', '169283926', 'aB#123', '1', 'Some UK State', '2022-01-10 15:36:38', NULL),
 (10, 'First', 'Last', 'firstAndLast@email.com', '+44', '1298371923', '', '1', NULL, '2022-01-13 13:35:08', NULL),
-(11, 'Dwayne', 'Johnson', 'johnnyl516@hotmail.com', '+44', '123456789', '$2y$10$HCQJEOL4J.0Gq2MoMDLuIuSZ1xDleqjfN.grAZUmOpPFJp8uUktkO', '1', 'UK-01', '2022-01-14 19:10:56', '0001-01-01');
+(11, 'Dwayne', 'Johnson', 'johnnyl516@hotmail.com', '+44', '123456789', '$2y$10$Tp/Yponpiutay8NJGYTuBOginQZ66vcq4ojKDYrkf7o5ukUoZNziK', '1', 'UK-01', '2022-01-14 19:10:56', '0001-01-01');
 
 -- --------------------------------------------------------
 
@@ -227,7 +225,7 @@ INSERT INTO `orders` (`id`, `memberId`, `stages`, `editable`, `type`, `fullName`
 CREATE TABLE `transactions` (
   `id` int(11) NOT NULL,
   `memberId` int(11) NOT NULL,
-  `carId` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`carId`)),
+  `leasedCars` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '[]' CHECK (json_valid(`leasedCars`)),
   `orderId` int(11) NOT NULL,
   `transactionDate` datetime NOT NULL DEFAULT current_timestamp(),
   `creditCard` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}',
@@ -238,7 +236,7 @@ CREATE TABLE `transactions` (
 -- Dumping data for table `transactions`
 --
 
-INSERT INTO `transactions` (`id`, `memberId`, `carId`, `orderId`, `transactionDate`, `creditCard`, `amount`) VALUES
+INSERT INTO `transactions` (`id`, `memberId`, `leasedCars`, `orderId`, `transactionDate`, `creditCard`, `amount`) VALUES
 (1, 1, '{\"2\": 1, \"6\": 1}', 1, '2021-09-10 10:13:11', '{\"cardNo\":\"1234123412341234\", \"paymentAmount\":\"2052\"}', 2052),
 (2, 3, '{\"4\": 1, \"9\": 1}', 2, '2022-01-14 13:50:25', '{}', 3099),
 (5, 11, '{\"9\":2,\"19\":3}', 5, '2022-01-16 13:17:40', '{\"name\":\"Dwayne Johnson\",\"number\":\"12345678\",\"expiry\":\"12\\/23\",\"cvv\":3432}', 10);
@@ -319,7 +317,7 @@ ALTER TABLE `cars`
 -- AUTO_INCREMENT for table `memberlog`
 --
 ALTER TABLE `memberlog`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `members`
@@ -347,7 +345,7 @@ ALTER TABLE `transactions`
 -- Constraints for table `cars`
 --
 ALTER TABLE `cars`
-  ADD CONSTRAINT `Car Brand` FOREIGN KEY (`brandId`) REFERENCES `cars` (`id`);
+  ADD CONSTRAINT `Car Brand` FOREIGN KEY (`brandId`) REFERENCES `brands` (`id`);
 
 --
 -- Constraints for table `memberlog`

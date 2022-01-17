@@ -19,7 +19,9 @@
             $hadLogin = false;
 
 
-            if(checkIdleDuration()){
+            if(checkIfLogin()){
+                $member = new Members();
+                $member->updateCurrentLogoutDT();
                 $hadLogin = true;
                 if(isset($_SESSION["loggedIn"])){
                     unset($_SESSION["loggedIn"]);
@@ -33,7 +35,7 @@
                 if(isset($_SESSION["memberFirstName"])){
                     unset($_SESSION["memberFirstName"]);
                 }
-
+                
             }
             
 

@@ -107,6 +107,17 @@
                     $dayYTotalTransac = array();
                     $dayYTotalAmount = array();
 
+                    // Store total transaction and amount in a year (12 months).
+                    $yearTransacTotal = 0;
+                    $yearAmountTotal = 0;
+
+                    // Store total no. of registration from current month to (current - 11) month.
+                    // $monthXLabels = array();
+                    $monthYTotalRegister = array();
+
+                    // Store total registration in a year (12 months).
+                    $yearRegisterTotal = 0;
+
                     // Prepare for storing data.
                     $currentDate = strtotime(date("Y-m-d H:i:s"));
 
@@ -121,6 +132,8 @@
                         $monthYTotalTransac[$i] = $monthYTotalAmount[$i] = 0;
                         $weekYTotalTransac[$i] = $weekYTotalAmount[$i] = 0;
                         $dayYTotalTransac[$i] = $dayYTotalAmount[$i] = 0;
+
+                        $monthYTotalRegister[$i] = 0;
                     }
 
                     // Try to fetch data from Transactions table.
@@ -181,15 +194,71 @@
                         }
                     }
 
+                    // Try to fetch data from Members table.
+                    $query = "SELECT members.registerDate FROM members ORDER BY registerDate";
+
+                    $rs = mysqli_query($serverConnect, $query);
+                    $totalRecord = 0;
+
+                    if ($rs) {
+                        $totalRecord = mysqli_num_rows($rs);
+                        while ($record = mysqli_fetch_assoc($rs)) {
+                            if (isset($record['registerDate'])) {
+                                // Check month.
+                                for ($i = 0; $i < 12; $i++) {
+                                    // Same month.
+                                    if (
+                                        $monthXLabels[$i] == date('M Y', strtotime($record['registerDate']))
+                                    ) {
+                                        $monthYTotalRegister[$i]++;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     // Change label for month & week & day.
                     for ($i = 0; $i < 12; $i++) {
                         $monthXLabels[$i] = date('M', strtotime((-11 + $i) . " month", strtotime(date("Y-m-15"))));
                         $weekXLabels[$i] = date('d', strtotime((-11 + $i) . " week -6 day", $currentDate)) . "-" . date('d', strtotime((-11 + $i) . " week", $currentDate));
                         $dayXLabels[$i] = date('M d', strtotime((-11 + $i) . " day", $currentDate));
+
+                        // Add to total transaction and amount.
+                        $yearTransacTotal += $monthYTotalTransac[$i];
+                        $yearAmountTotal += $monthYTotalAmount[$i];
+
+                        // Add to total registration.
+                        $yearRegisterTotal += $monthYTotalRegister[$i];
                     }
                 ?>
 
                 <div class='chart-container'>
+                    <div class='data-value'>
+                        <div class='data-group'>
+                            <span class='overall-data'><?php
+                                echo($yearTransacTotal . "/year; " . round($yearTransacTotal / 12, 1) . '/month');
+                            ?></span>
+                            <span class='data-title'>Total Transaction (last 12 Months)</span>
+                        </div>
+
+                        <div class='data-group'>
+                            <span class='overall-data'><?php
+                                echo("£" . $yearAmountTotal . "/year; £" . round($yearAmountTotal / 12, 2) . '/month');
+                            ?></span>
+                            <span class='data-title'>Transaction Amount (last 12 Months)</span>
+                        </div>
+                    </div>
+                    
+                    <div class='data-value'>
+                        <div class='data-group'>
+                            <span class='overall-data'><?php
+                                echo($yearRegisterTotal . "/year; " . round($yearRegisterTotal / 12, 1) . '/month');
+                            ?></span>
+                            <span class='data-title'>New Member (last 12 Months)</span>
+                        </div>
+                    </div>
+                    
                     <div class='chart'>
                         <canvas id="monthTransacChart"></canvas>
 
@@ -377,50 +446,6 @@
                         </script>
                     </div>
 
-                    <?php
-                        // Store total no. of registration from current month to (current - 11) month.
-                        $monthXLabels = array();
-                        $monthYTotalRegister = array();
-
-                        // Prepare for storing data.
-                        $currentDate = strtotime(date("Y-m-d H:i:s"));
-
-                        for ($i = 0; $i < 12; $i++) {
-                            // Month stored in format (e.g., Jan 2022).
-                            $monthXLabels[$i] = date('M Y', strtotime((-11 + $i) . " month", strtotime(date("Y-m-15"))));
-                            $monthYTotalRegister[$i] = 0;
-                        }
-
-                        // Try to fetch data from Members table.
-                        $query = "SELECT members.registerDate FROM members ORDER BY registerDate";
-
-                        $rs = mysqli_query($serverConnect, $query);
-                        $totalRecord = 0;
-
-                        if ($rs) {
-                            $totalRecord = mysqli_num_rows($rs);
-                            while ($record = mysqli_fetch_assoc($rs)) {
-                                if (isset($record['registerDate'])) {
-                                    // Check month.
-                                    for ($i = 0; $i < 12; $i++) {
-                                        // Same month.
-                                        if (
-                                            $monthXLabels[$i] == date('M Y', strtotime($record['registerDate']))
-                                        ) {
-                                            $monthYTotalRegister[$i]++;
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        // Change label for month.
-                        for ($i = 0; $i < 12; $i++) {
-                            $monthXLabels[$i] = date('M', strtotime((-11 + $i) . " month", strtotime(date("Y-m-15"))));
-                        }
-                    ?>
-
                     <div class='chart'>
                         <canvas id="monthRegisterChart"></canvas>
 
@@ -530,7 +555,6 @@
                     <?php endif; ?>
                 </div>
             </div>
-            
         </main>
         
         <footer>

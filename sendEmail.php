@@ -9,9 +9,9 @@ use PHPMailer\PHPMailer\Exception;
 /* This one cannot used on XAMPP, cuz local file use '\'
     but webhost use '/'
 */
-require './mail/Exception.php';
-require './mail/PHPMailer.php';
-require './mail/SMTP.php';
+require $_SERVER['DOCUMENT_ROOT'].'/mail/Exception.php';
+require $_SERVER['DOCUMENT_ROOT'].'/mail/PHPMailer.php';
+require $_SERVER['DOCUMENT_ROOT'].'/mail/SMTP.php';
 
 
 //if test on XAMPP, use this one

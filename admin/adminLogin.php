@@ -44,6 +44,7 @@
             }
 
             if ($found) {
+                mysqli_query($serverConnect, "SET GLOBAL time_zone = '+0:00';");
                 // Date stored as YYYY-MM-DD HH:MM:SS. Refer https://www.w3schools.com/php/func_date_date.asp
                 $currentDate = date("Y-m-d H:i:s");
                 // Record new login date.

@@ -58,14 +58,14 @@
         $residentialAddress['status'] = $status;
         
 
-        if($livedYrs === NULL || $livedYrs === false || $alivedYrs === '') {
+        if($livedYrs === NULL || $livedYrs === false || $livedYrs === '') {
                 
         } else if ($livedYrs < 0 || $livedYrs > 100) {
             $inputError['livedYrs'] = 'Invalid number of years lived. Number of years lived must be in 0 - 100 years.';
         }
         $residentialAddress['livedYrs'] = $livedYrs;
 
-        if($livedMths === NULL || $livedMths === false || $alivedMths === '') {
+        if($livedMths === NULL || $livedMths === false || $livedMths === '') {
             
         } else if ($livedMths < 0 || $livedMths > 12) {
             $inputError['livedMths'] = 'Invalid number of months lived. Number of months lived must be in 0 - 12 months.';
