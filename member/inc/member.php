@@ -1,5 +1,5 @@
 <?php
-    define('RELATIVE_LOGIN_URL', '../loginPage.php?required=true');
+    define('RELATIVE_LOGIN_URL', '../loginPage.php');
 
     define('HTML_FOOTER',    
        '<footer>
