@@ -1,5 +1,5 @@
 <?php
-    define('RELATIVE_LOGIN_URL', '../loginPage.php?required=true');
+    define('RELATIVE_LOGIN_URL', '../loginPage.php');
 
     define('HTML_FOOTER',    
        '<footer>
@@ -85,5 +85,13 @@
             <h1>'.$title.'</h1>
             <h2>'.$message.'</h2>
         </div>';
+    }
+
+    function reformatDate(&$datetime) {
+        if($datetime) {
+            $datetime = date_format(date_create($datetime), 'j M y');
+        } else {
+            $datetime = '-';
+        }
     }
 ?>
