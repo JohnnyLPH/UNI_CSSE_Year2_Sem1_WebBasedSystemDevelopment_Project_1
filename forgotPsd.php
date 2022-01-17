@@ -71,7 +71,7 @@
                                 $mail->addAddress($verifiedEmail, 'Mr. '.$array_user['firstName']); // to email and name  //set receiver's email and name   *
                                 $mail->Subject =     'LingsCar\'s OTP for forgotten account password';   //set subject   *
                                 $mail->msgHTML("Verified OTP: ".$otp); //*$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,*
-                                $mail->AltBody = 'HTML messaging not supported'; // If html emails is not supported by the receiver, show this body
+                                $mail->AltBody = "Verified OTP: ".$otp; // If html emails is not supported by the receiver, show this body
                                 // $mail->addAttachment('images/phpmailer_mini.png'); //Attach an image file
                                 $mail->SMTPOptions = array(
                                                     'ssl' => array(
