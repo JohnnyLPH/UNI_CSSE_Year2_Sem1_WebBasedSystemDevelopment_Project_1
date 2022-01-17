@@ -74,7 +74,7 @@
             echo '<p style="font-size:x-large; text-align:center;"><strong>Proposal  / Order ID:</strong> '.$orderId.'</p>';
         }
         
-        printProgressLine(array(array('Car Proposal', CURRENT_STAGE), array('Wait for Review', INCOMPLETE_STAGE), array('Confirmation', INCOMPLETE_STAGE), array('Delivery', INCOMPLETE_STAGE)));
+        printProgressLine(array(array('Car Proposal', CURRENT_STAGE), array('Wait for Approval', INCOMPLETE_STAGE), array('Confirmation', INCOMPLETE_STAGE), array('Delivery', INCOMPLETE_STAGE)));
 
         $progressLine = array(array('Car Details', getStageStatus(1)), array('Personal Info', getStageStatus(2)), array('Current Address', getStageStatus(3)), array('Job Info', getStageStatus(4)));
         
@@ -88,13 +88,6 @@
         $progressLine[5 + $offset] = array('Submission', getStageStatus(6 + $offset));
 
         printProgressLine($progressLine);
-    }
-    
-    function showProposalNotFoundError() {
-        global $orderId;
-        printHeader();
-        printNavBar();
-        showError('404 Error: Proposal Not Found or Cancelled', 'Your account does not have proposal ID '.$orderId.' or it has been cancelled.');
     }
 
     function showSessionExpiredError() {

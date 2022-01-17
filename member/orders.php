@@ -19,11 +19,13 @@
             'Proposal Cancelled.',
             'Draft Proposal pending submission. Please complete and submit your proposal.',
             'Proposal under review.',
-            'Proposal approved. Awaiting for your confirmation.',
+            'Proposal approved. Awaiting for your confirmation. Click <b>Pay</b> to confirm.',
             'Order Confirmed.');
         
         if($type >= 0 && isset($status[$type])) {
             return $status[$type];
+        } else {
+            return '-';
         }
     }
 
@@ -53,15 +55,7 @@
                         <th>Payment</th>
                     </tr>
                 </thead>
-                <tbody>';
-
-    function reformatDate(&$datetime) {
-        if($datetime) {
-            $datetime = date_format(date_create($datetime), 'j M y');
-        } else {
-            $datetime = '-';
-        }
-    }
+                <tbody>';                
 
     $numOfProposalsUnderReview = 0;
     $numOfUnsubmittedProposals = 0;
@@ -75,6 +69,7 @@
             
             $htmlCars = getCarsHTML($row['carsId']);
 
+            // determined final stage that has been edited
             $stage = 2;
             if($row['stages']) {
                 $stages = json_decode($row['stages'], true);                
@@ -94,25 +89,15 @@
 
             $orderStatus = $row['orderStatus'];
             $orderStatus = '<p style="text-align:justify; margin: 0;">'.getOrderStatus($row['orderStatus']).($row['orderStatusMessage'] ? ('<br>'.$row['orderStatusMessage']) : '').'</p>';
-            switch($row['orderStatus']) {
-                case 1:
-                    $numOfUnsubmittedProposals++;
-                    $orderStatus.='<a class="button">Edit Proposal</a>';
-                    break;
-                case 2:
-                    $orderStatus.='<a class="button">Pay Now</a>';
-                    break;
-                case 4:
-                    $numOfUnsubmittedProposals++;
-                    $orderStatus.='<a class="button" href="./proposal.php?id='.$orderId.'&type='.$type.'&stage='.$stage.'" target="_blank">Edit Proposal</a>';
-                    break;
-                case 5:
-                    $numOfProposalsUnderReview++;
-                    break;
-                case 6:
-                    $orderStatus.='<a class="button">Confirm Order</a>';
-                    break;
-            }            
+            $orderStatusNum = $row['orderStatus'];
+            if($orderStatusNum == 1 || $orderStatusNum == 4) {
+                $numOfUnsubmittedProposals++;
+                $orderStatus .= '<a class="button" href="./proposal.php?id='.$orderId.'&type='.$type.'&stage='.$stage.'" target="_blank">Edit Proposal</a>';
+            } else if($orderStatusNum == 5) {
+                $numOfProposalsUnderReview++;
+            } else if($orderStatusNum == 2 || $orderStatusNum == 6 || $orderStatusNum == 7) {
+                $payment = '<a class="button"  href="./payment.php?orderId='.$orderId.'" target="_blank">Pay</a>';
+            }    
 
             if($type == 1) {
                 $type = 'Personal';
@@ -123,13 +108,13 @@
             reformatDate($row['proposalDate']);
             reformatDate($row['reviewDate']);
             reformatDate($row['confirmDate']);
-
-            $row = array($orderId, $type, $htmlCars, $orderStatus, $row['proposalDate'], $row['reviewDate'], $row['confirmDate']);
+            
+            $row = array($orderId, $type, $htmlCars, $orderStatus, $row['proposalDate'], $row['reviewDate'], $row['confirmDate'], $payment ?? '-');
             $htmlTable.='<tr>';
             foreach ($row as &$cell) {
                 $htmlTable.='<td>'.$cell.'</td>';
             }
-            unset($cell);
+            unset($cell, $payment);
             $htmlTable.='</tr>';
         }        
     }           

@@ -100,6 +100,13 @@
         $JSON[$key] = $input;
     }
 
+    function showProposalNotFoundError() {
+        global $orderId;
+        printHeader();
+        printNavBar();
+        showError('404 Error: Proposal Not Found or Cancelled', 'Your account does not have proposal ID '.$orderId.' or it has been cancelled.');
+    }
+
     define('HTML_HIDE_WARNING', ' hidden">');
     define('HTML_SHOW_WARNING', '">');
     define('HTML_WARNING_CLASS', ' class="warning"');

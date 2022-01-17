@@ -32,7 +32,7 @@ function printNavBar() {
             </li>
 
             <li>
-                <a href="./leased.php"'.($scriptName === 'leased.php' ? $htmlActiveClass : '').'>Leased Cars/Vans</a>
+                <a href="./leasedCars.php"'.($scriptName === 'leasedCars.php' ? $htmlActiveClass : '').'>Leased Cars/Vans</a>
             </li>
         
             <li>
@@ -46,11 +46,7 @@ function printNavBar() {
             <li class="dropdown_list">
                 Help
                 <div class="dropdown_menu">
-                    <a href="#">Who is on my page?</a>
-                    <a href="#">Customer letter</a>
-                    <a href="#">Customer in process</a>
-                    <a href="#">Customer map</a>
-                    <a href="#">Log on to LINGO</a>
+                    <a href="../about.html">About Ling</a>
                 </div>
             </li>
         </ul>';

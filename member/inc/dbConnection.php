@@ -31,6 +31,20 @@
         }
     }
 
+    function getLeasedCars($memberId) {
+        global $db;
+        $result = mysqli_query($db, 'SELECT leasedCars.id, leasedCars.orderId, leasedCars.carId, cars.carImage, cars.imagePath, brands.brandName, cars.carModel, leasedCars.status, leasedCars.statusMessage, leasedCars.paymentMthsCompleted, cars.monthPrice, cars.leaseTime, leasedCars.leaseDate, leasedCars.returnDate FROM leasedCars LEFT JOIN cars ON cars.id = leasedCars.carId LEFT JOIN brands ON brands.id = cars.brandId WHERE leasedCars.memberId = '.mysqli_real_escape_string($db, $memberId)) or showDBError();
+        if(mysqli_num_rows($result) >= 1) {
+            $cars = array();
+            while ($carRow = mysqli_fetch_assoc($result)) {
+                $cars[$carRow['id']] = $carRow;
+            }
+            return $cars;
+        } else {
+            return false;
+        }
+    }
+
     function getAllOrders($memberId) {
         global $db;
         $result = mysqli_query($db, 'SELECT * FROM orders WHERE memberId = '.mysqli_real_escape_string($db, $memberId)) or showDBError();
@@ -45,11 +59,31 @@
         global $db;
         $result = mysqli_query($db, 'SELECT cars.id, brandId, brandName, carModel, monthPrice, leaseTime, initialPay, carImage, imagePath FROM cars INNER JOIN brands ON cars.brandId = brands.id WHERE cars.id IN ('.implode(',', $cars).')') or showDBError();
         if(mysqli_num_rows($result) >= 1) {
-            return ($result);
+            $cars = array();
+            while ($carRow = mysqli_fetch_assoc($result)) {
+                $cars[$carRow['id']] = $carRow;
+            }
+            return $cars;
         } else {
             return false;
         }
     }
+
+    /*
+    function getMultipleCarsId($leaseCarsId) {
+        global $db;
+        $result = mysqli_query($db, 'SELECT leasedCars.id, leasedCars.carId FROM leasedCars INNER JOIN cars ON cars.id = leasedCars.carId WHERE leasedCars.id IN ('.implode(',', $leaseCarsId).')') or showDBError();
+        if(mysqli_num_rows($result) >= 1) {
+            $carIds = array();
+            while ($carRow = mysqli_fetch_assoc($result)) {
+                $carIds[$carRow['id']] = $carRow['carId'];
+            }
+            return $carIds;
+        } else {
+            return false;
+        }
+    }
+    */
 
     function getOrderCol($columnName) {
         // gets data from specific column
@@ -99,26 +133,80 @@
         return mysqli_insert_id($db);
     }
 
-    function newTrans($carId, $creditCard, $amount) {
+    function newTrans($leasedCars, $creditCard, $amount) {
         // prepared statement to prevent SQL injection
 
         global $db, $orderId, $memberId;
-        $updateSTMT = mysqli_prepare($db, 'INSERT INTO transactions (memberId, orderId, carId, creditCard, amount) VALUES (?, ?, ?, ?, ?)') or showDBError();
-        if(is_array($carId)) {
-            $carId = json_encode($carId);
+        $updateSTMT = mysqli_prepare($db, 'INSERT INTO transactions (memberId, orderId, leasedCars, creditCard, amount) VALUES (?, ?, ?, ?, ?)') or showDBError();
+        if(is_array($leasedCars)) {
+            $leasedCars = json_encode($leasedCars);
         }
         if(is_array($creditCard)) {
             $creditCard = json_encode($creditCard);
         }
-        mysqli_stmt_bind_param($updateSTMT, 'iissi', $memberId, $orderId, $carId, $creditCard, $amount) or showDBError();
+        mysqli_stmt_bind_param($updateSTMT, 'iissi', $memberId, $orderId, $leasedCars, $creditCard, $amount) or showDBError();
         mysqli_stmt_execute($updateSTMT) or showDBError();
 
         return mysqli_insert_id($db);
     }
+    
+    function confirmOrder($orderId, $cars) {
+        global $db, $memberId;
+
+        if($cars) {
+            $numOfCars = count($cars);
+            
+            $stmt = 'INSERT INTO leasedCars (memberId, orderId, carId, paymentMthsCompleted) VALUES ';
+            for($i = 0; $i < $numOfCars; $i++) {
+                $stmt .= '('.$memberId.', '.$orderId.', '.$cars[$i]['carId'].', '.$cars[$i]['MthsPaid'];
+                if($i < $numOfCars - 1) {
+                    $stmt .= ', ';
+                }
+            }
+            unset($i);
+            
+            mysqli_query($db, $stmt) or showDBError();
+
+            $firstLeaseId = mysqli_insert_id($db);
+            $leasedCars = array();
+            for($i = 0; $i < $numOfCars; $i++) {
+                $leasedCars[$firstLeaseId + $i] = $cars[$i]['carId'];
+            }
+            unset($i);
+            $leasedCars = json_encode($leasedCars);
+
+            mysqli_query($db, 'UPDATE orders SET orderStatus = 7, leasedCarsId = \''.$leasedCars.'\', confirmDate = NOW() WHERE id = '.$orderId.' AND memberId = '.$memberId) or showDBError();
+
+            $leasedCars = array();
+            for($i = 0; $i < $numOfCars; $i++) {
+                $leasedCars[$firstLeaseId + $i] = $cars[$i];
+            }
+            unset($i);
+            return $leasedCars;
+        } else {
+            return false;
+        }
+    }
+
+    function payExistingOrder($orderId, $leasedCars) {
+        global $db, $memberId;
+        if($leasedCars && $orderId && $memberId) {
+            $stmt = 'UPDATE leasedCars SET paymentMthsCompleted = (CASE';
+
+            foreach($leasedCars as $leaseId => $car) {
+                $stmt .= ' WHEN id = '.$leaseId.' then paymentMthsCompleted + '.$car['MthsPaid'];
+            }
+            unset($leaseId, $car);
+
+            $stmt .= ' END) WHERE orderId = '.$orderId.' AND memberId = '.$memberId;
+
+            mysqli_query($db, $stmt) or showDBError();
+        }
+    }
 
     function cancelOrder($orderId) {
         global $db, $memberId;
-        $result = mysqli_query($db, 'UPDATE orders SET editable = false, orderStatus = 3, orderStatusMessage = "Cancellation made on '.date('j F Y g:i:s A').'." WHERE id = '.mysqli_real_escape_string($db, $orderId).' AND memberId = '.mysqli_real_escape_string($db, $memberId).' LIMIT 1') or showDBError();
+        mysqli_query($db, 'UPDATE orders SET editable = false, orderStatus = 3, orderStatusMessage = "Cancellation made on '.date('j F Y g:i:s A').'." WHERE id = '.mysqli_real_escape_string($db, $orderId).' AND memberId = '.mysqli_real_escape_string($db, $memberId).' LIMIT 1') or showDBError();
         return mysqli_affected_rows($db);
     }
 

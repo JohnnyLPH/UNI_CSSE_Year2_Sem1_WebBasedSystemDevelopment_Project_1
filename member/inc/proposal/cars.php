@@ -20,14 +20,14 @@
                     <thead>
                         <tr>
                             <th>Car</th>
-                            <th>Price (£/mth)</th>
+                            <th>Rental Fee (£/mth)</th>
                             <th>Lease Time (Month)</th>
                             <th>Initial Pay (* £/mth)</th>
                             <th>Quantity</th>
                         </tr>
                     </thead>
                     <tbody>';
-            while ($carRow = mysqli_fetch_assoc($carsResult)) {
+            foreach($carsResult as &$carRow) {
                 echo '<tr><td><img src="..'.$carRow['imagePath'].$carRow['carImage'].'">
                 <p><strong>'.$carRow['brandName'].' '.$carRow['carModel'].'</strong><br>
                 <strong>Car ID: </strong>'.$carRow['id'].'</p></td>
@@ -37,6 +37,7 @@
                 <td>'.$cars[$carRow['id']].'</td>
                 </tr>';
             }
+            unset($carRow);
             echo
                     '</tbody>
                 </table>
