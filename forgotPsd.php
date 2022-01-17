@@ -80,7 +80,7 @@
                                                         'allow_self_signed' => true
                                                     )
                                                 );
-                                if（!$mail->send()){
+                                if（$mail->send() == false){
                                     $emailError = "The email inputted is unable to send the OTP email! Please make sure you have enter a correct valid email!!!";
                                 }
                                     
