@@ -124,11 +124,11 @@
         } else if(search('/\s/', $phone) >= 0) {
             $phoneError = 'Phone number cannot contain any whitespace character (spaces, tabs, line breaks)';
         } else if($phone[0] !== '1') {
-            $phoneError = 'Invalid format. Malaysia mobile phone number must begin with 1';
+            $phoneError = 'Invalid format. UK mobile phone number must begin with 1';
         } else if(search('/[^0-9]/', $phone) >= 0) {
             $phoneError = "Phone number can only contain numbers without any special character such as '-'";
         } else if(strlen($phone) < 9 || strlen($phone) > 10) {
-            $phoneError = 'Malaysia mobile phone number must have 9 - 10 digits (excluding +60)';
+            $phoneError = 'UK mobile phone number must have 9 - 10 digits (excluding +44)';
         }
         
         $password = $_POST['password'] ?? '';
@@ -240,7 +240,7 @@
                             <span class="form-icon smartphone"></span>
                             <div>
                                 <div style="display: flex; align-items: center;">
-                                    <span style="white-space: pre;">+60 </span>
+                                    <span style="white-space: pre;">+44 </span>
                                     <input type="tel" name="phone" placeholder="123456789" id="phone"'.(isset($phoneError) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($phone).'">
                                 </div>
                                 <p class="warning-text'.(isset($phoneError) ? (NO_HIDDEN_WARNING_HTML.$phoneError) : (HIDDEN_WARNING_HTML.'Error')).'</p>
