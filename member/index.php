@@ -187,9 +187,61 @@
     } else {
         echo '<p>No proposals have been made. Add Cars to cart and Checkout to create a new proposal.</p>';
     }
-    echo '</div>';
+    echo '</div>
+        <div class="grid-item">
+            <h3>Leased Cars/Vans</h3>';
 
-    echo '</section>
+    $leasedCars = getLeasedCars($memberId);
+    if($leasedCars) {
+        include_once './inc/leasedCars.php';
+
+        $htmlTable =
+           '<table>
+                <thead>
+                    <tr>
+                        <th>Lease ID</th>
+                        <th>Order ID</th>
+                        <th>Car</th>
+                        <th>Status</th>
+                        <th>Rental Fee (£/mth)</th>
+                    </tr>
+                </thead>
+                <tbody>';
+                
+        $limit = 5;
+        $leasedCarsProcessed = 0;
+
+        foreach($leasedCars as $leaseId => $leasedCar) {
+            if($leasedCarsProcessed < $limit) {
+                $orderId = $leasedCar['orderId'];            
+                
+                $column = array($leaseId, $orderId, getCarHTML($leasedCar), getStatusHTML($leasedCar), $leasedCar['monthPrice']);
+                $htmlTable.='<tr>';
+                foreach ($column as &$cell) {
+                    $htmlTable.='<td>'.$cell.'</td>';
+                }
+                unset($cell);
+                $htmlTable.='</tr>';
+                $leasedCarsProcessed++;
+            }
+        }
+        unset($limit, $column, $leasedCarsProcessed);
+
+        $htmlTable.=
+                '</tbody>
+            </table>
+                <div style="text-align: center;">
+                    <a class="button" href="./leasedCars.php">View All</a>
+                </div>';
+
+        echo $htmlTable;
+    } else {
+        echo '<p>No cars / vans have been leased.</p>';
+    }
+    unset($leasedCars);
+
+    echo   '</div>
+        </section>
     </main>';
 
     if($numOfProposalsUnderReview || $numOfUnsubmittedProposals) {

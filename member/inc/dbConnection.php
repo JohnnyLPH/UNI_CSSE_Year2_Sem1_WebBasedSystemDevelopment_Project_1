@@ -33,7 +33,7 @@
 
     function getLeasedCars($memberId) {
         global $db;
-        $result = mysqli_query($db, 'SELECT leasedCars.id, leasedCars.orderId, leasedCars.carId, cars.carImage, cars.imagePath, brands.brandName, cars.carModel, leasedCars.status, leasedCars.statusMessage, leasedCars.paymentMthsCompleted, cars.monthPrice, cars.leaseTime, leasedCars.leaseDate, leasedCars.returnDate FROM leasedCars LEFT JOIN cars ON cars.id = leasedCars.carId LEFT JOIN brands ON brands.id = cars.brandId WHERE leasedCars.memberId = '.mysqli_real_escape_string($db, $memberId)) or showDBError();
+        $result = mysqli_query($db, 'SELECT leasedCars.id, leasedCars.orderId, leasedCars.carId, cars.carImage, cars.imagePath, brands.brandName, cars.carModel, leasedCars.status, leasedCars.statusMessage, leasedCars.paymentMthsCompleted, cars.monthPrice, cars.leaseTime, leasedCars.leaseDate, leasedCars.returnDate FROM leasedCars LEFT JOIN cars ON cars.id = leasedCars.carId LEFT JOIN brands ON brands.id = cars.brandId WHERE leasedCars.memberId = '.mysqli_real_escape_string($db, $memberId).' ORDER BY leasedCars.id DESC') or showDBError();
         if(mysqli_num_rows($result) >= 1) {
             $cars = array();
             while ($carRow = mysqli_fetch_assoc($result)) {
@@ -47,7 +47,7 @@
 
     function getOrders($memberId) {
         global $db;
-        $result = mysqli_query($db, 'SELECT * FROM orders WHERE memberId = '.mysqli_real_escape_string($db, $memberId)) or showDBError();
+        $result = mysqli_query($db, 'SELECT * FROM orders WHERE memberId = '.mysqli_real_escape_string($db, $memberId).' ORDER BY id DESC') or showDBError();
         if(mysqli_num_rows($result) >= 1) {
             return ($result);
         } else {
@@ -57,7 +57,7 @@
 
     function getTransactions($memberId) {
         global $db;
-        $result = mysqli_query($db, 'SELECT id, orderId, leasedCars, creditCard, amount, transactionDate FROM transactions WHERE memberId = '.mysqli_real_escape_string($db, $memberId)) or showDBError();
+        $result = mysqli_query($db, 'SELECT id, orderId, leasedCars, creditCard, amount, transactionDate FROM transactions WHERE memberId = '.mysqli_real_escape_string($db, $memberId).' ORDER BY id DESC') or showDBError();
         if(mysqli_num_rows($result) >= 1) {
             $transactions = array();
             while ($row = mysqli_fetch_assoc($result)) {

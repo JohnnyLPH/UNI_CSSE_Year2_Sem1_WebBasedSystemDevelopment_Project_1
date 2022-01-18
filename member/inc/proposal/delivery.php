@@ -8,7 +8,7 @@
     }
 
     if($post) {
-        $deliveryMth = filter_input(INPUT_POST, 'delivery-mth', FILTER_VALIDATE_INT);
+        $deliveryMth = filter_input(INPUT_POST, 'deliveryMth', FILTER_VALIDATE_INT);
     } else {
         // retrieve from database
         $preferredDelivery = getOrderCol('preferredDelivery');
@@ -18,7 +18,7 @@
             die();
         }
 
-        $preferredDelivery = $preferredDelivery['preferredDelivery'];
+        $deliveryMth = $preferredDelivery['preferredDelivery'];
 
         printHeader();
         printNavBar();
@@ -96,10 +96,10 @@
     }
     
     echo   '<fieldset>
-                <label for="delivery-mth">Preferred Delivery Month: </label>
+                <label for="deliveryMth">Preferred Delivery Month: </label>
                 <div class="input">
                     <span class="form-icon">event</span>
-                    <select name="delivery-mth">
+                    <select name="deliveryMth">
                         <option value="">-- Select Month --</option>';
 
     $currentMonth = date_create();
@@ -112,7 +112,7 @@
     }
 
     echo               '</select>
-                    <p class="warning-text hidden">Error</p>
+                    <p class="warning-text'.(isset($inputError['deliveryMth']) ? (HTML_SHOW_WARNING.$inputError['deliveryMth']) : (HTML_HIDE_WARNING.'Error')).'</p>
                 </div>
             </fieldset>';
 

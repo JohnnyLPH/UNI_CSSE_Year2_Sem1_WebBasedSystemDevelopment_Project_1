@@ -20,20 +20,6 @@
     include_once './inc/postHead.php';
     printNavBar();
 
-    function getStatus($status) {
-        $statusList = array(
-            'Cancelled or Returned.',
-            'To be Delivered.',
-            'Leased.',
-            'Under Maintenance.');
-
-        if($status >= 0 && isset($statusList[$status])) {
-            return $statusList[$status];
-        } else {
-            return '-';
-        }
-    }
-
     echo '<main>';
         
     $htmlTable =
@@ -55,15 +41,15 @@
 
     $leasedCars = getLeasedCars($memberId);
     if($leasedCars) {
+        include_once './inc/leasedCars.php';
+
         foreach($leasedCars as $leaseId => $leasedCar) {
             $orderId = $leasedCar['orderId'];
             $paymentMthsCompleted = $leasedCar['paymentMthsCompleted'].' / '.$leasedCar['leaseTime'];
             
-            $car = '<img src="..'.$leasedCar['imagePath'].$leasedCar['carImage'].'" style="max-height:30px;">
-                <p style="display:inline-block; margin:0px;"><a href="/?manage-mode=view-car&car-id='.$leasedCar['carId'].'"><strong>'.$leasedCar['brandName'].' '.$leasedCar['carModel'].'</strong></a><br>
-                <strong>Car ID: </strong>'.$leasedCar['carId'].'</p>';
+            $car = getCarHTML($leasedCar);
 
-            $status = '<p style="text-align:justify; margin: 0;">'.getStatus($leasedCar['status']).($leasedCar['statusMessage'] ? ('<br>'.$leasedCar['statusMessage']) : '').'</p>';
+            $status = getStatusHTML($leasedCar);
             reformatDate($leasedCar['leaseDate']);
             reformatDate($leasedCar['returnDate']);
             
@@ -87,7 +73,7 @@
     if($leasedCars) {
         echo $htmlTable;
     } else {
-        echo '<p>No cars have been leased.</p>';
+        echo '<p>No cars / vans have been leased.</p>';
     }
 
     echo '</main>'.HTML_FOOTER;
