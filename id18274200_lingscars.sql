@@ -40,7 +40,7 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `adminName`, `adminPassword`, `lastLogin`) VALUES
-(1, 'admin', '$2y$10$YVeg46P7ezx1SQB8TcrFBexLFiQ6P7pxxTejduyk0d9jxRl6.7VPK', '2022-01-16 09:07:07'),
+(1, 'admin', '$2y$10$ptLn05BMkrq9jjd7WV6Le.AFCDLN2TdPhyYt9XQ96gMw/LiQxzatm', '2022-01-16 09:07:07'),
 (2, 'LPH', '$2y$10$VZr8bW7ALTsfMTT7d4cvpuaMhEJG74NiuihY92II4aOHlY64wN6qC', '2022-01-17 13:37:19'),
 (9, 'Yuki', '$2y$10$1If4/Vcdi/gmNCK3Gf4y/eEzx6Y0Gj2l3uOxYhczXcW5A4qGEhcJe', '2022-01-17 13:40:03'),
 (10, 'James', '$2y$10$L83B22yVT0qUuHojH7yc0.nQ1EpoUnSChAPXo/6qL40eeaEirLEOe', '2022-01-13 12:59:15'),

@@ -2,7 +2,9 @@
 
     date_default_timezone_set('Europe/London');
 
-    $db = mysqli_connect('localhost', 'id18274200_wbsd', 'G03abc-abc03G', 'id18274200_lingscars');
+    require_once('../dbConnection.php');
+
+    $db = $serverConnect;
 
     function showDBError() {        
         global $db;

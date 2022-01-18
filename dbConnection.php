@@ -3,7 +3,7 @@
     $dbHost = "localhost";
 
     $dbUsername = "id18274200_wbsd";
-    $dbPassword = "G03abc-abc03G";
+    $dbPassword = "happyG03-ABC2022proj";
 
     // Make sure the DB is already created.
     $dbName = "id18274200_lingscars";
