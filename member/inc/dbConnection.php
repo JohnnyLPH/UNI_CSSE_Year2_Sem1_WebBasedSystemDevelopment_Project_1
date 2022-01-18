@@ -55,6 +55,20 @@
         }
     }
 
+    function getTransactions($memberId) {
+        global $db;
+        $result = mysqli_query($db, 'SELECT id, orderId, leasedCars, creditCard, amount, transactionDate FROM transactions WHERE memberId = '.mysqli_real_escape_string($db, $memberId)) or showDBError();
+        if(mysqli_num_rows($result) >= 1) {
+            $transactions = array();
+            while ($row = mysqli_fetch_assoc($result)) {
+                $transactions[$row['id']] = $row;
+            }
+            return $transactions;
+        } else {
+            return false;
+        }
+    }
+
     function getMultipleCars($cars) {
         global $db;
         $result = mysqli_query($db, 'SELECT cars.id, brandId, brandName, carModel, monthPrice, leaseTime, initialPay, carImage, imagePath FROM cars INNER JOIN brands ON cars.brandId = brands.id WHERE cars.id IN ('.implode(',', $cars).')') or showDBError();
@@ -68,22 +82,6 @@
             return false;
         }
     }
-
-    /*
-    function getMultipleCarsId($leaseCarsId) {
-        global $db;
-        $result = mysqli_query($db, 'SELECT leasedCars.id, leasedCars.carId FROM leasedCars INNER JOIN cars ON cars.id = leasedCars.carId WHERE leasedCars.id IN ('.implode(',', $leaseCarsId).')') or showDBError();
-        if(mysqli_num_rows($result) >= 1) {
-            $carIds = array();
-            while ($carRow = mysqli_fetch_assoc($result)) {
-                $carIds[$carRow['id']] = $carRow['carId'];
-            }
-            return $carIds;
-        } else {
-            return false;
-        }
-    }
-    */
 
     function getOrderCol($columnName) {
         // gets data from specific column

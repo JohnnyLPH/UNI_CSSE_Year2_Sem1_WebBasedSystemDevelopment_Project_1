@@ -28,6 +28,10 @@
             
                 <li>
                     <a href="/member/orders.php">Proposal/Orders</a>
+                </li>
+                
+                <li>
+                    <a href="/member/transactions.php">Transactions</a>
                 </li>' : '
 
                 <li>

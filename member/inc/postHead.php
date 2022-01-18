@@ -40,6 +40,10 @@ function printNavBar() {
             </li>
 
             <li>
+                <a href="./transactions.php"'.($scriptName === 'transactions.php' ? $htmlActiveClass : '').'>Transactions</a>
+            </li>
+
+            <li>
                 <a href="../cart.php">Cart</a>
             </li>
 
