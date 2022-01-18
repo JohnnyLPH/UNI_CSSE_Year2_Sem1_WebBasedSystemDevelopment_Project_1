@@ -66,7 +66,7 @@
                 } else {
                     $first = false;
                 }
-                $leasedCarsHTML .= '<strong>'.$leaseId.': </strong> '.$leasedCar['MthsPaid'].' ('.$carsCatalogue[$leasedCar['carId']]['brandName'].' '.$carsCatalogue[$leasedCar['carId']]['carModel'].')';
+                $leasedCarsHTML .= '<strong>'.$leaseId.': </strong> '.$leasedCar['MthsPaid'].' (<a href="/?manage-mode=view-car&car-id='.$leasedCar['carId'].'">'.$carsCatalogue[$leasedCar['carId']]['brandName'].' '.$carsCatalogue[$leasedCar['carId']]['carModel'].'</a>)';
             }
             unset($leaseId, $leasedCar);
 

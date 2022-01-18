@@ -11,24 +11,6 @@
     
     require_once './inc/dbConnection.php';
     include_once './inc/orders.php';
-    
-    function getOrderStatus($type) {
-        $status = array(
-            'Ineligible.',
-            'Changes required.',
-            'Incomplete Payment.',
-            'Proposal Cancelled.',
-            'Draft Proposal pending submission. Please complete and submit your proposal.',
-            'Proposal under review.',
-            'Proposal approved. Awaiting for your confirmation. Click <b>Pay</b> to confirm.',
-            'Order Confirmed.');
-        
-        if($type >= 0 && isset($status[$type])) {
-            return $status[$type];
-        } else {
-            return '-';
-        }
-    }
 
     include_once './inc/preHead.php';
 ?>    
@@ -61,7 +43,7 @@
     $numOfProposalsUnderReview = 0;
     $numOfUnsubmittedProposals = 0;
 
-    $orders = getAllOrders($memberId);
+    $orders = getOrders($memberId);
     if($orders) {
         while ($row = mysqli_fetch_assoc($orders)) {
             $orderId = $row['id'];
@@ -118,6 +100,7 @@
             unset($cell, $payment);
             $htmlTable.='</tr>';
         }        
+        unset($row);
     }           
     $htmlTable.=
                 '</tbody>

@@ -45,7 +45,7 @@
         }
     }
 
-    function getAllOrders($memberId) {
+    function getOrders($memberId) {
         global $db;
         $result = mysqli_query($db, 'SELECT * FROM orders WHERE memberId = '.mysqli_real_escape_string($db, $memberId)) or showDBError();
         if(mysqli_num_rows($result) >= 1) {
