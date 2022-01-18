@@ -89,7 +89,7 @@
         // gets data from specific column
         // also updates current proposal stage status
 
-        global $db, $orderId, $memberId, $requestedStage, $stages, $stageStatus;
+        global $db, $orderId, $memberId, $requestedStage, $stageStatus;
         $result = mysqli_query($db, 'SELECT '.$columnName.', orderStatus, stages FROM orders WHERE id = '.mysqli_real_escape_string($db, $orderId).' AND memberId = '.mysqli_real_escape_string($db, $memberId).' LIMIT 1') or showDBError();
         if(mysqli_num_rows($result) === 1) {
             $column = mysqli_fetch_assoc($result) or showDBError();
@@ -99,6 +99,10 @@
             }
 
             $stages = json_decode($column['stages'], true);
+            if(!isset($_SESSION['stages'])) {
+                $_SESSION['stages'] = array();
+            }
+            $_SESSION['stages'][$orderId] = $stages;
             $stageStatus = $stages[$requestedStage] ?? 0;
 
             return $column;

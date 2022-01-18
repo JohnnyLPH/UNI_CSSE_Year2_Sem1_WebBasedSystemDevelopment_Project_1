@@ -128,31 +128,14 @@
             $type = $row['type'];       
             
             $htmlCars = getCarsHTML($row['carsId']);
-
-            // determined final stage that has been edited
-            $stage = 2;
-            if($row['stages']) {
-                $stages = json_decode($row['stages'], true);                
-                if($stages) {
-                    $maxStage = max($stages);
-                    if($maxStage > 1) {
-                        if($type == 1 && $maxStage > 6) {
-                            $stage = 6;
-                        } else if($type == 2 && $maxStage > 7) {
-                            $stage = 7;
-                        } else {
-                            $stage = $maxStage;
-                        }
-                    }
-                }
-            }
+            $firstIncompleteStage = getFirstIncompleteStage($row['stages']);
 
             $orderStatus = $row['orderStatus'];
             $orderStatus = '<p style="text-align:justify; margin: 0;">'.getOrderStatus($row['orderStatus']).($row['orderStatusMessage'] ? ('<br>'.$row['orderStatusMessage']) : '').'</p>';
             $orderStatusNum = $row['orderStatus'];
             if($orderStatusNum == 1 || $orderStatusNum == 4) {
                 $numOfUnsubmittedProposals++;
-                $orderStatus .= '<a class="button" href="./proposal.php?id='.$orderId.'&type='.$type.'&stage='.$stage.'" target="_blank">Edit Proposal</a>';
+                $orderStatus .= '<a class="button" href="./proposal.php?id='.$orderId.'&type='.$type.'&stage='.$firstIncompleteStage.'" target="_blank">Edit Proposal</a>';
             } else if($orderStatusNum == 5) {
                 $numOfProposalsUnderReview++;
             }

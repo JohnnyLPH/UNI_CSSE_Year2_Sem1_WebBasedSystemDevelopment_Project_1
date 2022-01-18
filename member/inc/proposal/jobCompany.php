@@ -370,7 +370,7 @@
                 <div class="input">
                     <span class="form-icon">local_atm</span>
                     <div>
-                        <input type="text" name="salary" id="salary"'.(isset($inputError['salary']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($salary).'">
+                        <input type="number" name="salary" id="salary"'.(isset($inputError['salary']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($salary).'">
                         <p class="warning-text'.(isset($inputError['salary']) ? (HTML_SHOW_WARNING.$inputError['salary']) : (HTML_HIDE_WARNING.'Error')).'</p>
                     </div>
                 </div>
@@ -392,30 +392,40 @@
                     <div>
                         <div class="input-flex-double">
                             <div>
-                                <input type="number" min="0" max="999" name="workedYrs" id="workedYrs">
+                                <input type="number" min="0" max="999" name="workedYrs" id="workedYrs"'.(isset($inputError['workedYrs']) ? HTML_WARNING_CLASS : '').' value="'.htmlspecialchars($workedYrs).'">
                                 <label for="workedYrs">year(s)</label>
                             </div>
                             <div>
                                 <select name="workedMths" id="workedMths">
                                     <option value=""></option>
-                                    <option value="0">0</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>
-                                    <option value="11">11</option>
-                                    <option value="12">12</option>
+                                    <option value="0"'.(($workedMths == 0) ? ' selected' : '').'>0</option>
+                                    <option value="1"'.(($workedMths == 1) ? ' selected' : '').'>1</option>
+                                    <option value="2"'.(($workedMths == 2) ? ' selected' : '').'>2</option>
+                                    <option value="3"'.(($workedMths == 3) ? ' selected' : '').'>3</option>
+                                    <option value="4"'.(($workedMths == 4) ? ' selected' : '').'>4</option>
+                                    <option value="5"'.(($workedMths == 5) ? ' selected' : '').'>5</option>
+                                    <option value="6"'.(($workedMths == 6) ? ' selected' : '').'>6</option>
+                                    <option value="7"'.(($workedMths == 7) ? ' selected' : '').'>7</option>
+                                    <option value="8"'.(($workedMths == 8) ? ' selected' : '').'>8</option>
+                                    <option value="9"'.(($workedMths == 9) ? ' selected' : '').'>9</option>
+                                    <option value="10"'.(($workedMths == 10) ? ' selected' : '').'>10</option>
+                                    <option value="11"'.(($workedMths == 11) ? ' selected' : '').'>11</option>
+                                    <option value="12"'.(($workedMths == 12) ? ' selected' : '').'>12</option>
                                 </select>
                                 <label for="workedMths">month(s)</label>
                             </div>                        
                         </div>
-                        <p class="warning-text hidden">Error</p>
+                        <p class="warning-text';
+
+    if(isset($inputError['workedMths'])) {
+        echo HTML_SHOW_WARNING.$inputError['workedMths'];
+    } else if(isset($inputError['workedYrs'])) {
+        echo HTML_SHOW_WARNING.$inputError['workedYrs'];
+    } else {
+        echo HTML_HIDE_WARNING.'Error';
+    }
+
+    echo               '</p>
                     </div>
                 </div>
             </fieldset>';

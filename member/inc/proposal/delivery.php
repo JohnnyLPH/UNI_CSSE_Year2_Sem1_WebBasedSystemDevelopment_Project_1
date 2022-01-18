@@ -99,8 +99,9 @@
                 <label for="deliveryMth">Preferred Delivery Month: </label>
                 <div class="input">
                     <span class="form-icon">event</span>
-                    <select name="deliveryMth">
-                        <option value="">-- Select Month --</option>';
+                    <div>
+                        <select name="deliveryMth">
+                            <option value="">-- Select Month --</option>';
 
     $currentMonth = date_create();
 
@@ -112,7 +113,8 @@
     }
 
     echo               '</select>
-                    <p class="warning-text'.(isset($inputError['deliveryMth']) ? (HTML_SHOW_WARNING.$inputError['deliveryMth']) : (HTML_HIDE_WARNING.'Error')).'</p>
+                        <p class="warning-text'.(isset($inputError['deliveryMth']) ? (HTML_SHOW_WARNING.$inputError['deliveryMth']) : (HTML_HIDE_WARNING.'Error')).'</p>
+                    </div>
                 </div>
             </fieldset>';
 

@@ -189,7 +189,7 @@
                         $mail->Subject = 'LINGsCAR\'s Official Payment Receipt for Order ID '.$orderId;   //set subject   *
                         $mail->CharSet = $CHARSET_UTF8;
                         $mail->msgHTML($receiptHTML); //*$mail->msgHTML(file_get_contents('contents.html'), __DIR__); //Read an HTML message body from an external file, convert referenced images to embedded,*
-                        $mail->AltBody = 'HTML messaging not supported'; // If html emails is not supported by the receiver, show this body
+                        $mail->AltBody = 'LINGsCAR\'s Official Payment Receipt for Order ID '.$orderId; // If html emails is not supported by the receiver, show this body
                         $mail->SMTPOptions = array(
                                 'ssl' => array(
                                 'verify_peer' => false,

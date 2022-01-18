@@ -37,4 +37,23 @@
 
         return $htmlCars;
     }
+
+    function getFirstIncompleteStage($stages) {
+        // returns the first stage that is not completed (or have input validation errors) by the user
+        $firstIncompleteStage = 2;
+        if($stages) {
+            $stages = json_decode($stages, true);    
+            if($stages) {
+                ksort($stages); // sort by key
+                foreach($stages as $stageNum => $stageStatus) {
+                    $firstIncompleteStage = $stageNum;
+                    if($stageStatus !== 1) {
+                        break;
+                    }
+                }
+                unset($stageNum, $stageStatus);
+            }
+        }
+        return $firstIncompleteStage;
+    }
 ?>

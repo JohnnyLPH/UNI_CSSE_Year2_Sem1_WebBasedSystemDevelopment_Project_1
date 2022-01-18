@@ -48,8 +48,9 @@
     $stage = array('Car Details', 'Personal Info', 'Current Address', 'Job Info', 'Bank Details', 'Submission');
 
     function getStageStatus($stage) {
-        global $stages, $requestedStage;
-
+        global $orderId, $requestedStage;
+        $stages = $_SESSION['stages'][$orderId] ?? '';
+        
         $stageStatus = $stages[$stage] ?? '';
         if($stage === $requestedStage) {
             return CURRENT_STAGE;
@@ -243,9 +244,9 @@
     }
 
     function setCurrentStageStatus($statusNum) {
-        global $db, $type, $requestedStage, $orderId, $memberId;
+        global $db, $type, $requestedStage, $orderId, $memberId, $goPrevious;
         $editable = '';
-        if($statusNum === 1 && (($type === 1 && $requestedStage === 6) || ($type === 2 && $requestedStage === 7))) {
+        if($statusNum === 1 && (($type === 1 && $requestedStage === 6) || ($type === 2 && $requestedStage === 7)) && isset($goPrevious) && !$goPrevious) {
             $editable = 'editable = false, orderStatus = 5, proposalDate = NOW(), ';
         }
 
