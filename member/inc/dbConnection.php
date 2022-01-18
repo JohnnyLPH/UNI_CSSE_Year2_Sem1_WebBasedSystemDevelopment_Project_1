@@ -141,14 +141,14 @@
         // prepared statement to prevent SQL injection
 
         global $db, $orderId, $memberId;
-        $updateSTMT = mysqli_prepare($db, 'INSERT INTO transactions (memberId, orderId, leasedCars, creditCard, amount) VALUES (?, ?, ?, ?, ?)') or showDBError();
+        $updateSTMT = mysqli_prepare($db, 'INSERT INTO transactions (memberId, orderId, leasedCars, transactionDate, creditCard, amount) VALUES (?, ?, ?, ?, ?, ?)') or showDBError();
         if(is_array($leasedCars)) {
             $leasedCars = json_encode($leasedCars);
         }
         if(is_array($creditCard)) {
             $creditCard = json_encode($creditCard);
         }
-        mysqli_stmt_bind_param($updateSTMT, 'iissi', $memberId, $orderId, $leasedCars, $creditCard, $amount) or showDBError();
+        mysqli_stmt_bind_param($updateSTMT, 'iisssi', $memberId, $orderId, $leasedCars, date('Y-m-d H:i:s'), $creditCard, $amount) or showDBError();
         mysqli_stmt_execute($updateSTMT) or showDBError();
 
         return mysqli_insert_id($db);
@@ -179,7 +179,7 @@
             unset($i);
             $leasedCars = json_encode($leasedCars);
 
-            mysqli_query($db, 'UPDATE orders SET orderStatus = 7, leasedCarsId = \''.$leasedCars.'\', confirmDate = NOW() WHERE id = '.$orderId.' AND memberId = '.$memberId) or showDBError();
+            mysqli_query($db, 'UPDATE orders SET orderStatus = 7, leasedCarsId = \''.$leasedCars.'\', confirmDate = "'.date('Y-m-d H:i:s').'" WHERE id = '.$orderId.' AND memberId = '.$memberId) or showDBError();
 
             $leasedCars = array();
             for($i = 0; $i < $numOfCars; $i++) {

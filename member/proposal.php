@@ -246,15 +246,15 @@
     function setCurrentStageStatus($statusNum) {
         global $db, $type, $requestedStage, $orderId, $memberId, $goPrevious;
         $editable = '';
-        if($statusNum === 1 && (($type === 1 && $requestedStage === 6) || ($type === 2 && $requestedStage === 7)) && isset($goPrevious) && !$goPrevious) {
-            $editable = 'editable = false, orderStatus = 5, proposalDate = NOW(), ';
+        if($statusNum === 1 && (($type === 1 && $requestedStage === 6) || ($type === 2 && $requestedStage === 7)) && (!isset($goPrevious) || !$goPrevious)) {
+            $editable = 'editable = false, orderStatus = 5, proposalDate = "'.date('Y-m-d H:i:s').'", ';
         }
 
         mysqli_query($db, 'UPDATE orders SET '.$editable.'stages = JSON_SET(stages, "$.'.$requestedStage.'", '.$statusNum.') WHERE id = '.$orderId.' AND memberId = '.$memberId.'') or showDBError();
     }
 
     function getForm($name) {
-        global $post, $stageStatus, $requestedStage, $type, $memberId, $orderId, $inputError;
+        global $post, $stageStatus, $requestedStage, $type, $memberId, $orderId, $inputError, $goPrevious;
 
         $goPrevious = ($_POST['goPrevious'] ?? '') === 'true';           
 
