@@ -195,7 +195,7 @@
                 </noscript>
                 <form action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'" method="post" name="registrationForm" onsubmit="return(validateForm());" novalidate>            
                     <div style="text-align: center;">
-                        <img src="./images/form-icon-png-15.jpg" style="max-width: 100px; vertical-align: middle;">
+                        <img src="source/images/registrationPage/form-icon-png-15.jpg" style="max-width: 100px; vertical-align: middle;">
                         <h1 style="display: inline-block;">User Account Registration</h1>
                     </div>
                     <div class="warning-banner">
